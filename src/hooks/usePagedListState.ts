@@ -62,6 +62,18 @@ export function usePagedListState(initialSortBy = 'name', initial?: Partial<List
     setState((prev) => ({ ...prev, page: 1, columnFilters: {} }))
   }, [])
 
+  /** Set a server-side `filters[key]` value (stored in columnFilters). */
+  const setFilter = useCallback((key: string, value: string) => {
+    const normalized = value.trim()
+    setState((prev) => ({
+      ...prev,
+      page: 1,
+      columnFilters: normalized
+        ? { ...prev.columnFilters, [key]: normalized }
+        : Object.fromEntries(Object.entries(prev.columnFilters).filter(([k]) => k !== key)),
+    }))
+  }, [])
+
   return {
     state,
     effectiveState,
@@ -69,6 +81,7 @@ export function usePagedListState(initialSortBy = 'name', initial?: Partial<List
     toggleSort,
     setColumnFilter,
     clearColumnFilters,
+    setFilter,
     setSearch,
     setPage,
     setPageSize,

@@ -9,9 +9,18 @@ import { DashboardSettingsPage } from './features/dashboard/pages/DashboardSetti
 import { EmployeesPage } from './features/organization/pages/EmployeesPage'
 import { RolePermissionsPage } from './features/organization/pages/RolePermissionsPage'
 import { TeamInvitePage } from './features/organization/pages/TeamInvitePage'
+import { PeoplePage } from './features/people/pages/PeoplePage'
 import { TenantSettingsPage } from './features/settings/pages/TenantSettingsPage'
 import { AppearanceSettingsPage } from './features/settings/pages/AppearanceSettingsPage'
 import { PlatformStatusPage } from './features/platform/pages/PlatformStatusPage'
+import { PropertyWorkspaceLayout } from './features/structure/layouts/PropertyWorkspaceLayout'
+import { BuildingsPage } from './features/structure/pages/BuildingsPage'
+import { FloorsPage } from './features/structure/pages/FloorsPage'
+import { NeighborhoodsPage } from './features/structure/pages/NeighborhoodsPage'
+import { OccupanciesPage } from './features/structure/pages/OccupanciesPage'
+import { PropertiesPage } from './features/structure/pages/PropertiesPage'
+import { PropertyOverviewPage } from './features/structure/pages/PropertyOverviewPage'
+import { UnitsPage } from './features/structure/pages/UnitsPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
 import { useAuthStore } from './stores/authStore'
 
@@ -34,6 +43,16 @@ export default function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/settings/dashboard" element={<DashboardSettingsPage />} />
+              <Route path="/neighborhoods" element={<NeighborhoodsPage />} />
+              <Route path="/properties" element={<PropertiesPage />} />
+              <Route path="/properties/:propertyId" element={<PropertyWorkspaceLayout />}>
+                <Route index element={<PropertyOverviewPage />} />
+                <Route path="buildings" element={<BuildingsPage />} />
+                <Route path="floors" element={<FloorsPage />} />
+                <Route path="units" element={<UnitsPage />} />
+                <Route path="occupancies" element={<OccupanciesPage />} />
+              </Route>
+              <Route path="/people" element={<PeoplePage />} />
               <Route path="/employees" element={<EmployeesPage />} />
               <Route path="/team" element={<TeamInvitePage />} />
               <Route path="/role-permissions" element={<RolePermissionsPage />} />

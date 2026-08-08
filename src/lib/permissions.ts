@@ -6,6 +6,12 @@ export const FeatureCodes = {
   organizationEmployees: 'organization.employees',
   organizationTeam: 'organization.team',
   organizationRoles: 'organization.roles',
+  structureNeighborhoods: 'structure.neighborhoods',
+  structureProperties: 'structure.properties',
+  structureBuildings: 'structure.buildings',
+  structureFloors: 'structure.floors',
+  structureUnits: 'structure.units',
+  peopleManage: 'people.manage',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]

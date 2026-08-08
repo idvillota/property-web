@@ -13,15 +13,18 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import {
+  IconBuildingCommunity,
   IconIdBadge,
   IconLayoutDashboard,
   IconLayoutGrid,
   IconLogout,
+  IconMapPin,
   IconPalette,
   IconServer,
   IconSettings,
   IconShieldLock,
   IconUserPlus,
+  IconUsers,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
@@ -38,6 +41,21 @@ type NavItem =
 
 const NAV: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', permission: FeatureCodes.dashboardView, icon: IconLayoutDashboard },
+
+  { section: 'Properties' },
+  {
+    to: '/neighborhoods',
+    label: 'Neighborhoods',
+    permission: FeatureCodes.structureNeighborhoods,
+    icon: IconMapPin,
+  },
+  {
+    to: '/properties',
+    label: 'Properties',
+    permission: FeatureCodes.structureProperties,
+    icon: IconBuildingCommunity,
+  },
+  { to: '/people', label: 'People', permission: FeatureCodes.peopleManage, icon: IconUsers },
 
   { section: 'Administration' },
   { to: '/settings', label: 'Tenant settings', permission: FeatureCodes.settingsTenant, icon: IconSettings },

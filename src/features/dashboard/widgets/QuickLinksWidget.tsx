@@ -1,10 +1,12 @@
 import { Anchor, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import {
+  IconBuildingCommunity,
   IconIdBadge,
   IconLayoutGrid,
   IconSettings,
   IconShieldLock,
   IconUserPlus,
+  IconUsers,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
@@ -20,6 +22,20 @@ type QuickLink = {
 }
 
 const LINKS: QuickLink[] = [
+  {
+    to: '/properties',
+    label: 'Properties',
+    description: 'Horizontal properties workspace',
+    permission: FeatureCodes.structureProperties,
+    icon: IconBuildingCommunity,
+  },
+  {
+    to: '/people',
+    label: 'People',
+    description: 'Owners, tenants, and contacts',
+    permission: FeatureCodes.peopleManage,
+    icon: IconUsers,
+  },
   {
     to: '/settings/dashboard',
     label: 'Dashboard settings',
