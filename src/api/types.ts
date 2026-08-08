@@ -323,3 +323,181 @@ export type ReceptionItem = {
 export type ReceptionPendingCount = {
   pendingPickupCount: number
 }
+
+export type ReportsOverview = {
+  unitCount: number
+  billableUnitCount: number
+  activeOccupancyCount: number
+  totalCoefficient: number
+  remainingCoefficientToHundred: number
+  openChargesAmount: number
+  overdueChargesAmount: number
+  collectedAmountThisMonth: number
+  pendingReceptionCount: number
+  upcomingReservationsCount: number
+}
+
+export type CarteraTotals = {
+  unitCount: number
+  totalBalance: number
+  totalOverdue: number
+}
+
+export type CarteraItem = {
+  unitId: string
+  unitCode: string
+  unitType: string | number
+  balance: number
+  overdueBalance: number
+  oldestDueDate: string
+  chargeCount: number
+}
+
+export type CarteraReport = {
+  asOfDate: string
+  totals: CarteraTotals
+  items: CarteraItem[]
+}
+
+export type CollectionsTotals = {
+  paymentCount: number
+  totalAmount: number
+}
+
+export type CollectionsByMethod = {
+  method: string | number
+  count: number
+  amount: number
+}
+
+export type CollectionsByDay = {
+  date: string
+  count: number
+  amount: number
+}
+
+export type CollectionsItem = {
+  paymentId: string
+  unitId: string
+  unitCode: string
+  amount: number
+  paidAt: string
+  method: string | number
+  reference: string | null
+}
+
+export type CollectionsReport = {
+  from: string
+  to: string
+  totals: CollectionsTotals
+  byMethod: CollectionsByMethod[]
+  byDay: CollectionsByDay[]
+  items: CollectionsItem[]
+}
+
+export type OccupancyTotals = {
+  unitCount: number
+  unitsWithOwner: number
+  unitsWithResident: number
+  unitsVacant: number
+}
+
+export type OccupancyItem = {
+  unitId: string
+  unitCode: string
+  unitType: string | number
+  isBillable: boolean
+  ownerName?: string | null
+  residentName?: string | null
+  occupancyCount: number
+  hasBillingContact: boolean
+}
+
+export type OccupancyReport = {
+  totals: OccupancyTotals
+  items: OccupancyItem[]
+}
+
+export type CoefficientsTotals = {
+  unitCount: number
+  billableUnitCount: number
+  totalCoefficient: number
+  remainingToHundred: number
+}
+
+export type CoefficientsItem = {
+  unitId: string
+  unitCode: string
+  unitType: string | number
+  coefficient: number
+  privateBuiltAreaM2: number
+  isBillable: boolean
+  isActive: boolean
+}
+
+export type CoefficientsReport = {
+  totals: CoefficientsTotals
+  items: CoefficientsItem[]
+}
+
+export type ReservationUsageTotals = {
+  reservationCount: number
+  confirmedCount: number
+  cancelledCount: number
+  completedCount: number
+}
+
+export type ReservationUsageByArea = {
+  commonAreaId: string
+  commonAreaName: string
+  count: number
+  confirmedCount: number
+}
+
+export type ReservationUsageItem = {
+  reservationId: string
+  commonAreaName: string
+  unitCode: string
+  startsAtUtc: string
+  endsAtUtc: string
+  status: string | number
+  attendeesCount: number
+}
+
+export type ReservationUsageReport = {
+  from: string
+  to: string
+  totals: ReservationUsageTotals
+  byArea: ReservationUsageByArea[]
+  items: ReservationUsageItem[]
+}
+
+export type ReceptionReportTotals = {
+  total: number
+  pendingPickup: number
+  delivered: number
+  returned: number
+}
+
+export type ReceptionReportByType = {
+  itemType: string | number
+  count: number
+}
+
+export type ReceptionReportItem = {
+  id: string
+  itemType: string | number
+  unitCode?: string | null
+  recipientName?: string | null
+  status: string | number
+  receivedAtUtc: string
+  deliveredAtUtc?: string | null
+}
+
+export type ReceptionReport = {
+  from: string
+  to: string
+  totals: ReceptionReportTotals
+  byType: ReceptionReportByType[]
+  items: ReceptionReportItem[]
+}

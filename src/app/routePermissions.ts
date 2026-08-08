@@ -33,6 +33,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, FeatureCode]> = [
   [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
   [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
   [/^\/properties\/[^/]+\/reception(?:\/|$)/, FeatureCodes.receptionManage],
+  [/^\/properties\/[^/]+\/reports(?:\/|$)/, FeatureCodes.reportsView],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 

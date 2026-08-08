@@ -25,6 +25,7 @@ import {
   IconPool,
   IconReceipt,
   IconCalendarCheck,
+  IconChartBar,
   IconUsersGroup,
 } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -119,6 +120,13 @@ const LINKS = [
     description: 'Packages, letters, messages',
     icon: IconPackage,
     permission: FeatureCodes.receptionManage,
+  },
+  {
+    to: 'reports',
+    label: 'Reports',
+    description: 'Cartera, collections, occupancy, and more',
+    icon: IconChartBar,
+    permission: FeatureCodes.reportsView,
   },
 ] as const
 

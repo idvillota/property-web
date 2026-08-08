@@ -20,6 +20,13 @@ import { BillingSettingsPage } from './features/billing/pages/BillingSettingsPag
 import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
 import { PaymentsPage } from './features/billing/pages/PaymentsPage'
 import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
+import { CarteraReportPage } from './features/reports/pages/CarteraReportPage'
+import { CoefficientsReportPage } from './features/reports/pages/CoefficientsReportPage'
+import { CollectionsReportPage } from './features/reports/pages/CollectionsReportPage'
+import { OccupancyReportPage } from './features/reports/pages/OccupancyReportPage'
+import { ReceptionReportPage } from './features/reports/pages/ReceptionReportPage'
+import { ReportsHubPage } from './features/reports/pages/ReportsHubPage'
+import { ReservationUsageReportPage } from './features/reports/pages/ReservationUsageReportPage'
 import { PropertyWorkspaceLayout } from './features/structure/layouts/PropertyWorkspaceLayout'
 import { BuildingsPage } from './features/structure/pages/BuildingsPage'
 import { FloorsPage } from './features/structure/pages/FloorsPage'
@@ -65,6 +72,13 @@ export default function App() {
                 <Route path="common-areas" element={<CommonAreasPage />} />
                 <Route path="reservations" element={<ReservationsPage />} />
                 <Route path="reception" element={<ReceptionItemsPage />} />
+                <Route path="reports" element={<ReportsHubPage />} />
+                <Route path="reports/cartera" element={<CarteraReportPage />} />
+                <Route path="reports/collections" element={<CollectionsReportPage />} />
+                <Route path="reports/occupancy" element={<OccupancyReportPage />} />
+                <Route path="reports/coefficients" element={<CoefficientsReportPage />} />
+                <Route path="reports/reservations" element={<ReservationUsageReportPage />} />
+                <Route path="reports/reception" element={<ReceptionReportPage />} />
               </Route>
               <Route path="/people" element={<PeoplePage />} />
               <Route path="/employees" element={<EmployeesPage />} />

@@ -18,6 +18,7 @@ export const FeatureCodes = {
   amenitiesAreas: 'amenities.areas',
   amenitiesReservations: 'amenities.reservations',
   receptionManage: 'reception.manage',
+  reportsView: 'reports.view',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
