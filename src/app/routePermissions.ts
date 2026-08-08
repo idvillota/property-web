@@ -26,6 +26,13 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, FeatureCode]> = [
   [/^\/properties\/[^/]+\/floors(?:\/|$)/, FeatureCodes.structureFloors],
   [/^\/properties\/[^/]+\/units(?:\/|$)/, FeatureCodes.structureUnits],
   [/^\/properties\/[^/]+\/occupancies(?:\/|$)/, FeatureCodes.peopleManage],
+  [/^\/properties\/[^/]+\/billing(?:\/|$)/, FeatureCodes.billingSettings],
+  [/^\/properties\/[^/]+\/periods(?:\/|$)/, FeatureCodes.billingCharges],
+  [/^\/properties\/[^/]+\/charges(?:\/|$)/, FeatureCodes.billingCharges],
+  [/^\/properties\/[^/]+\/payments(?:\/|$)/, FeatureCodes.billingPayments],
+  [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
+  [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
+  [/^\/properties\/[^/]+\/reception(?:\/|$)/, FeatureCodes.receptionManage],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 

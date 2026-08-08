@@ -16,8 +16,15 @@ import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import {
   IconBuilding,
+  IconCalendarEvent,
+  IconCash,
+  IconCreditCard,
   IconDoor,
   IconLayersIntersect,
+  IconPackage,
+  IconPool,
+  IconReceipt,
+  IconCalendarCheck,
   IconUsersGroup,
 } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -63,6 +70,55 @@ const LINKS = [
     description: 'Owners, tenants, residents',
     icon: IconUsersGroup,
     permission: FeatureCodes.peopleManage,
+  },
+  {
+    to: 'billing',
+    label: 'Billing settings',
+    description: 'Budget, due day, late interest',
+    icon: IconCash,
+    permission: FeatureCodes.billingSettings,
+  },
+  {
+    to: 'periods',
+    label: 'Billing periods',
+    description: 'Open months and generate fees',
+    icon: IconCalendarEvent,
+    permission: FeatureCodes.billingCharges,
+  },
+  {
+    to: 'charges',
+    label: 'Fee charges',
+    description: 'Ordinary, interest, adjustments',
+    icon: IconReceipt,
+    permission: FeatureCodes.billingCharges,
+  },
+  {
+    to: 'payments',
+    label: 'Payments',
+    description: 'Record and allocate payments',
+    icon: IconCreditCard,
+    permission: FeatureCodes.billingPayments,
+  },
+  {
+    to: 'common-areas',
+    label: 'Common areas',
+    description: 'Amenities available to reserve',
+    icon: IconPool,
+    permission: FeatureCodes.amenitiesAreas,
+  },
+  {
+    to: 'reservations',
+    label: 'Reservations',
+    description: 'Book common areas',
+    icon: IconCalendarCheck,
+    permission: FeatureCodes.amenitiesReservations,
+  },
+  {
+    to: 'reception',
+    label: 'Reception',
+    description: 'Packages, letters, messages',
+    icon: IconPackage,
+    permission: FeatureCodes.receptionManage,
   },
 ] as const
 

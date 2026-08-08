@@ -12,6 +12,12 @@ export const FeatureCodes = {
   structureFloors: 'structure.floors',
   structureUnits: 'structure.units',
   peopleManage: 'people.manage',
+  billingSettings: 'billing.settings',
+  billingCharges: 'billing.charges',
+  billingPayments: 'billing.payments',
+  amenitiesAreas: 'amenities.areas',
+  amenitiesReservations: 'amenities.reservations',
+  receptionManage: 'reception.manage',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]

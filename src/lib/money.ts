@@ -8,7 +8,8 @@ export function formatMoney(value: number): string {
   return value.toLocaleString(MONEY_LOCALE, {
     style: 'currency',
     currency: MONEY_CURRENCY,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   })
 }
 

@@ -13,6 +13,13 @@ import { PeoplePage } from './features/people/pages/PeoplePage'
 import { TenantSettingsPage } from './features/settings/pages/TenantSettingsPage'
 import { AppearanceSettingsPage } from './features/settings/pages/AppearanceSettingsPage'
 import { PlatformStatusPage } from './features/platform/pages/PlatformStatusPage'
+import { CommonAreasPage } from './features/amenities/pages/CommonAreasPage'
+import { ReservationsPage } from './features/amenities/pages/ReservationsPage'
+import { BillingPeriodsPage } from './features/billing/pages/BillingPeriodsPage'
+import { BillingSettingsPage } from './features/billing/pages/BillingSettingsPage'
+import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
+import { PaymentsPage } from './features/billing/pages/PaymentsPage'
+import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
 import { PropertyWorkspaceLayout } from './features/structure/layouts/PropertyWorkspaceLayout'
 import { BuildingsPage } from './features/structure/pages/BuildingsPage'
 import { FloorsPage } from './features/structure/pages/FloorsPage'
@@ -51,6 +58,13 @@ export default function App() {
                 <Route path="floors" element={<FloorsPage />} />
                 <Route path="units" element={<UnitsPage />} />
                 <Route path="occupancies" element={<OccupanciesPage />} />
+                <Route path="billing" element={<BillingSettingsPage />} />
+                <Route path="periods" element={<BillingPeriodsPage />} />
+                <Route path="charges" element={<FeeChargesPage />} />
+                <Route path="payments" element={<PaymentsPage />} />
+                <Route path="common-areas" element={<CommonAreasPage />} />
+                <Route path="reservations" element={<ReservationsPage />} />
+                <Route path="reception" element={<ReceptionItemsPage />} />
               </Route>
               <Route path="/people" element={<PeoplePage />} />
               <Route path="/employees" element={<EmployeesPage />} />

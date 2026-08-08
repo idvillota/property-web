@@ -14,6 +14,13 @@ const TABS: Array<{ to: string; label: string; permission: string }> = [
   { to: 'floors', label: 'Floors', permission: FeatureCodes.structureFloors },
   { to: 'units', label: 'Units', permission: FeatureCodes.structureUnits },
   { to: 'occupancies', label: 'Occupancies', permission: FeatureCodes.peopleManage },
+  { to: 'billing', label: 'Billing', permission: FeatureCodes.billingSettings },
+  { to: 'periods', label: 'Periods', permission: FeatureCodes.billingCharges },
+  { to: 'charges', label: 'Charges', permission: FeatureCodes.billingCharges },
+  { to: 'payments', label: 'Payments', permission: FeatureCodes.billingPayments },
+  { to: 'common-areas', label: 'Common areas', permission: FeatureCodes.amenitiesAreas },
+  { to: 'reservations', label: 'Reservations', permission: FeatureCodes.amenitiesReservations },
+  { to: 'reception', label: 'Reception', permission: FeatureCodes.receptionManage },
 ]
 
 export function PropertySubnav({ propertyId }: Props) {

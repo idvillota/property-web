@@ -197,3 +197,129 @@ export type CoefficientSummary = {
   unitCount: number
   remainingToHundred: number
 }
+
+export type FeeSettings = {
+  horizontalPropertyId: string
+  monthlyBudgetAmount: number
+  dueDayOfMonth: number
+  lateInterestMonthlyPercent: number
+  notes: string | null
+}
+
+export type BillingPeriod = {
+  id: string
+  horizontalPropertyId: string
+  year: number
+  month: number
+  periodKey: string
+  status: string | number
+  notes: string | null
+}
+
+export type FeeCharge = {
+  id: string
+  horizontalPropertyId: string
+  billingPeriodId: string
+  unitId: string
+  chargeType: string | number
+  description: string
+  coefficientSnapshot: number
+  amount: number
+  amountPaid: number
+  dueDate: string
+  status: string | number
+  isActive: boolean
+  unitCode?: string
+  periodKey?: string
+}
+
+export type ArrearsSummary = {
+  totalPending: number
+  totalPartial: number
+  totalOverdue: number
+  unitCountInArrears: number
+}
+
+export type GenerateChargesResult = {
+  createdCount: number
+  skippedCount: number
+  totalAmount: number
+}
+
+export type PaymentAllocation = {
+  id?: string
+  feeChargeId: string
+  amount: number
+  feeChargeDescription?: string
+}
+
+export type Payment = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string
+  personId: string | null
+  amount: number
+  paidAt: string
+  method: string | number
+  reference: string | null
+  notes: string | null
+  isActive: boolean
+  unitCode?: string
+  allocations?: PaymentAllocation[]
+}
+
+export type CommonArea = {
+  id: string
+  horizontalPropertyId: string
+  name: string
+  areaType: string | number
+  capacity: number
+  requiresDeposit: boolean
+  depositAmount: number | null
+  rulesNotes: string | null
+  minDurationMinutes: number | null
+  maxDurationMinutes: number | null
+  isActive: boolean
+}
+
+export type Reservation = {
+  id: string
+  horizontalPropertyId: string
+  commonAreaId: string
+  unitId: string
+  personId: string | null
+  startsAtUtc: string
+  endsAtUtc: string
+  status: string | number
+  attendeesCount: number
+  notes: string | null
+  depositPaid: boolean
+  isActive: boolean
+  commonAreaName?: string
+  unitCode?: string
+  personName?: string
+}
+
+export type ReceptionItem = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string | null
+  personId: string | null
+  itemType: string | number
+  status: string | number
+  receivedAtUtc: string
+  receivedByEmployeeId: string | null
+  deliveredAtUtc: string | null
+  deliveredByEmployeeId: string | null
+  carrierOrSender: string | null
+  trackingOrReference: string | null
+  recipientName: string | null
+  notes: string | null
+  isActive: boolean
+  unitCode?: string
+  personName?: string
+}
+
+export type ReceptionPendingCount = {
+  pendingPickupCount: number
+}
