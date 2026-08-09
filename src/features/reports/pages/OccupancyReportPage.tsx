@@ -24,30 +24,30 @@ export function OccupancyReportPage() {
 
   return (
     <ReportPageShell
-      title="Occupancy"
-      description="Owners, residents, and vacant units."
+      title="Ocupación"
+      description="Propietarios, residentes y unidades vacantes."
       loading={query.isLoading}
       error={query.isError ? getApiErrorMessage(query.error) : null}
     >
       {report ? (
         <Stack gap="md">
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
-            <Kpi label="Units" value={String(report.totals.unitCount)} />
-            <Kpi label="With owner" value={String(report.totals.unitsWithOwner)} />
-            <Kpi label="With resident" value={String(report.totals.unitsWithResident)} />
-            <Kpi label="Vacant" value={String(report.totals.unitsVacant)} />
+            <Kpi label="Unidades" value={String(report.totals.unitCount)} />
+            <Kpi label="Con propietario" value={String(report.totals.unitsWithOwner)} />
+            <Kpi label="Con residente" value={String(report.totals.unitsWithResident)} />
+            <Kpi label="Vacantes" value={String(report.totals.unitsVacant)} />
           </SimpleGrid>
 
           <Table striped highlightOnHover withTableBorder>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Unit</Table.Th>
-                <Table.Th>Type</Table.Th>
-                <Table.Th>Billable</Table.Th>
-                <Table.Th>Owner</Table.Th>
-                <Table.Th>Resident</Table.Th>
-                <Table.Th ta="right">Occupancies</Table.Th>
-                <Table.Th>Billing contact</Table.Th>
+                <Table.Th>Unidad</Table.Th>
+                <Table.Th>Tipo</Table.Th>
+                <Table.Th>Facturable</Table.Th>
+                <Table.Th>Propietario</Table.Th>
+                <Table.Th>Residente</Table.Th>
+                <Table.Th ta="right">Ocupaciones</Table.Th>
+                <Table.Th>Contacto de facturación</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -55,7 +55,7 @@ export function OccupancyReportPage() {
                 <Table.Tr>
                   <Table.Td colSpan={7}>
                     <Text c="dimmed" size="sm">
-                      No units.
+                      No hay unidades.
                     </Text>
                   </Table.Td>
                 </Table.Tr>
@@ -66,11 +66,11 @@ export function OccupancyReportPage() {
                     <Table.Td>
                       {labelForOption(UNIT_TYPE_OPTIONS, String(row.unitType))}
                     </Table.Td>
-                    <Table.Td>{row.isBillable ? 'Yes' : 'No'}</Table.Td>
+                    <Table.Td>{row.isBillable ? 'Sí' : 'No'}</Table.Td>
                     <Table.Td>{row.ownerName || '—'}</Table.Td>
                     <Table.Td>{row.residentName || '—'}</Table.Td>
                     <Table.Td ta="right">{row.occupancyCount}</Table.Td>
-                    <Table.Td>{row.hasBillingContact ? 'Yes' : 'No'}</Table.Td>
+                    <Table.Td>{row.hasBillingContact ? 'Sí' : 'No'}</Table.Td>
                   </Table.Tr>
                 ))
               )}

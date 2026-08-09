@@ -38,20 +38,20 @@ export function CollectionsReportPage() {
 
   return (
     <ReportPageShell
-      title="Collections"
-      description="Payments collected in the selected period."
+      title="Recaudos"
+      description="Pagos recaudados en el periodo seleccionado."
       filters={
         <Group>
           <TextInput
             type="date"
-            label="From"
+            label="Desde"
             value={from}
             onChange={(e) => setFrom(e.currentTarget.value)}
             w={180}
           />
           <TextInput
             type="date"
-            label="To"
+            label="Hasta"
             value={to}
             onChange={(e) => setTo(e.currentTarget.value)}
             w={180}
@@ -64,20 +64,20 @@ export function CollectionsReportPage() {
       {report ? (
         <Stack gap="lg">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-            <Kpi label="Payments" value={String(report.totals.paymentCount)} />
-            <Kpi label="Total amount" value={formatMoney(report.totals.totalAmount)} />
+            <Kpi label="Pagos" value={String(report.totals.paymentCount)} />
+            <Kpi label="Valor total" value={formatMoney(report.totals.totalAmount)} />
           </SimpleGrid>
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              By method
+              Por método
             </Text>
             <Table striped withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Method</Table.Th>
-                  <Table.Th ta="right">Count</Table.Th>
-                  <Table.Th ta="right">Amount</Table.Th>
+                  <Table.Th>Método</Table.Th>
+                  <Table.Th ta="right">Cantidad</Table.Th>
+                  <Table.Th ta="right">Valor</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -98,14 +98,14 @@ export function CollectionsReportPage() {
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              By day
+              Por día
             </Text>
             <Table striped withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Date</Table.Th>
-                  <Table.Th ta="right">Count</Table.Th>
-                  <Table.Th ta="right">Amount</Table.Th>
+                  <Table.Th>Fecha</Table.Th>
+                  <Table.Th ta="right">Cantidad</Table.Th>
+                  <Table.Th ta="right">Valor</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -126,16 +126,16 @@ export function CollectionsReportPage() {
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              Recent payments
+              Pagos recientes
             </Text>
             <Table striped highlightOnHover withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Unit</Table.Th>
-                  <Table.Th ta="right">Amount</Table.Th>
-                  <Table.Th>Paid at</Table.Th>
-                  <Table.Th>Method</Table.Th>
-                  <Table.Th>Reference</Table.Th>
+                  <Table.Th>Unidad</Table.Th>
+                  <Table.Th ta="right">Valor</Table.Th>
+                  <Table.Th>Pagado el</Table.Th>
+                  <Table.Th>Método</Table.Th>
+                  <Table.Th>Referencia</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -177,7 +177,7 @@ function EmptyRow({ cols }: { cols: number }) {
     <Table.Tr>
       <Table.Td colSpan={cols}>
         <Text c="dimmed" size="sm">
-          No data.
+          Sin datos.
         </Text>
       </Table.Td>
     </Table.Tr>

@@ -54,7 +54,7 @@ export function AppearanceControls({ variant = 'full' }: Props) {
         </Group>
         {variant === 'full' ? (
           <Text size="sm" c="dimmed">
-            Cada usuario puede elegir su propio estilo. El administrador, meseros y caja pueden usar combinaciones distintas.
+            Cada usuario puede elegir su propio estilo. Las preferencias se guardan en tu cuenta.
           </Text>
         ) : null}
       </Stack>

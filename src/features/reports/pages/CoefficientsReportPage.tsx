@@ -25,40 +25,40 @@ export function CoefficientsReportPage() {
 
   return (
     <ReportPageShell
-      title="Coefficients"
-      description="Coefficient distribution across units (scale 100)."
+      title="Coeficientes"
+      description="Distribución de coeficientes entre unidades (escala 100)."
       loading={query.isLoading}
       error={query.isError ? getApiErrorMessage(query.error) : null}
     >
       {report ? (
         <Stack gap="md">
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
-            <Kpi label="Units" value={String(report.totals.unitCount)} />
-            <Kpi label="Billable units" value={String(report.totals.billableUnitCount)} />
-            <Kpi label="Total coefficient" value={report.totals.totalCoefficient.toFixed(5)} />
+            <Kpi label="Unidades" value={String(report.totals.unitCount)} />
+            <Kpi label="Unidades facturables" value={String(report.totals.billableUnitCount)} />
+            <Kpi label="Coeficiente total" value={report.totals.totalCoefficient.toFixed(2)} />
             <Kpi
-              label="Remaining to 100"
-              value={report.totals.remainingToHundred.toFixed(5)}
+              label="Restante para 100"
+              value={report.totals.remainingToHundred.toFixed(2)}
               accent={remainingOff ? 'orange' : 'teal'}
             />
           </SimpleGrid>
 
           {remainingOff ? (
             <Text size="sm" c="orange">
-              Coefficients do not sum to 100. Remaining:{' '}
-              {report.totals.remainingToHundred.toFixed(5)}
+              Los coeficientes no suman 100. Restante:{' '}
+              {report.totals.remainingToHundred.toFixed(2)}
             </Text>
           ) : null}
 
           <Table striped highlightOnHover withTableBorder>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Unit</Table.Th>
-                <Table.Th>Type</Table.Th>
-                <Table.Th ta="right">Coefficient</Table.Th>
-                <Table.Th ta="right">Built area m²</Table.Th>
-                <Table.Th>Billable</Table.Th>
-                <Table.Th>Active</Table.Th>
+                <Table.Th>Unidad</Table.Th>
+                <Table.Th>Tipo</Table.Th>
+                <Table.Th ta="right">Coeficiente</Table.Th>
+                <Table.Th ta="right">Área construida m²</Table.Th>
+                <Table.Th>Facturable</Table.Th>
+                <Table.Th>Activo</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -66,7 +66,7 @@ export function CoefficientsReportPage() {
                 <Table.Tr>
                   <Table.Td colSpan={6}>
                     <Text c="dimmed" size="sm">
-                      No units.
+                      No hay unidades.
                     </Text>
                   </Table.Td>
                 </Table.Tr>
@@ -77,10 +77,10 @@ export function CoefficientsReportPage() {
                     <Table.Td>
                       {labelForOption(UNIT_TYPE_OPTIONS, String(row.unitType))}
                     </Table.Td>
-                    <Table.Td ta="right">{row.coefficient.toFixed(5)}</Table.Td>
+                    <Table.Td ta="right">{row.coefficient.toFixed(2)}</Table.Td>
                     <Table.Td ta="right">{row.privateBuiltAreaM2.toFixed(2)}</Table.Td>
-                    <Table.Td>{row.isBillable ? 'Yes' : 'No'}</Table.Td>
-                    <Table.Td>{row.isActive ? 'Yes' : 'No'}</Table.Td>
+                    <Table.Td>{row.isBillable ? 'Sí' : 'No'}</Table.Td>
+                    <Table.Td>{row.isActive ? 'Sí' : 'No'}</Table.Td>
                   </Table.Tr>
                 ))
               )}

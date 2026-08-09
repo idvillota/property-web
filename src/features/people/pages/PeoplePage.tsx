@@ -10,6 +10,7 @@ import {
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
+import { IconEye } from '@tabler/icons-react'
 import { useMutation } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { api } from '../../../api/client'
@@ -27,9 +28,11 @@ import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { DOCUMENT_TYPE_OPTIONS, labelForOption } from '../../../lib/structureEnums'
+import { PersonOverviewDrawer } from '../components/PersonOverviewDrawer'
 
 export function PeoplePage() {
   const [drawer, setDrawer] = useState<'create' | Person | null>(null)
+  const [overviewPersonId, setOverviewPersonId] = useState<string | null>(null)
   const invalidate = useInvalidate(['people', 'people-options'])
   const list = usePagedListState('lastname')
   const listQuery = usePagedListQuery<Person>('people', '/api/People', list)
@@ -45,10 +48,10 @@ export function PeoplePage() {
       isActive: true,
     },
     validate: {
-      documentType: (v) => (!v ? 'Required' : null),
-      documentNumber: (v) => (v.trim().length < 1 ? 'Required' : null),
-      firstName: (v) => (v.trim().length < 1 ? 'Required' : null),
-      lastName: (v) => (v.trim().length < 1 ? 'Required' : null),
+      documentType: (v) => (!v ? 'Obligatorio' : null),
+      documentNumber: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
+      firstName: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
+      lastName: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
     },
   })
 
@@ -99,7 +102,7 @@ export function PeoplePage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Person saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Persona guardada', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -110,7 +113,7 @@ export function PeoplePage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/People/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Person deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Persona desactivada', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -121,19 +124,25 @@ export function PeoplePage() {
     return [
       {
         key: 'name',
-        header: 'Name',
+        header: 'Nombre',
         sortKey: 'lastname',
         filter: 'text',
         filterKey: 'lastName',
         render: (row) => (
-          <Text size="sm" fw={500}>
+          <Text
+            size="sm"
+            fw={500}
+            style={{ cursor: 'pointer' }}
+            c="teal"
+            onClick={() => setOverviewPersonId(row.id)}
+          >
             {row.firstName} {row.lastName}
           </Text>
         ),
       },
       {
         key: 'document',
-        header: 'Document',
+        header: 'Documento',
         sortKey: 'documentnumber',
         filter: 'text',
         filterKey: 'documentNumber',
@@ -142,7 +151,7 @@ export function PeoplePage() {
       },
       {
         key: 'email',
-        header: 'Email',
+        header: 'Correo',
         sortKey: 'email',
         filter: 'text',
         filterKey: 'email',
@@ -150,7 +159,7 @@ export function PeoplePage() {
       },
       {
         key: 'phone',
-        header: 'Phone',
+        header: 'Teléfono',
         filter: 'text',
         filterKey: 'phone',
         render: (row) => row.phone ?? '—',
@@ -160,10 +169,18 @@ export function PeoplePage() {
         key: 'actions',
         header: '',
         filter: 'none',
-        width: 88,
+        width: 120,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon
+              variant="light"
+              size="md"
+              onClick={() => setOverviewPersonId(row.id)}
+              aria-label="Ver resumen"
+            >
+              <IconEye size={16} stroke={1.75} />
+            </ActionIcon>
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -171,10 +188,10 @@ export function PeoplePage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm(`Deactivate "${row.firstName} ${row.lastName}"?`))
+                if (window.confirm(`¿Desactivar "${row.firstName} ${row.lastName}"?`))
                   deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -187,12 +204,12 @@ export function PeoplePage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="People"
-        description="Owners, tenants, and contacts used across unit occupancies."
+        title="Personas"
+        description="Toca un nombre para ver unidades, estado de pagos y reservas."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add person"
+        addLabel="Agregar persona"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -213,39 +230,49 @@ export function PeoplePage() {
             title={`${item.firstName} ${item.lastName}`}
             subtitle={`${labelForOption(DOCUMENT_TYPE_OPTIONS, item.documentType)} ${item.documentNumber}`}
             inactive={!item.isActive}
+            meta={
+              <Button size="compact-xs" variant="subtle" onClick={() => setOverviewPersonId(item.id)}>
+                Ver resumen
+              </Button>
+            }
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm(`Deactivate "${item.firstName} ${item.lastName}"?`))
+              if (window.confirm(`¿Desactivar "${item.firstName} ${item.lastName}"?`))
                 deleteMutation.mutate(item.id)
             }}
           />
         )}
       />
 
+      <PersonOverviewDrawer
+        personId={overviewPersonId}
+        onClose={() => setOverviewPersonId(null)}
+      />
+
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New person' : 'Edit person'}
+        title={drawer === 'create' ? 'Nueva persona' : 'Editar persona'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Document type"
+              label="Tipo de documento"
               required
               data={[...DOCUMENT_TYPE_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('documentType')}
             />
-            <TextInput label="Document number" required {...form.getInputProps('documentNumber')} />
-            <TextInput label="First name" required {...form.getInputProps('firstName')} />
-            <TextInput label="Last name" required {...form.getInputProps('lastName')} />
-            <TextInput label="Email" type="email" {...form.getInputProps('email')} />
-            <TextInput label="Phone" {...form.getInputProps('phone')} />
+            <TextInput label="Número de documento" required {...form.getInputProps('documentNumber')} />
+            <TextInput label="Nombres" required {...form.getInputProps('firstName')} />
+            <TextInput label="Apellidos" required {...form.getInputProps('lastName')} />
+            <TextInput label="Correo" type="email" {...form.getInputProps('email')} />
+            <TextInput label="Teléfono" {...form.getInputProps('phone')} />
             {drawer !== 'create' && (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

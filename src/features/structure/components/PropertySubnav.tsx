@@ -1,4 +1,20 @@
 import { Group, NavLink, Stack, Text } from '@mantine/core'
+import {
+  IconBuilding,
+  IconCalendarCheck,
+  IconCalendarEvent,
+  IconCash,
+  IconChartBar,
+  IconCreditCard,
+  IconDoor,
+  IconHome,
+  IconLayersIntersect,
+  IconPackage,
+  IconPool,
+  IconReceipt,
+  IconUsersGroup,
+} from '@tabler/icons-react'
+import type { TablerIcon } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { FeatureCodes } from '../../../lib/permissions'
@@ -12,6 +28,7 @@ type NavItem = {
   to: string
   label: string
   permission: string
+  icon: TablerIcon
 }
 
 type NavSection = {
@@ -21,38 +38,43 @@ type NavSection = {
 
 const SECTIONS: NavSection[] = [
   {
-    label: 'Structure',
+    label: 'Estructura',
     items: [
-      { to: '', label: 'Overview', permission: FeatureCodes.structureProperties },
-      { to: 'buildings', label: 'Buildings', permission: FeatureCodes.structureBuildings },
-      { to: 'floors', label: 'Floors', permission: FeatureCodes.structureFloors },
-      { to: 'units', label: 'Units', permission: FeatureCodes.structureUnits },
-      { to: 'occupancies', label: 'Occupancies', permission: FeatureCodes.peopleManage },
+      { to: '', label: 'Resumen', permission: FeatureCodes.structureProperties, icon: IconHome },
+      { to: 'buildings', label: 'Bloques', permission: FeatureCodes.structureBuildings, icon: IconBuilding },
+      { to: 'floors', label: 'Pisos', permission: FeatureCodes.structureFloors, icon: IconLayersIntersect },
+      { to: 'units', label: 'Unidades', permission: FeatureCodes.structureUnits, icon: IconDoor },
+      { to: 'occupancies', label: 'Ocupaciones', permission: FeatureCodes.peopleManage, icon: IconUsersGroup },
     ],
   },
   {
-    label: 'Billing',
+    label: 'Facturación',
     items: [
-      { to: 'billing', label: 'Billing', permission: FeatureCodes.billingSettings },
-      { to: 'periods', label: 'Periods', permission: FeatureCodes.billingCharges },
-      { to: 'charges', label: 'Charges', permission: FeatureCodes.billingCharges },
-      { to: 'payments', label: 'Payments', permission: FeatureCodes.billingPayments },
+      { to: 'billing', label: 'Configuración', permission: FeatureCodes.billingSettings, icon: IconCash },
+      { to: 'periods', label: 'Periodos', permission: FeatureCodes.billingCharges, icon: IconCalendarEvent },
+      { to: 'charges', label: 'Cargos', permission: FeatureCodes.billingCharges, icon: IconReceipt },
+      { to: 'payments', label: 'Pagos', permission: FeatureCodes.billingPayments, icon: IconCreditCard },
     ],
   },
   {
-    label: 'Amenities',
+    label: 'Zonas comunes',
     items: [
-      { to: 'common-areas', label: 'Common areas', permission: FeatureCodes.amenitiesAreas },
-      { to: 'reservations', label: 'Reservations', permission: FeatureCodes.amenitiesReservations },
+      { to: 'common-areas', label: 'Zonas comunes', permission: FeatureCodes.amenitiesAreas, icon: IconPool },
+      {
+        to: 'reservations',
+        label: 'Reservas',
+        permission: FeatureCodes.amenitiesReservations,
+        icon: IconCalendarCheck,
+      },
     ],
   },
   {
-    label: 'Reception',
-    items: [{ to: 'reception', label: 'Reception', permission: FeatureCodes.receptionManage }],
+    label: 'Portería',
+    items: [{ to: 'reception', label: 'Portería', permission: FeatureCodes.receptionManage, icon: IconPackage }],
   },
   {
-    label: 'Reports',
-    items: [{ to: 'reports', label: 'Reports', permission: FeatureCodes.reportsView }],
+    label: 'Reportes',
+    items: [{ to: 'reports', label: 'Reportes', permission: FeatureCodes.reportsView, icon: IconChartBar }],
   },
 ]
 
@@ -84,6 +106,7 @@ export function PropertySubnav({ propertyId }: Props) {
                 tab.to === ''
                   ? location.pathname === base || location.pathname === `${base}/`
                   : location.pathname === to || location.pathname.startsWith(`${to}/`)
+              const Icon = tab.icon
 
               return (
                 <NavLink
@@ -91,6 +114,7 @@ export function PropertySubnav({ propertyId }: Props) {
                   component={Link}
                   to={to}
                   label={tab.label}
+                  leftSection={<Icon size={16} stroke={1.75} />}
                   active={active}
                   variant="subtle"
                   style={{ borderRadius: 8, flex: '0 0 auto' }}

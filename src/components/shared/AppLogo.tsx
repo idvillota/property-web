@@ -1,7 +1,7 @@
 import { Box, UnstyledButton } from '@mantine/core'
 import { Link } from 'react-router-dom'
 
-export const HOST_LOGO_SRC = '/host-logo.png'
+export const HOST_LOGO_SRC = '/home-logo.png'
 
 type Variant = 'auth' | 'header' | 'nav'
 
@@ -27,7 +27,7 @@ export function AppLogo({ variant = 'header', to = '/dashboard' }: Props) {
     <Box
       component="img"
       src={HOST_LOGO_SRC}
-      alt="Property"
+      alt="Propiedades"
       h={height}
       w="auto"
       maw={maxWidth}
@@ -41,7 +41,7 @@ export function AppLogo({ variant = 'header', to = '/dashboard' }: Props) {
       <UnstyledButton
         component={Link}
         to={to}
-        aria-label="Property — go to dashboard"
+        aria-label="Propiedades — ir al inicio"
         className="app-logo-link"
       >
         {image}

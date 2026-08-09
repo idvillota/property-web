@@ -33,7 +33,7 @@ export function BuildingsPage() {
 
   const form = useForm({
     initialValues: { name: '', code: '', sortOrder: 0, isActive: true },
-    validate: { name: (v) => (v.trim().length < 1 ? 'Required' : null) },
+    validate: { name: (v) => (v.trim().length < 1 ? 'Obligatorio' : null) },
   })
 
   const openCreate = () => {
@@ -70,7 +70,7 @@ export function BuildingsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Building saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Bloque guardado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -81,7 +81,7 @@ export function BuildingsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/Buildings/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Building deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Bloque desactivado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -92,7 +92,7 @@ export function BuildingsPage() {
     return [
       {
         key: 'name',
-        header: 'Name',
+        header: 'Nombre',
         sortKey: 'name',
         filter: 'text',
         filterKey: 'name',
@@ -104,7 +104,7 @@ export function BuildingsPage() {
       },
       {
         key: 'code',
-        header: 'Code',
+        header: 'Código',
         sortKey: 'code',
         filter: 'text',
         filterKey: 'code',
@@ -112,7 +112,7 @@ export function BuildingsPage() {
       },
       {
         key: 'sortOrder',
-        header: 'Order',
+        header: 'Orden',
         sortKey: 'sortorder',
         filter: 'none',
         render: (row) => row.sortOrder,
@@ -125,7 +125,7 @@ export function BuildingsPage() {
         width: 88,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -133,9 +133,9 @@ export function BuildingsPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm(`Deactivate "${row.name}"?`)) deleteMutation.mutate(row.id)
+                if (window.confirm(`¿Desactivar "${row.name}"?`)) deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -147,10 +147,10 @@ export function BuildingsPage() {
 
   return (
     <Stack gap="md">
-      <PageHeader title="Buildings" description="Towers, blocks, or buildings within this property." />
+      <PageHeader title="Bloques" description="Torres o bloques dentro de esta propiedad." />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add building"
+        addLabel="Agregar bloque"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -176,7 +176,7 @@ export function BuildingsPage() {
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm(`Deactivate "${item.name}"?`)) deleteMutation.mutate(item.id)
+              if (window.confirm(`¿Desactivar "${item.name}"?`)) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -185,18 +185,18 @@ export function BuildingsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New building' : 'Edit building'}
+        title={drawer === 'create' ? 'Nuevo bloque' : 'Editar bloque'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
-            <TextInput label="Name" required {...form.getInputProps('name')} />
-            <TextInput label="Code" {...form.getInputProps('code')} />
-            <NumberInput label="Sort order" {...form.getInputProps('sortOrder')} />
+            <TextInput label="Nombre" required {...form.getInputProps('name')} />
+            <TextInput label="Código" {...form.getInputProps('code')} />
+            <NumberInput label="Orden" {...form.getInputProps('sortOrder')} />
             {drawer !== 'create' && (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

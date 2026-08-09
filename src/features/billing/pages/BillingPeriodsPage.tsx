@@ -71,8 +71,8 @@ export function BillingPeriodsPage() {
       status: 'Open',
     },
     validate: {
-      year: (v) => (!v ? 'Required' : null),
-      month: (v) => (!v ? 'Required' : null),
+      year: (v) => (!v ? 'Obligatorio' : null),
+      month: (v) => (!v ? 'Obligatorio' : null),
     },
   })
 
@@ -114,7 +114,7 @@ export function BillingPeriodsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Billing period saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Periodo de facturación guardado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -131,7 +131,7 @@ export function BillingPeriodsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Closed', message: 'Period closed', color: 'teal' })
+      notifications.show({ title: 'Cerrado', message: 'Periodo cerrado', color: 'teal' })
       invalidate()
     },
     onError: (err) =>
@@ -141,7 +141,7 @@ export function BillingPeriodsPage() {
   const softCloseMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/BillingPeriods/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Closed', message: 'Period closed', color: 'gray' })
+      notifications.show({ title: 'Cerrado', message: 'Periodo cerrado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -158,8 +158,8 @@ export function BillingPeriodsPage() {
     },
     onSuccess: (result) => {
       notifications.show({
-        title: 'Ordinary charges generated',
-        message: `Created ${result.createdCount}, skipped ${result.skippedCount}, total ${formatMoney(result.totalAmount)}`,
+        title: 'Cargos ordinarios generados',
+        message: `Creados ${result.createdCount}, omitidos ${result.skippedCount}, total ${formatMoney(result.totalAmount)}`,
         color: 'teal',
       })
       invalidate()
@@ -172,7 +172,7 @@ export function BillingPeriodsPage() {
     return [
       {
         key: 'periodKey',
-        header: 'Period',
+        header: 'Periodo',
         sortKey: 'year',
         filter: 'none',
         render: (row) => (
@@ -183,7 +183,7 @@ export function BillingPeriodsPage() {
       },
       {
         key: 'status',
-        header: 'Status',
+        header: 'Estado',
         sortKey: 'status',
         filter: 'select',
         filterKey: 'status',
@@ -200,7 +200,7 @@ export function BillingPeriodsPage() {
       },
       {
         key: 'notes',
-        header: 'Notes',
+        header: 'Notas',
         filter: 'none',
         render: (row) => row.notes || '—',
       },
@@ -212,7 +212,7 @@ export function BillingPeriodsPage() {
         render: (row) => (
           <Group gap={4} wrap="nowrap">
             {isOpenPeriod(row.status) ? (
-              <Tooltip label="Generate ordinary charges">
+              <Tooltip label="Generar cuotas ordinarias">
                 <ActionIcon
                   variant="light"
                   color="teal"
@@ -221,36 +221,36 @@ export function BillingPeriodsPage() {
                   onClick={() => {
                     if (
                       window.confirm(
-                        `Generate ordinary charges for ${row.periodKey}? Existing ordinary charges for units will be skipped.`,
+                        `¿Generar cuotas ordinarias para ${row.periodKey}? Se omitirán las cuotas ordinarias existentes por unidad.`,
                       )
                     ) {
                       generateMutation.mutate(row.id)
                     }
                   }}
-                  aria-label="Generate ordinary charges"
+                  aria-label="Generar cuotas ordinarias"
                 >
                   <IconReceipt2 size={16} stroke={1.75} />
                 </ActionIcon>
               </Tooltip>
             ) : null}
             {isOpenPeriod(row.status) ? (
-              <Tooltip label="Close period">
+              <Tooltip label="Cerrar periodo">
                 <ActionIcon
                   variant="light"
                   color="orange"
                   size="md"
                   onClick={() => {
-                    if (window.confirm(`Close period ${row.periodKey}?`)) {
+                    if (window.confirm(`¿Cerrar periodo ${row.periodKey}?`)) {
                       closeMutation.mutate(row)
                     }
                   }}
-                  aria-label="Close period"
+                  aria-label="Cerrar periodo"
                 >
                   <IconLock size={16} stroke={1.75} />
                 </ActionIcon>
               </Tooltip>
             ) : null}
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             {isOpenPeriod(row.status) ? (
@@ -259,11 +259,11 @@ export function BillingPeriodsPage() {
                 color="red"
                 size="md"
                 onClick={() => {
-                  if (window.confirm(`Close period ${row.periodKey}?`)) {
+                  if (window.confirm(`¿Cerrar periodo ${row.periodKey}?`)) {
                     softCloseMutation.mutate(row.id)
                   }
                 }}
-                aria-label="Close"
+                aria-label="Cerrar"
               >
                 ✕
               </ActionIcon>
@@ -277,10 +277,10 @@ export function BillingPeriodsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Billing periods"
-        description="Open and close monthly periods, then generate ordinary charges."
+        title="Periodos de facturación"
+        description="Abra y cierre periodos mensuales, luego genere las cuotas ordinarias."
       />
-      <ListToolbar onAdd={openCreate} addLabel="Add period" />
+      <ListToolbar onAdd={openCreate} addLabel="Agregar periodo" />
       <PagedEntityView
         loading={listQuery.isLoading}
         data={listQuery.data}
@@ -302,7 +302,7 @@ export function BillingPeriodsPage() {
             subtitle={labelForOption(BILLING_PERIOD_STATUS_OPTIONS, item.status)}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (isOpenPeriod(item.status) && window.confirm(`Close period ${item.periodKey}?`)) {
+              if (isOpenPeriod(item.status) && window.confirm(`¿Cerrar periodo ${item.periodKey}?`)) {
                 softCloseMutation.mutate(item.id)
               }
             }}
@@ -313,21 +313,21 @@ export function BillingPeriodsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New billing period' : 'Edit billing period'}
+        title={drawer === 'create' ? 'Nuevo periodo de facturación' : 'Editar periodo de facturación'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             {drawer === 'create' ? (
               <>
                 <Select
-                  label="Year"
+                  label="Año"
                   required
                   data={yearOptions()}
                   comboboxProps={formDrawerSelectComboboxProps}
                   {...form.getInputProps('year')}
                 />
                 <Select
-                  label="Month"
+                  label="Mes"
                   required
                   data={[...MONTH_OPTIONS]}
                   comboboxProps={formDrawerSelectComboboxProps}
@@ -337,19 +337,19 @@ export function BillingPeriodsPage() {
             ) : (
               <>
                 <Text size="sm" c="dimmed">
-                  Period {drawer?.periodKey}
+                  Periodo {drawer?.periodKey}
                 </Text>
                 <Select
-                  label="Status"
+                  label="Estado"
                   data={[...BILLING_PERIOD_STATUS_OPTIONS]}
                   comboboxProps={formDrawerSelectComboboxProps}
                   {...form.getInputProps('status')}
                 />
               </>
             )}
-            <Textarea label="Notes" minRows={2} {...form.getInputProps('notes')} />
+            <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

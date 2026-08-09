@@ -80,10 +80,10 @@ export function PaymentsPage() {
       notes: '',
     },
     validate: {
-      unitId: (v) => (!v ? 'Required' : null),
-      amount: (v) => (v <= 0 ? 'Must be greater than zero' : null),
-      method: (v) => (!v ? 'Required' : null),
-      paidAt: (v) => (!v ? 'Required' : null),
+      unitId: (v) => (!v ? 'Obligatorio' : null),
+      amount: (v) => (v <= 0 ? 'Debe ser mayor que cero' : null),
+      method: (v) => (!v ? 'Obligatorio' : null),
+      paidAt: (v) => (!v ? 'Obligatorio' : null),
     },
   })
 
@@ -131,7 +131,7 @@ export function PaymentsPage() {
         return {
           feeChargeId: c.id,
           amount: alloc,
-          label: `${c.dueDate} · ${labelForOption(FEE_CHARGE_TYPE_OPTIONS, c.chargeType)} · bal ${formatMoney(balance)}`,
+          label: `${c.dueDate} · ${labelForOption(FEE_CHARGE_TYPE_OPTIONS, c.chargeType)} · saldo ${formatMoney(balance)}`,
           balance,
         }
       }),
@@ -173,7 +173,7 @@ export function PaymentsPage() {
       const sum = Math.round(activeAllocations.reduce((s, a) => s + a.amount, 0) * 100) / 100
       if (sum !== Math.round(amount * 100) / 100) {
         throw new Error(
-          `Allocations (${formatMoney(sum)}) must equal payment amount (${formatMoney(amount)})`,
+          `Las asignaciones (${formatMoney(sum)}) deben igualar el valor del pago (${formatMoney(amount)})`,
         )
       }
       const { data } = await api.post<Payment>('/api/Payments', {
@@ -190,7 +190,7 @@ export function PaymentsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Payment recorded', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Pago registrado', color: 'teal' })
       setDrawer(false)
       invalidate()
     },
@@ -206,8 +206,8 @@ export function PaymentsPage() {
     mutationFn: (id: string) => api.delete(`/api/Payments/${id}`),
     onSuccess: () => {
       notifications.show({
-        title: 'Deactivated',
-        message: 'Payment reversed and deactivated',
+        title: 'Desactivado',
+        message: 'Pago anulado y desactivado',
         color: 'gray',
       })
       invalidate()
@@ -220,7 +220,7 @@ export function PaymentsPage() {
     return [
       {
         key: 'unit',
-        header: 'Unit',
+        header: 'Unidad',
         sortKey: 'unitid',
         filter: 'select',
         filterKey: 'unitId',
@@ -229,7 +229,7 @@ export function PaymentsPage() {
       },
       {
         key: 'amount',
-        header: 'Amount',
+        header: 'Valor',
         sortKey: 'amount',
         filter: 'none',
         align: 'right',
@@ -237,14 +237,14 @@ export function PaymentsPage() {
       },
       {
         key: 'paidAt',
-        header: 'Date',
+        header: 'Fecha',
         sortKey: 'paidat',
         filter: 'none',
         render: (row) => new Date(row.paidAt).toLocaleString(),
       },
       {
         key: 'method',
-        header: 'Method',
+        header: 'Método',
         sortKey: 'method',
         filter: 'select',
         filterKey: 'method',
@@ -253,17 +253,17 @@ export function PaymentsPage() {
       },
       {
         key: 'allocations',
-        header: 'Allocations',
+        header: 'Asignaciones',
         filter: 'none',
         render: (row) => {
           const count = row.allocations?.length ?? 0
           if (!count) return '—'
-          return `${count} charge${count === 1 ? '' : 's'}`
+          return `${count} cargo${count === 1 ? '' : 's'}`
         },
       },
       {
         key: 'reference',
-        header: 'Reference',
+        header: 'Referencia',
         filter: 'none',
         render: (row) => row.reference || '—',
       },
@@ -280,11 +280,11 @@ export function PaymentsPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm('Deactivate this payment and reverse allocations?')) {
+                if (window.confirm('¿Desactivar este pago y revertir las asignaciones?')) {
                   deleteMutation.mutate(row.id)
                 }
               }}
-              aria-label="Deactivate"
+              aria-label="Desactivar"
             >
               ✕
             </ActionIcon>
@@ -296,12 +296,12 @@ export function PaymentsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Payments"
-        description="Record payments and allocate them to open fee charges."
+        title="Pagos"
+        description="Registre pagos y asígnelos a cargos de cuota abiertos."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Record payment"
+        addLabel="Registrar pago"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -323,11 +323,11 @@ export function PaymentsPage() {
           <EntityCard
             key={item.id}
             title={formatMoney(item.amount)}
-            subtitle={`${item.unitCode ?? 'Unit'} · ${labelForOption(PAYMENT_METHOD_OPTIONS, item.method)}`}
+            subtitle={`${item.unitCode ?? 'Unidad'} · ${labelForOption(PAYMENT_METHOD_OPTIONS, item.method)}`}
             inactive={!item.isActive}
             onEdit={() => undefined}
             onDelete={() => {
-              if (item.isActive && window.confirm('Deactivate this payment and reverse allocations?')) {
+              if (item.isActive && window.confirm('¿Desactivar este pago y revertir las asignaciones?')) {
                 deleteMutation.mutate(item.id)
               }
             }}
@@ -335,11 +335,11 @@ export function PaymentsPage() {
         )}
       />
 
-      <FormDrawer opened={drawer} onClose={() => setDrawer(false)} title="Record payment">
+      <FormDrawer opened={drawer} onClose={() => setDrawer(false)} title="Registrar pago">
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Unit"
+              label="Unidad"
               required
               searchable
               data={unitOptions}
@@ -349,50 +349,50 @@ export function PaymentsPage() {
               error={form.errors.unitId}
             />
             <MoneyInput
-              label="Amount"
+              label="Valor"
               precision={2}
               required
               {...form.getInputProps('amount')}
             />
             <Select
-              label="Method"
+              label="Método"
               required
               data={[...PAYMENT_METHOD_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('method')}
             />
             <TextInput
-              label="Paid at"
+              label="Pagado el"
               type="datetime-local"
               required
               {...form.getInputProps('paidAt')}
             />
-            <TextInput label="Reference" {...form.getInputProps('reference')} />
-            <Textarea label="Notes" minRows={2} {...form.getInputProps('notes')} />
+            <TextInput label="Referencia" {...form.getInputProps('reference')} />
+            <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
 
             <Switch
-              label="Auto-allocate FIFO by due date"
+              label="Asignar automáticamente FIFO por vencimiento"
               checked={autoAllocate}
               onChange={(e) => setAutoAllocate(e.currentTarget.checked)}
             />
 
             {!form.values.unitId ? (
               <Text size="sm" c="dimmed">
-                Select a unit to load pending charges.
+                Seleccione una unidad para cargar los cargos pendientes.
               </Text>
             ) : pendingChargesQuery.isLoading ? (
               <Text size="sm" c="dimmed">
-                Loading open charges…
+                Cargando cargos abiertos…
               </Text>
             ) : (pendingChargesQuery.data?.length ?? 0) === 0 ? (
               <Text size="sm" c="dimmed">
-                No pending or partial charges for this unit.
+                No hay cargos pendientes o parciales para esta unidad.
               </Text>
             ) : (
               <Stack gap="xs">
                 <Group justify="space-between">
                   <Text size="sm" fw={600}>
-                    Allocations
+                    Asignaciones
                   </Text>
                   <Text size="xs" c={allocationSum === Number(form.values.amount) ? 'teal' : 'orange'}>
                     {formatMoney(allocationSum)} / {formatMoney(Number(form.values.amount) || 0)}
@@ -423,7 +423,7 @@ export function PaymentsPage() {
             )}
 
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save payment
+              Guardar pago
             </Button>
           </Stack>
         </form>

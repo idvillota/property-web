@@ -20,37 +20,37 @@ const REPORT_LINKS = [
   {
     to: 'cartera',
     label: 'Cartera',
-    description: 'Units in arrears and outstanding balances',
+    description: 'Unidades en mora y saldos pendientes',
     icon: IconCash,
   },
   {
     to: 'collections',
-    label: 'Collections',
-    description: 'Payments collected in a date range',
+    label: 'Recaudos',
+    description: 'Pagos recaudados en un rango de fechas',
     icon: IconChartBar,
   },
   {
     to: 'occupancy',
-    label: 'Occupancy',
-    description: 'Owners, residents, and vacant units',
+    label: 'Ocupación',
+    description: 'Propietarios, residentes y unidades vacantes',
     icon: IconUsersGroup,
   },
   {
     to: 'coefficients',
-    label: 'Coefficients',
-    description: 'Coefficient distribution toward 100',
+    label: 'Coeficientes',
+    description: 'Distribución de coeficientes hacia 100',
     icon: IconPercentage,
   },
   {
     to: 'reservations',
-    label: 'Reservation usage',
-    description: 'Common area bookings over time',
+    label: 'Uso de reservas',
+    description: 'Reservas de zonas comunes en el tiempo',
     icon: IconCalendarCheck,
   },
   {
     to: 'reception',
-    label: 'Reception',
-    description: 'Packages, letters, and deliveries',
+    label: 'Portería',
+    description: 'Paquetes, cartas y entregas',
     icon: IconPackage,
   },
 ] as const
@@ -73,33 +73,33 @@ export function ReportsHubPage() {
   return (
     <Stack gap="lg">
       <PageHeader
-        title="Reports"
-        description="Read-only snapshots for billing, occupancy, amenities, and reception."
+        title="Reportes"
+        description="Consultas de solo lectura sobre facturación, ocupación, zonas comunes y portería."
       />
 
       {overviewQuery.isLoading ? <Loader size="sm" /> : null}
       {overviewQuery.isError ? (
-        <Alert color="red" title="Could not load overview">
+        <Alert color="red" title="No se pudo cargar el resumen">
           {getApiErrorMessage(overviewQuery.error)}
         </Alert>
       ) : null}
 
       {overview ? (
         <SimpleGrid cols={{ base: 2, sm: 3, md: 5 }} spacing="md">
-          <Kpi label="Units" value={String(overview.unitCount)} />
-          <Kpi label="Billable units" value={String(overview.billableUnitCount)} />
-          <Kpi label="Active occupancies" value={String(overview.activeOccupancyCount)} />
-          <Kpi label="Total coefficient" value={overview.totalCoefficient.toFixed(5)} />
+          <Kpi label="Unidades" value={String(overview.unitCount)} />
+          <Kpi label="Unidades facturables" value={String(overview.billableUnitCount)} />
+          <Kpi label="Ocupaciones activas" value={String(overview.activeOccupancyCount)} />
+          <Kpi label="Coeficiente total" value={overview.totalCoefficient.toFixed(2)} />
           <Kpi
-            label="Remaining to 100"
-            value={overview.remainingCoefficientToHundred.toFixed(5)}
+            label="Restante para 100"
+            value={overview.remainingCoefficientToHundred.toFixed(2)}
             accent={overview.remainingCoefficientToHundred !== 0 ? 'orange' : 'teal'}
           />
-          <Kpi label="Open charges" value={formatMoney(overview.openChargesAmount)} />
-          <Kpi label="Overdue charges" value={formatMoney(overview.overdueChargesAmount)} />
-          <Kpi label="Collected this month" value={formatMoney(overview.collectedAmountThisMonth)} />
-          <Kpi label="Pending reception" value={String(overview.pendingReceptionCount)} />
-          <Kpi label="Upcoming reservations" value={String(overview.upcomingReservationsCount)} />
+          <Kpi label="Cargos abiertos" value={formatMoney(overview.openChargesAmount)} />
+          <Kpi label="Cargos vencidos" value={formatMoney(overview.overdueChargesAmount)} />
+          <Kpi label="Recaudado este mes" value={formatMoney(overview.collectedAmountThisMonth)} />
+          <Kpi label="Pendientes en portería" value={String(overview.pendingReceptionCount)} />
+          <Kpi label="Reservas próximas" value={String(overview.upcomingReservationsCount)} />
         </SimpleGrid>
       ) : null}
 

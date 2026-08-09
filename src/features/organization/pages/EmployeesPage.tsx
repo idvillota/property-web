@@ -141,12 +141,12 @@ export function EmployeesPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Employees"
+        title="Empleados"
         description={
           <>
-            Staff records. Link access through{' '}
+            Registros de personal. Vincula el acceso desde{' '}
             <Text component={Link} to="/team" size="sm" c="teal" span>
-              Invite team
+              Invitar equipo
             </Text>
             .
           </>
@@ -154,7 +154,7 @@ export function EmployeesPage() {
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add employee"
+        addLabel="Agregar empleado"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />

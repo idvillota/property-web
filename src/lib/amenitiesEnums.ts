@@ -1,19 +1,19 @@
 export const COMMON_AREA_TYPE_OPTIONS = [
-  { value: 'SocialRoom', label: 'Social room' },
+  { value: 'SocialRoom', label: 'Salón social' },
   { value: 'Bbq', label: 'BBQ' },
-  { value: 'Court', label: 'Court' },
-  { value: 'Pool', label: 'Pool' },
-  { value: 'Gym', label: 'Gym' },
-  { value: 'MeetingRoom', label: 'Meeting room' },
-  { value: 'Other', label: 'Other' },
+  { value: 'Court', label: 'Cancha' },
+  { value: 'Pool', label: 'Piscina' },
+  { value: 'Gym', label: 'Gimnasio' },
+  { value: 'MeetingRoom', label: 'Sala de juntas' },
+  { value: 'Other', label: 'Otro' },
 ] as const
 
 export const RESERVATION_STATUS_OPTIONS = [
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Confirmed', label: 'Confirmed' },
-  { value: 'Cancelled', label: 'Cancelled' },
-  { value: 'Completed', label: 'Completed' },
-  { value: 'NoShow', label: 'No-show' },
+  { value: 'Pending', label: 'Pendiente' },
+  { value: 'Confirmed', label: 'Confirmada' },
+  { value: 'Cancelled', label: 'Cancelada' },
+  { value: 'Completed', label: 'Completada' },
+  { value: 'NoShow', label: 'No asistió' },
 ] as const
 
 /** Normalize API enum (name or numeric) to the option value/name. */
@@ -69,15 +69,15 @@ export function reservationStatusActions(
   const name = asEnumName(status, RESERVATION_STATUS_OPTIONS)
   if (name === 'Pending') {
     return [
-      { status: 'Confirmed', label: 'Confirm', color: 'teal' },
-      { status: 'Cancelled', label: 'Cancel', color: 'red' },
+      { status: 'Confirmed', label: 'Confirmar', color: 'teal' },
+      { status: 'Cancelled', label: 'Cancelar', color: 'red' },
     ]
   }
   if (name === 'Confirmed') {
     return [
-      { status: 'Completed', label: 'Complete', color: 'teal' },
-      { status: 'Cancelled', label: 'Cancel', color: 'red' },
-      { status: 'NoShow', label: 'No-show', color: 'orange' },
+      { status: 'Completed', label: 'Completar', color: 'teal' },
+      { status: 'Cancelled', label: 'Cancelar', color: 'red' },
+      { status: 'NoShow', label: 'No asistió', color: 'orange' },
     ]
   }
   return []

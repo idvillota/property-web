@@ -19,7 +19,7 @@ export function FeatureGuard({ permission, children }: FeatureGuardProps) {
           <Stack align="center" gap="xs" maw={360}>
             <Title order={3}>Acceso restringido</Title>
             <Text c="dimmed" ta="center">
-              You do not have permission to view this section. If you think this is a mistake, contact your tenant administrator.
+              No tienes permiso para ver esta sección. Si crees que es un error, contacta al administrador del tenant.
             </Text>
           </Stack>
         </Center>

@@ -3,18 +3,18 @@ import { asEnumName, enumIndex, labelForOption } from './amenitiesEnums'
 export { asEnumName, enumIndex, labelForOption }
 
 export const RECEPTION_ITEM_TYPE_OPTIONS = [
-  { value: 'Package', label: 'Package' },
-  { value: 'Letter', label: 'Letter' },
-  { value: 'Document', label: 'Document' },
-  { value: 'VisitorMessage', label: 'Visitor message' },
-  { value: 'Other', label: 'Other' },
+  { value: 'Package', label: 'Paquete' },
+  { value: 'Letter', label: 'Carta' },
+  { value: 'Document', label: 'Documento' },
+  { value: 'VisitorMessage', label: 'Mensaje de visitante' },
+  { value: 'Other', label: 'Otro' },
 ] as const
 
 export const RECEPTION_ITEM_STATUS_OPTIONS = [
-  { value: 'PendingPickup', label: 'Pending pickup' },
-  { value: 'Delivered', label: 'Delivered' },
-  { value: 'Returned', label: 'Returned' },
-  { value: 'Cancelled', label: 'Cancelled' },
+  { value: 'PendingPickup', label: 'Pendiente de retiro' },
+  { value: 'Delivered', label: 'Entregado' },
+  { value: 'Returned', label: 'Devuelto' },
+  { value: 'Cancelled', label: 'Cancelado' },
 ] as const
 
 export function receptionStatusVariant(

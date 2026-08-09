@@ -55,8 +55,8 @@ export function FloorsPage() {
       isActive: true,
     },
     validate: {
-      buildingId: (v) => (!v ? 'Required' : null),
-      name: (v) => (v.trim().length < 1 ? 'Required' : null),
+      buildingId: (v) => (!v ? 'Obligatorio' : null),
+      name: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
     },
   })
 
@@ -112,7 +112,7 @@ export function FloorsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Floor saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Piso guardado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -123,7 +123,7 @@ export function FloorsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/Floors/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Floor deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Piso desactivado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -134,7 +134,7 @@ export function FloorsPage() {
     return [
       {
         key: 'name',
-        header: 'Name',
+        header: 'Nombre',
         sortKey: 'name',
         filter: 'text',
         filterKey: 'name',
@@ -146,13 +146,13 @@ export function FloorsPage() {
       },
       {
         key: 'building',
-        header: 'Building',
+        header: 'Bloque',
         filter: 'none',
         render: (row) => buildingNameById.get(row.buildingId) ?? '—',
       },
       {
         key: 'number',
-        header: 'Number',
+        header: 'Número',
         sortKey: 'number',
         filter: 'none',
         render: (row) => row.number ?? '—',
@@ -165,7 +165,7 @@ export function FloorsPage() {
         width: 88,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -173,9 +173,9 @@ export function FloorsPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm(`Deactivate "${row.name}"?`)) deleteMutation.mutate(row.id)
+                if (window.confirm(`¿Desactivar "${row.name}"?`)) deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -187,10 +187,10 @@ export function FloorsPage() {
 
   return (
     <Stack gap="md">
-      <PageHeader title="Floors" description="Levels within buildings for this property." />
+      <PageHeader title="Pisos" description="Niveles dentro de los bloques de esta propiedad." />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add floor"
+        addLabel="Agregar piso"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -216,7 +216,7 @@ export function FloorsPage() {
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm(`Deactivate "${item.name}"?`)) deleteMutation.mutate(item.id)
+              if (window.confirm(`¿Desactivar "${item.name}"?`)) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -225,29 +225,29 @@ export function FloorsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New floor' : 'Edit floor'}
+        title={drawer === 'create' ? 'Nuevo piso' : 'Editar piso'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Building"
+              label="Bloque"
               required
               data={buildingOptions}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('buildingId')}
             />
-            <TextInput label="Name" required {...form.getInputProps('name')} />
+            <TextInput label="Nombre" required {...form.getInputProps('name')} />
             <NumberInput
-              label="Floor number"
+              label="Número de piso"
               value={form.values.number ?? ''}
               onChange={(v) => form.setFieldValue('number', typeof v === 'number' ? v : null)}
             />
-            <NumberInput label="Sort order" {...form.getInputProps('sortOrder')} />
+            <NumberInput label="Orden" {...form.getInputProps('sortOrder')} />
             {drawer !== 'create' && (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

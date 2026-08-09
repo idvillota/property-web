@@ -6,8 +6,8 @@ export function AppearanceSettingsPage() {
   return (
     <Stack gap="lg">
       <PageHeader
-        title="Appearance"
-        description="Customize brand theme and light/dark mode. Preferences are saved to your account and apply across devices."
+        title="Apariencia"
+        description="Personaliza el tema de marca y el modo claro/oscuro. Las preferencias se guardan en tu cuenta y aplican en todos los dispositivos."
       />
       <Paper withBorder radius="md" p="lg">
         <AppearanceControls variant="full" />

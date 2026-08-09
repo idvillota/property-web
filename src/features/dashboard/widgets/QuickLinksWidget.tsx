@@ -24,50 +24,50 @@ type QuickLink = {
 const LINKS: QuickLink[] = [
   {
     to: '/properties',
-    label: 'Properties',
-    description: 'Horizontal properties workspace',
+    label: 'Mi propiedad',
+    description: 'Espacio de trabajo de la copropiedad',
     permission: FeatureCodes.structureProperties,
     icon: IconBuildingCommunity,
   },
   {
     to: '/people',
-    label: 'People',
-    description: 'Owners, tenants, and contacts',
+    label: 'Personas',
+    description: 'Propietarios, arrendatarios y contactos',
     permission: FeatureCodes.peopleManage,
     icon: IconUsers,
   },
   {
     to: '/settings/dashboard',
-    label: 'Dashboard settings',
-    description: 'Arrange dashboard widgets',
+    label: 'Configurar inicio',
+    description: 'Organiza los widgets del inicio',
     permission: FeatureCodes.dashboardConfigure,
     icon: IconLayoutGrid,
   },
   {
     to: '/team',
-    label: 'Team',
-    description: 'Invite users to this tenant',
+    label: 'Equipo',
+    description: 'Invita usuarios a este tenant',
     permission: FeatureCodes.organizationTeam,
     icon: IconUserPlus,
   },
   {
     to: '/role-permissions',
     label: 'Roles',
-    description: 'Manage role permissions',
+    description: 'Administra permisos por rol',
     permission: FeatureCodes.organizationRoles,
     icon: IconShieldLock,
   },
   {
     to: '/employees',
-    label: 'Employees',
-    description: 'Maintain employee records',
+    label: 'Empleados',
+    description: 'Mantén los registros de personal',
     permission: FeatureCodes.organizationEmployees,
     icon: IconIdBadge,
   },
   {
     to: '/settings',
-    label: 'Tenant settings',
-    description: 'Legal and contact details',
+    label: 'Configuración',
+    description: 'Datos legales y de la propiedad',
     permission: FeatureCodes.settingsTenant,
     icon: IconSettings,
   },
@@ -80,7 +80,7 @@ export function QuickLinksWidget() {
   if (visible.length === 0) {
     return (
       <Text size="sm" c="dimmed">
-        No shortcuts available for your role.
+        No hay accesos rápidos para tu rol.
       </Text>
     )
   }

@@ -1,53 +1,53 @@
 export const FEE_CHARGE_TYPE_OPTIONS = [
-  { value: 'Ordinary', label: 'Ordinary' },
-  { value: 'Extraordinary', label: 'Extraordinary' },
-  { value: 'Interest', label: 'Interest' },
-  { value: 'Adjustment', label: 'Adjustment' },
+  { value: 'Ordinary', label: 'Ordinaria' },
+  { value: 'Extraordinary', label: 'Extraordinaria' },
+  { value: 'Interest', label: 'Intereses' },
+  { value: 'Adjustment', label: 'Ajuste' },
 ] as const
 
 export const MANUAL_CHARGE_TYPE_OPTIONS = [
-  { value: 'Adjustment', label: 'Adjustment' },
-  { value: 'Extraordinary', label: 'Extraordinary' },
+  { value: 'Adjustment', label: 'Ajuste' },
+  { value: 'Extraordinary', label: 'Extraordinaria' },
 ] as const
 
 export const FEE_CHARGE_STATUS_OPTIONS = [
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Partial', label: 'Partial' },
-  { value: 'Paid', label: 'Paid' },
-  { value: 'Waived', label: 'Waived' },
-  { value: 'Cancelled', label: 'Cancelled' },
+  { value: 'Pending', label: 'Pendiente' },
+  { value: 'Partial', label: 'Parcial' },
+  { value: 'Paid', label: 'Pagado' },
+  { value: 'Waived', label: 'Condonado' },
+  { value: 'Cancelled', label: 'Cancelado' },
 ] as const
 
 export const OPEN_CHARGE_STATUS_OPTIONS = [
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Partial', label: 'Partial' },
+  { value: 'Pending', label: 'Pendiente' },
+  { value: 'Partial', label: 'Parcial' },
 ] as const
 
 export const BILLING_PERIOD_STATUS_OPTIONS = [
-  { value: 'Open', label: 'Open' },
-  { value: 'Closed', label: 'Closed' },
+  { value: 'Open', label: 'Abierto' },
+  { value: 'Closed', label: 'Cerrado' },
 ] as const
 
 export const PAYMENT_METHOD_OPTIONS = [
-  { value: 'Cash', label: 'Cash' },
-  { value: 'Transfer', label: 'Transfer' },
-  { value: 'Check', label: 'Check' },
-  { value: 'Other', label: 'Other' },
+  { value: 'Cash', label: 'Efectivo' },
+  { value: 'Transfer', label: 'Transferencia' },
+  { value: 'Check', label: 'Cheque' },
+  { value: 'Other', label: 'Otro' },
 ] as const
 
 export const MONTH_OPTIONS = [
-  { value: '1', label: 'January' },
-  { value: '2', label: 'February' },
-  { value: '3', label: 'March' },
-  { value: '4', label: 'April' },
-  { value: '5', label: 'May' },
-  { value: '6', label: 'June' },
-  { value: '7', label: 'July' },
-  { value: '8', label: 'August' },
-  { value: '9', label: 'September' },
-  { value: '10', label: 'October' },
-  { value: '11', label: 'November' },
-  { value: '12', label: 'December' },
+  { value: '1', label: 'Enero' },
+  { value: '2', label: 'Febrero' },
+  { value: '3', label: 'Marzo' },
+  { value: '4', label: 'Abril' },
+  { value: '5', label: 'Mayo' },
+  { value: '6', label: 'Junio' },
+  { value: '7', label: 'Julio' },
+  { value: '8', label: 'Agosto' },
+  { value: '9', label: 'Septiembre' },
+  { value: '10', label: 'Octubre' },
+  { value: '11', label: 'Noviembre' },
+  { value: '12', label: 'Diciembre' },
 ] as const
 
 /** Normalize API enum (name or numeric) to the option value/name. */

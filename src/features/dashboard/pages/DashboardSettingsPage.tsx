@@ -73,7 +73,7 @@ export function DashboardSettingsPage() {
     onSuccess: (data) => {
       setPanels(data.panels)
       queryClient.setQueryData(['dashboard', 'layout'], data)
-      notifications.show({ color: 'green', message: 'Dashboard saved.' })
+      notifications.show({ color: 'green', message: 'Inicio guardado.' })
     },
     onError: (error) => {
       notifications.show({ color: 'red', message: getApiErrorMessage(error) })
@@ -114,19 +114,19 @@ export function DashboardSettingsPage() {
   return (
     <Stack gap="lg">
       <PageHeader
-        title="Configure dashboard"
-        description="Drag and resize widgets. Only administrators can edit the dashboard."
+        title="Configurar inicio"
+        description="Arrastra y redimensiona widgets. Solo los administradores pueden editar el inicio."
         actions={
           <Group>
             <Button component={Link} to="/dashboard" variant="default">
-              View dashboard
+              Ver inicio
             </Button>
             <Button
               onClick={() => saveMutation.mutate()}
               loading={saveMutation.isPending}
               disabled={layoutQuery.isLoading}
             >
-              Save
+              Guardar
             </Button>
           </Group>
         }
@@ -135,10 +135,10 @@ export function DashboardSettingsPage() {
       <Group align="flex-start" gap="lg" wrap="nowrap" className="dashboard-settings-layout">
         <Card withBorder padding="md" radius="md" w={280} className="dashboard-settings-sidebar">
           <Title order={5} mb="sm">
-            Add widget
+            Agregar widget
           </Title>
           <Text size="sm" c="dimmed" mb="md">
-            Click to add a widget, then drag it into place.
+            Haz clic para agregar un widget y luego arrástralo a su lugar.
           </Text>
           <ScrollArea h={420} type="auto" offsetScrollbars>
             <Stack gap="xs">
@@ -168,7 +168,7 @@ export function DashboardSettingsPage() {
           {panels.length === 0 ? (
             <Card withBorder padding="xl" radius="md">
               <Text c="dimmed" ta="center">
-                The dashboard is empty. Add widgets from the side list.
+                El inicio está vacío. Agrega widgets desde la lista lateral.
               </Text>
             </Card>
           ) : (

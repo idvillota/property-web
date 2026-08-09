@@ -64,9 +64,9 @@ export function CommonAreasPage() {
       isActive: true,
     },
     validate: {
-      name: (v) => (v.trim().length < 1 ? 'Required' : null),
-      areaType: (v) => (!v ? 'Required' : null),
-      capacity: (v) => (v < 1 ? 'Must be at least 1' : null),
+      name: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
+      areaType: (v) => (!v ? 'Obligatorio' : null),
+      capacity: (v) => (v < 1 ? 'Debe ser al menos 1' : null),
     },
   })
 
@@ -134,7 +134,7 @@ export function CommonAreasPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Common area saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Zona común guardada', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -145,7 +145,7 @@ export function CommonAreasPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/CommonAreas/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Common area deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Zona común desactivada', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -156,7 +156,7 @@ export function CommonAreasPage() {
     return [
       {
         key: 'name',
-        header: 'Name',
+        header: 'Nombre',
         sortKey: 'name',
         filter: 'text',
         filterKey: 'name',
@@ -168,7 +168,7 @@ export function CommonAreasPage() {
       },
       {
         key: 'areaType',
-        header: 'Type',
+        header: 'Tipo',
         sortKey: 'areatype',
         filter: 'select',
         filterKey: 'areaType',
@@ -177,20 +177,20 @@ export function CommonAreasPage() {
       },
       {
         key: 'capacity',
-        header: 'Capacity',
+        header: 'Capacidad',
         sortKey: 'capacity',
         filter: 'none',
         render: (row) => row.capacity,
       },
       {
         key: 'deposit',
-        header: 'Deposit',
+        header: 'Depósito',
         filter: 'none',
         render: (row) =>
           row.requiresDeposit
             ? row.depositAmount != null
               ? formatMoney(row.depositAmount)
-              : 'Required'
+              : 'Obligatorio'
             : '—',
       },
       activeColumn<CommonArea>(),
@@ -201,7 +201,7 @@ export function CommonAreasPage() {
         width: 88,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -209,9 +209,9 @@ export function CommonAreasPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm(`Deactivate "${row.name}"?`)) deleteMutation.mutate(row.id)
+                if (window.confirm(`¿Desactivar "${row.name}"?`)) deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -224,12 +224,12 @@ export function CommonAreasPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Common areas"
-        description="Amenities available for reservation — social rooms, BBQ, pool, gym, and more."
+        title="Zonas comunes"
+        description="Amenidades disponibles para reserva: salón social, BBQ, piscina, gimnasio y más."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add area"
+        addLabel="Agregar zona"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -255,7 +255,7 @@ export function CommonAreasPage() {
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm(`Deactivate "${item.name}"?`)) deleteMutation.mutate(item.id)
+              if (window.confirm(`¿Desactivar "${item.name}"?`)) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -264,48 +264,48 @@ export function CommonAreasPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New common area' : 'Edit common area'}
+        title={drawer === 'create' ? 'Nueva zona común' : 'Editar zona común'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
-            <TextInput label="Name" required {...form.getInputProps('name')} />
+            <TextInput label="Nombre" required {...form.getInputProps('name')} />
             <Select
-              label="Area type"
+              label="Tipo de zona"
               required
               data={[...COMMON_AREA_TYPE_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('areaType')}
             />
-            <NumberInput label="Capacity" required min={1} {...form.getInputProps('capacity')} />
+            <NumberInput label="Capacidad" required min={1} {...form.getInputProps('capacity')} />
             <Switch
-              label="Requires deposit"
+              label="Requiere depósito"
               {...form.getInputProps('requiresDeposit', { type: 'checkbox' })}
             />
             {form.values.requiresDeposit ? (
               <MoneyInput
-                label="Deposit amount"
+                label="Valor del depósito"
                 precision={2}
                 {...form.getInputProps('depositAmount')}
               />
             ) : null}
             <NumberInput
-              label="Min duration (minutes)"
+              label="Duración mínima (minutos)"
               min={0}
               allowDecimal={false}
               {...form.getInputProps('minDurationMinutes')}
             />
             <NumberInput
-              label="Max duration (minutes)"
+              label="Duración máxima (minutos)"
               min={0}
               allowDecimal={false}
               {...form.getInputProps('maxDurationMinutes')}
             />
-            <Textarea label="Rules / notes" minRows={2} {...form.getInputProps('rulesNotes')} />
+            <Textarea label="Reglas / notas" minRows={2} {...form.getInputProps('rulesNotes')} />
             {drawer !== 'create' ? (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             ) : null}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

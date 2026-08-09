@@ -69,10 +69,10 @@ export function OccupanciesPage() {
       isActive: true,
     },
     validate: {
-      unitId: (v) => (!v ? 'Required' : null),
-      personId: (v) => (!v ? 'Required' : null),
-      role: (v) => (!v ? 'Required' : null),
-      startDate: (v) => (!v ? 'Required' : null),
+      unitId: (v) => (!v ? 'Obligatorio' : null),
+      personId: (v) => (!v ? 'Obligatorio' : null),
+      role: (v) => (!v ? 'Obligatorio' : null),
+      startDate: (v) => (!v ? 'Obligatorio' : null),
     },
   })
 
@@ -147,7 +147,7 @@ export function OccupanciesPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Occupancy saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Ocupación guardada', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -158,7 +158,7 @@ export function OccupanciesPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/UnitOccupancies/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Occupancy deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Ocupación desactivada', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -169,7 +169,7 @@ export function OccupanciesPage() {
     return [
       {
         key: 'unit',
-        header: 'Unit',
+        header: 'Unidad',
         filter: 'none',
         render: (row) => (
           <Text size="sm" fw={500}>
@@ -179,13 +179,13 @@ export function OccupanciesPage() {
       },
       {
         key: 'person',
-        header: 'Person',
+        header: 'Persona',
         filter: 'none',
         render: (row) => row.personName ?? personNameById.get(row.personId) ?? '—',
       },
       {
         key: 'role',
-        header: 'Role',
+        header: 'Rol',
         sortKey: 'role',
         filter: 'select',
         filterKey: 'role',
@@ -194,7 +194,7 @@ export function OccupanciesPage() {
       },
       {
         key: 'startDate',
-        header: 'Start',
+        header: 'Inicio',
         sortKey: 'startdate',
         filter: 'none',
         render: (row) => row.startDate?.slice(0, 10) ?? '—',
@@ -207,7 +207,7 @@ export function OccupanciesPage() {
         width: 88,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -215,11 +215,11 @@ export function OccupanciesPage() {
               color="red"
               size="md"
               onClick={() => {
-                const label = row.unitCode ?? unitCodeById.get(row.unitId) ?? 'occupancy'
-                if (window.confirm(`Deactivate occupancy for "${label}"?`))
+                const label = row.unitCode ?? unitCodeById.get(row.unitId) ?? 'ocupación'
+                if (window.confirm(`¿Desactivar ocupación de "${label}"?`))
                   deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -232,12 +232,12 @@ export function OccupanciesPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Occupancies"
-        description="Link people to units as owners, tenants, or residents."
+        title="Ocupaciones"
+        description="Vincule personas a unidades como propietarios, arrendatarios o residentes."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add occupancy"
+        addLabel="Agregar ocupación"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -258,13 +258,13 @@ export function OccupanciesPage() {
         renderCard={(item) => (
           <EntityCard
             key={item.id}
-            title={item.unitCode ?? unitCodeById.get(item.unitId) ?? 'Unit'}
-            subtitle={`${item.personName ?? personNameById.get(item.personId) ?? 'Person'} · ${labelForOption(OCCUPANCY_ROLE_OPTIONS, item.role)}`}
+            title={item.unitCode ?? unitCodeById.get(item.unitId) ?? 'Unidad'}
+            subtitle={`${item.personName ?? personNameById.get(item.personId) ?? 'Persona'} · ${labelForOption(OCCUPANCY_ROLE_OPTIONS, item.role)}`}
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              const label = item.unitCode ?? unitCodeById.get(item.unitId) ?? 'occupancy'
-              if (window.confirm(`Deactivate occupancy for "${label}"?`))
+              const label = item.unitCode ?? unitCodeById.get(item.unitId) ?? 'ocupación'
+              if (window.confirm(`¿Desactivar ocupación de "${label}"?`))
                 deleteMutation.mutate(item.id)
             }}
           />
@@ -274,12 +274,12 @@ export function OccupanciesPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New occupancy' : 'Edit occupancy'}
+        title={drawer === 'create' ? 'Nueva ocupación' : 'Editar ocupación'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Unit"
+              label="Unidad"
               required
               searchable
               data={unitOptions}
@@ -287,7 +287,7 @@ export function OccupanciesPage() {
               {...form.getInputProps('unitId')}
             />
             <Select
-              label="Person"
+              label="Persona"
               required
               searchable
               data={personOptions}
@@ -295,24 +295,24 @@ export function OccupanciesPage() {
               {...form.getInputProps('personId')}
             />
             <Select
-              label="Role"
+              label="Rol"
               required
               data={[...OCCUPANCY_ROLE_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('role')}
             />
-            <Switch label="Primary" {...form.getInputProps('isPrimary', { type: 'checkbox' })} />
+            <Switch label="Principal" {...form.getInputProps('isPrimary', { type: 'checkbox' })} />
             <Switch
-              label="Receives billing"
+              label="Recibe facturación"
               {...form.getInputProps('receivesBilling', { type: 'checkbox' })}
             />
-            <TextInput label="Start date" type="date" required {...form.getInputProps('startDate')} />
-            <TextInput label="End date" type="date" {...form.getInputProps('endDate')} />
+            <TextInput label="Fecha de inicio" type="date" required {...form.getInputProps('startDate')} />
+            <TextInput label="Fecha de fin" type="date" {...form.getInputProps('endDate')} />
             {drawer !== 'create' && (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

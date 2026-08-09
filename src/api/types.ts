@@ -66,6 +66,8 @@ export type InvitedTenantUser = {
 }
 
 export type TenantSettings = {
+  propertyId: string | null
+  name: string
   tradeName: string
   legalName: string
   taxRegime: string
@@ -76,6 +78,13 @@ export type TenantSettings = {
   country: string
   postalCode: string | null
   phone: string | null
+  neighborhoodId: string | null
+  propertyUseType: string | null
+  matriculaInmobiliaria: string | null
+  regulationNotes: string | null
+  coefficientBasisNotes: string | null
+  isActive: boolean
+  hasProperty: boolean
 }
 
 export type PlatformTenantsStatus = {
@@ -121,10 +130,15 @@ export type HorizontalProperty = {
   id: string
   name: string
   tradeName: string | null
+  legalName: string | null
   nit: string | null
+  taxRegime: string | null
+  legalRepresentative: string | null
   addressLine: string
   city: string
   country: string
+  postalCode: string | null
+  phone: string | null
   neighborhoodId: string | null
   propertyUseType: string
   matriculaInmobiliaria: string | null
@@ -190,6 +204,81 @@ export type UnitOccupancy = {
   isActive: boolean
   unitCode?: string
   personName?: string
+}
+
+export type UnitHouseholdPerson = {
+  personId: string
+  fullName: string
+  documentLabel: string
+  email: string | null
+  phone: string | null
+  role: string
+  isPrimary: boolean
+  receivesBilling: boolean
+}
+
+export type UnitHousehold = {
+  unitId: string
+  unitCode: string
+  unitType: string
+  buildingId: string | null
+  buildingName: string | null
+  floorId: string | null
+  floorName: string | null
+  privateBuiltAreaM2: number
+  coefficient: number
+  owners: UnitHouseholdPerson[]
+  habitants: UnitHouseholdPerson[]
+}
+
+export type PersonOverview = {
+  personId: string
+  fullName: string
+  documentLabel: string
+  email: string | null
+  phone: string | null
+  units: PersonUnitLink[]
+  paymentStatus: PersonPaymentStatus
+  reservations: PersonReservationItem[]
+}
+
+export type PersonUnitLink = {
+  unitId: string
+  unitCode: string
+  unitType: string
+  role: string
+  buildingName: string | null
+  floorName: string | null
+  isPrimary: boolean
+  receivesBilling: boolean
+  openBalance: number
+  overdueBalance: number
+}
+
+export type PersonPaymentStatus = {
+  openBalance: number
+  overdueBalance: number
+  paidLast90Days: number
+  openChargeCount: number
+  recentPayments: PersonPaymentItem[]
+}
+
+export type PersonPaymentItem = {
+  paymentId: string
+  unitId: string
+  unitCode: string
+  amount: number
+  paidAt: string
+  method: string | number
+}
+
+export type PersonReservationItem = {
+  reservationId: string
+  commonAreaName: string
+  unitCode: string
+  startsAtUtc: string
+  endsAtUtc: string
+  status: string | number
 }
 
 export type CoefficientSummary = {

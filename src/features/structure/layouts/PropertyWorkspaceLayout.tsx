@@ -28,10 +28,10 @@ export function PropertyWorkspaceLayout() {
 
   if (propertyQuery.isError || !propertyQuery.data) {
     return (
-      <Alert color="red" title="Property not found">
-        Could not load this property.{' '}
-        <Anchor component={Link} to="/properties">
-          Back to properties
+      <Alert color="red" title="Propiedad no encontrada">
+        No se pudo cargar esta propiedad.{' '}
+        <Anchor component={Link} to="/settings">
+          Ir a configuración
         </Anchor>
       </Alert>
     )
@@ -44,15 +44,10 @@ export function PropertyWorkspaceLayout() {
       <PageHeader
         title={property.name}
         description={
-          <>
-            <Anchor component={Link} to="/properties" size="sm">
-              Properties
-            </Anchor>
-            <Text span size="sm" c="dimmed">
-              {' / '}
-              {property.tradeName ?? property.city}
-            </Text>
-          </>
+          <Text size="sm" c="dimmed">
+            {property.tradeName ?? property.city}
+            {property.nit ? ` · NIT ${property.nit}` : ''}
+          </Text>
         }
       />
       <PropertySubnav propertyId={propertyId} />

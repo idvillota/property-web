@@ -94,17 +94,17 @@ export function ReservationsPage() {
       isActive: true,
     },
     validate: {
-      commonAreaId: (v) => (!v ? 'Required' : null),
-      unitId: (v) => (!v ? 'Required' : null),
-      startsAt: (v) => (!v ? 'Required' : null),
+      commonAreaId: (v) => (!v ? 'Obligatorio' : null),
+      unitId: (v) => (!v ? 'Obligatorio' : null),
+      startsAt: (v) => (!v ? 'Obligatorio' : null),
       endsAt: (v, values) => {
-        if (!v) return 'Required'
+        if (!v) return 'Obligatorio'
         if (values.startsAt && new Date(v) <= new Date(values.startsAt)) {
-          return 'End must be after start'
+          return 'La fecha de fin debe ser posterior al inicio'
         }
         return null
       },
-      attendeesCount: (v) => (v < 1 ? 'Must be at least 1' : null),
+      attendeesCount: (v) => (v < 1 ? 'Debe ser al menos 1' : null),
     },
   })
 
@@ -165,7 +165,7 @@ export function ReservationsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Reservation saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Reserva guardada', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -182,8 +182,8 @@ export function ReservationsPage() {
     },
     onSuccess: (_data, vars) => {
       notifications.show({
-        title: 'Updated',
-        message: `Reservation marked as ${labelForOption(RESERVATION_STATUS_OPTIONS, vars.status)}`,
+        title: 'Actualizado',
+        message: `Reserva marcada como ${labelForOption(RESERVATION_STATUS_OPTIONS, vars.status)}`,
         color: 'teal',
       })
       invalidate()
@@ -195,7 +195,7 @@ export function ReservationsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/Reservations/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Reservation deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Reserva desactivada', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -206,7 +206,7 @@ export function ReservationsPage() {
     return [
       {
         key: 'area',
-        header: 'Area',
+        header: 'Zona',
         sortKey: 'commonareaid',
         filter: 'select',
         filterKey: 'commonAreaId',
@@ -218,7 +218,7 @@ export function ReservationsPage() {
       },
       {
         key: 'unit',
-        header: 'Unit',
+        header: 'Unidad',
         sortKey: 'unitid',
         filter: 'select',
         filterKey: 'unitId',
@@ -227,21 +227,21 @@ export function ReservationsPage() {
       },
       {
         key: 'startsAt',
-        header: 'Start',
+        header: 'Inicio',
         sortKey: 'startsatutc',
         filter: 'none',
         render: (row) => new Date(row.startsAtUtc).toLocaleString(),
       },
       {
         key: 'endsAt',
-        header: 'End',
+        header: 'Fin',
         sortKey: 'endsatutc',
         filter: 'none',
         render: (row) => new Date(row.endsAtUtc).toLocaleString(),
       },
       {
         key: 'status',
-        header: 'Status',
+        header: 'Estado',
         sortKey: 'status',
         filter: 'select',
         filterKey: 'status',
@@ -255,7 +255,7 @@ export function ReservationsPage() {
       },
       {
         key: 'attendees',
-        header: 'Attendees',
+        header: 'Asistentes',
         sortKey: 'attendeescount',
         filter: 'none',
         render: (row) => row.attendeesCount,
@@ -280,7 +280,7 @@ export function ReservationsPage() {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Mark reservation as ${action.label.toLowerCase()}?`,
+                          `¿Marcar reserva como ${action.label.toLowerCase()}?`,
                         )
                       ) {
                         statusMutation.mutate({ id: row.id, status: action.status })
@@ -291,7 +291,7 @@ export function ReservationsPage() {
                   </Button>
                 </Tooltip>
               ))}
-              <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+              <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
                 ✎
               </ActionIcon>
               <ActionIcon
@@ -299,9 +299,9 @@ export function ReservationsPage() {
                 color="red"
                 size="md"
                 onClick={() => {
-                  if (window.confirm('Deactivate this reservation?')) deleteMutation.mutate(row.id)
+                  if (window.confirm('¿Desactivar esta reserva?')) deleteMutation.mutate(row.id)
                 }}
-                aria-label="Delete"
+                aria-label="Eliminar"
               >
                 ✕
               </ActionIcon>
@@ -315,12 +315,12 @@ export function ReservationsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Reservations"
-        description="Book common areas for residents. Overlaps with pending or confirmed bookings are rejected."
+        title="Reservas"
+        description="Reserve zonas comunes para residentes. Se rechazan traslapes con reservas pendientes o confirmadas."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add reservation"
+        addLabel="Agregar reserva"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -344,13 +344,13 @@ export function ReservationsPage() {
             title={
               item.commonAreaName ??
               areaOptions.find((a) => a.value === item.commonAreaId)?.label ??
-              'Reservation'
+              'Reserva'
             }
             subtitle={`${item.unitCode ?? unitOptions.find((u) => u.value === item.unitId)?.label ?? '—'} · ${labelForOption(RESERVATION_STATUS_OPTIONS, item.status)}`}
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm('Deactivate this reservation?')) deleteMutation.mutate(item.id)
+              if (window.confirm('¿Desactivar esta reserva?')) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -359,12 +359,12 @@ export function ReservationsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New reservation' : 'Edit reservation'}
+        title={drawer === 'create' ? 'Nueva reserva' : 'Editar reserva'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Common area"
+              label="Zona común"
               required
               data={areaOptions}
               searchable
@@ -372,7 +372,7 @@ export function ReservationsPage() {
               {...form.getInputProps('commonAreaId')}
             />
             <Select
-              label="Unit"
+              label="Unidad"
               required
               data={unitOptions}
               searchable
@@ -380,7 +380,7 @@ export function ReservationsPage() {
               {...form.getInputProps('unitId')}
             />
             <Select
-              label="Person (optional)"
+              label="Persona (opcional)"
               data={personOptions}
               searchable
               clearable
@@ -389,42 +389,42 @@ export function ReservationsPage() {
               onChange={(v) => form.setFieldValue('personId', v)}
             />
             <TextInput
-              label="Starts at"
+              label="Inicia"
               type="datetime-local"
               required
               {...form.getInputProps('startsAt')}
             />
             <TextInput
-              label="Ends at"
+              label="Termina"
               type="datetime-local"
               required
               {...form.getInputProps('endsAt')}
             />
             <NumberInput
-              label="Attendees"
+              label="Asistentes"
               required
               min={1}
               allowDecimal={false}
               {...form.getInputProps('attendeesCount')}
             />
             <Switch
-              label="Deposit paid"
+              label="Depósito pagado"
               {...form.getInputProps('depositPaid', { type: 'checkbox' })}
             />
             {drawer !== 'create' ? (
               <Select
-                label="Status"
+                label="Estado"
                 data={[...RESERVATION_STATUS_OPTIONS]}
                 comboboxProps={formDrawerSelectComboboxProps}
                 {...form.getInputProps('status')}
               />
             ) : null}
-            <Textarea label="Notes" minRows={2} {...form.getInputProps('notes')} />
+            <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
             {drawer !== 'create' ? (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             ) : null}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

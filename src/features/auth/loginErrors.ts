@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { LoginTenantOption, MultipleTenantsLoginError } from '../../api/types'
 
-export function getLoginErrorMessage(err: unknown, fallback = 'Could not sign in'): string {
+export function getLoginErrorMessage(err: unknown, fallback = 'No se pudo iniciar sesión'): string {
   if (axios.isAxiosError(err)) {
     const data = err.response?.data as { message?: string } | undefined
     if (data?.message) return String(data.message)
@@ -31,7 +31,7 @@ export function parseMultipleTenantsLoginError(err: unknown): MultipleTenantsLog
 
   return {
     code: 'multiple_tenants',
-    message: data.message ?? 'Your account belongs to multiple tenants. Choose which one to open.',
+    message: data.message ?? 'Tu cuenta pertenece a varios tenants. Elige con cuál entrar.',
     tenants,
   }
 }

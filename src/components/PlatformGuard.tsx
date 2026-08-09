@@ -15,9 +15,9 @@ export function PlatformGuard({ children }: PlatformGuardProps) {
       <>
         <Center mih="50vh">
           <Stack align="center" gap="xs" maw={360}>
-            <Title order={3}>Access restricted</Title>
+            <Title order={3}>Acceso restringido</Title>
             <Text c="dimmed" ta="center">
-              This section is only for platform administrators.
+              Esta sección es solo para administradores de plataforma.
             </Text>
           </Stack>
         </Center>

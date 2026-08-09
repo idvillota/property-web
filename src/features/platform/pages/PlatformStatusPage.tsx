@@ -17,8 +17,8 @@ export function PlatformStatusPage() {
   return (
     <Stack gap="lg" maw={640}>
       <PageHeader
-        title="Platform status"
-        description="Platform administrator readiness check for Property."
+        title="Estado de la plataforma"
+        description="Verificación de disponibilidad para administradores de plataforma."
       />
 
       <Paper withBorder p="md" radius="md">
@@ -29,19 +29,21 @@ export function PlatformStatusPage() {
 
           {statusQuery.isLoading ? (
             <Text size="sm" c="dimmed">
-              Checking platform status…
+              Consultando estado de la plataforma…
             </Text>
           ) : statusQuery.isError ? (
-            <Alert color="red" variant="light" title="Platform check failed" icon={<IconServer size={16} />}>
+            <Alert color="red" variant="light" title="Error al consultar la plataforma" icon={<IconServer size={16} />}>
               {getApiErrorMessage(statusQuery.error)}
             </Alert>
           ) : (
             <Stack gap="xs">
               <Badge color={ready ? 'teal' : 'gray'} variant="light" w="fit-content">
-                {status ?? 'unknown'}
+                {status ?? 'desconocido'}
               </Badge>
               <Text size="sm">
-                {ready ? 'Platform admin ready.' : 'Platform admin responded with a non-ready status.'}
+                {ready
+                  ? 'Administrador de plataforma listo.'
+                  : 'La plataforma respondió con un estado distinto de listo.'}
               </Text>
             </Stack>
           )}

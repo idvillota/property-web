@@ -29,12 +29,12 @@ export function CarteraReportPage() {
   return (
     <ReportPageShell
       title="Cartera"
-      description="Outstanding balances by unit as of a given date."
+      description="Saldos pendientes por unidad a una fecha."
       filters={
         <Group>
           <TextInput
             type="date"
-            label="As of date"
+            label="Fecha de corte"
             value={asOfDate}
             onChange={(e) => setAsOfDate(e.currentTarget.value)}
             w={200}
@@ -47,20 +47,20 @@ export function CarteraReportPage() {
       {report ? (
         <Stack gap="md">
           <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-            <Kpi label="Units in arrears" value={String(report.totals.unitCount)} />
-            <Kpi label="Total balance" value={formatMoney(report.totals.totalBalance)} />
-            <Kpi label="Total overdue" value={formatMoney(report.totals.totalOverdue)} />
+            <Kpi label="Unidades en mora" value={String(report.totals.unitCount)} />
+            <Kpi label="Saldo total" value={formatMoney(report.totals.totalBalance)} />
+            <Kpi label="Total vencido" value={formatMoney(report.totals.totalOverdue)} />
           </SimpleGrid>
 
           <Table striped highlightOnHover withTableBorder>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Unit</Table.Th>
-                <Table.Th>Type</Table.Th>
-                <Table.Th ta="right">Balance</Table.Th>
-                <Table.Th ta="right">Overdue</Table.Th>
-                <Table.Th>Oldest due</Table.Th>
-                <Table.Th ta="right">Charges</Table.Th>
+                <Table.Th>Unidad</Table.Th>
+                <Table.Th>Tipo</Table.Th>
+                <Table.Th ta="right">Saldo</Table.Th>
+                <Table.Th ta="right">Vencido</Table.Th>
+                <Table.Th>Vencimiento más antiguo</Table.Th>
+                <Table.Th ta="right">Cargos</Table.Th>
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
@@ -68,7 +68,7 @@ export function CarteraReportPage() {
                 <Table.Tr>
                   <Table.Td colSpan={6}>
                     <Text c="dimmed" size="sm">
-                      No units in arrears.
+                      No hay unidades en mora.
                     </Text>
                   </Table.Td>
                 </Table.Tr>

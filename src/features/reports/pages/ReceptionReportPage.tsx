@@ -36,20 +36,20 @@ export function ReceptionReportPage() {
 
   return (
     <ReportPageShell
-      title="Reception"
-      description="Packages, letters, and messages received in the selected period."
+      title="Portería"
+      description="Paquetes, cartas y mensajes recibidos en el periodo seleccionado."
       filters={
         <Group>
           <TextInput
             type="date"
-            label="From"
+            label="Desde"
             value={from}
             onChange={(e) => setFrom(e.currentTarget.value)}
             w={180}
           />
           <TextInput
             type="date"
-            label="To"
+            label="Hasta"
             value={to}
             onChange={(e) => setTo(e.currentTarget.value)}
             w={180}
@@ -63,20 +63,20 @@ export function ReceptionReportPage() {
         <Stack gap="lg">
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
             <Kpi label="Total" value={String(report.totals.total)} />
-            <Kpi label="Pending pickup" value={String(report.totals.pendingPickup)} />
-            <Kpi label="Delivered" value={String(report.totals.delivered)} />
-            <Kpi label="Returned" value={String(report.totals.returned)} />
+            <Kpi label="Pendiente de retiro" value={String(report.totals.pendingPickup)} />
+            <Kpi label="Entregados" value={String(report.totals.delivered)} />
+            <Kpi label="Devueltos" value={String(report.totals.returned)} />
           </SimpleGrid>
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              By type
+              Por tipo
             </Text>
             <Table striped withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Type</Table.Th>
-                  <Table.Th ta="right">Count</Table.Th>
+                  <Table.Th>Tipo</Table.Th>
+                  <Table.Th ta="right">Cantidad</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -98,17 +98,17 @@ export function ReceptionReportPage() {
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              Recent items
+              Ítems recientes
             </Text>
             <Table striped highlightOnHover withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Type</Table.Th>
-                  <Table.Th>Unit</Table.Th>
-                  <Table.Th>Recipient</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th>Received</Table.Th>
-                  <Table.Th>Delivered</Table.Th>
+                  <Table.Th>Tipo</Table.Th>
+                  <Table.Th>Unidad</Table.Th>
+                  <Table.Th>Destinatario</Table.Th>
+                  <Table.Th>Estado</Table.Th>
+                  <Table.Th>Recibido</Table.Th>
+                  <Table.Th>Entregado</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -155,7 +155,7 @@ function EmptyRow({ cols }: { cols: number }) {
     <Table.Tr>
       <Table.Td colSpan={cols}>
         <Text c="dimmed" size="sm">
-          No data.
+          Sin datos.
         </Text>
       </Table.Td>
     </Table.Tr>

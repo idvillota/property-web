@@ -121,12 +121,12 @@ export function FeeChargesPage() {
       dueDate: '',
     },
     validate: {
-      billingPeriodId: (v) => (!v ? 'Required' : null),
-      unitId: (v) => (!v ? 'Required' : null),
-      chargeType: (v) => (!v ? 'Required' : null),
-      description: (v) => (v.trim().length < 1 ? 'Required' : null),
-      amount: (v) => (v <= 0 ? 'Must be greater than zero' : null),
-      dueDate: (v) => (!v ? 'Required' : null),
+      billingPeriodId: (v) => (!v ? 'Obligatorio' : null),
+      unitId: (v) => (!v ? 'Obligatorio' : null),
+      chargeType: (v) => (!v ? 'Obligatorio' : null),
+      description: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
+      amount: (v) => (v <= 0 ? 'Debe ser mayor que cero' : null),
+      dueDate: (v) => (!v ? 'Obligatorio' : null),
     },
   })
 
@@ -158,7 +158,7 @@ export function FeeChargesPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Charge created', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Cargo creado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -176,7 +176,7 @@ export function FeeChargesPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Waived', message: 'Charge waived', color: 'gray' })
+      notifications.show({ title: 'Condonado', message: 'Cargo condonado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -193,8 +193,8 @@ export function FeeChargesPage() {
     },
     onSuccess: (result) => {
       notifications.show({
-        title: 'Interest generated',
-        message: `Created ${result.createdCount}, skipped ${result.skippedCount}, total ${formatMoney(result.totalAmount)}`,
+        title: 'Intereses generados',
+        message: `Creados ${result.createdCount}, omitidos ${result.skippedCount}, total ${formatMoney(result.totalAmount)}`,
         color: 'teal',
       })
       invalidate()
@@ -207,7 +207,7 @@ export function FeeChargesPage() {
     return [
       {
         key: 'period',
-        header: 'Period',
+        header: 'Periodo',
         sortKey: 'billingperiodid',
         filter: 'select',
         filterKey: 'billingPeriodId',
@@ -219,7 +219,7 @@ export function FeeChargesPage() {
       },
       {
         key: 'unit',
-        header: 'Unit',
+        header: 'Unidad',
         sortKey: 'unitid',
         filter: 'select',
         filterKey: 'unitId',
@@ -228,7 +228,7 @@ export function FeeChargesPage() {
       },
       {
         key: 'chargeType',
-        header: 'Type',
+        header: 'Tipo',
         sortKey: 'chargetype',
         filter: 'select',
         filterKey: 'chargeType',
@@ -237,7 +237,7 @@ export function FeeChargesPage() {
       },
       {
         key: 'amount',
-        header: 'Amount',
+        header: 'Valor',
         sortKey: 'amount',
         filter: 'none',
         align: 'right',
@@ -245,7 +245,7 @@ export function FeeChargesPage() {
       },
       {
         key: 'amountPaid',
-        header: 'Paid',
+        header: 'Pagado',
         sortKey: 'amountpaid',
         filter: 'none',
         align: 'right',
@@ -253,21 +253,21 @@ export function FeeChargesPage() {
       },
       {
         key: 'balance',
-        header: 'Balance',
+        header: 'Saldo',
         filter: 'none',
         align: 'right',
         render: (row) => formatMoney(chargeBalance(row.amount, row.amountPaid)),
       },
       {
         key: 'dueDate',
-        header: 'Due date',
+        header: 'Vencimiento',
         sortKey: 'duedate',
         filter: 'none',
         render: (row) => row.dueDate,
       },
       {
         key: 'status',
-        header: 'Status',
+        header: 'Estado',
         sortKey: 'status',
         filter: 'select',
         filterKey: 'status',
@@ -287,17 +287,17 @@ export function FeeChargesPage() {
         render: (row) => {
           const status = asEnumName(row.status, FEE_CHARGE_STATUS_OPTIONS)
           return status === 'Pending' || status === 'Partial' ? (
-            <Tooltip label="Waive charge">
+            <Tooltip label="Condonar cargo">
               <ActionIcon
                 variant="light"
                 color="gray"
                 size="md"
                 onClick={() => {
-                  if (window.confirm(`Waive charge for ${row.unitCode ?? 'unit'}?`)) {
+                  if (window.confirm(`¿Condonar cargo de ${row.unitCode ?? 'unidad'}?`)) {
                     waiveMutation.mutate(row)
                   }
                 }}
-                aria-label="Waive"
+                aria-label="Condonar"
               >
                 <IconBan size={16} stroke={1.75} />
               </ActionIcon>
@@ -313,13 +313,13 @@ export function FeeChargesPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Fee charges"
-        description="Ordinary, extraordinary, interest, and adjustment charges."
+        title="Cargos / Cuotas"
+        description="Cargos ordinarios, extraordinarios, intereses y ajustes."
         actions={
           <Group gap="xs" align="flex-end">
             <Select
-              label="Interest period"
-              placeholder="Open period"
+              label="Periodo de intereses"
+              placeholder="Periodo abierto"
               clearable
               data={openPeriodOptions}
               value={interestPeriodId}
@@ -335,14 +335,14 @@ export function FeeChargesPage() {
                 if (!interestPeriodId) return
                 if (
                   window.confirm(
-                    'Generate interest charges for overdue balances into the selected open period?',
+                    '¿Generar cargos de intereses por saldos vencidos en el periodo abierto seleccionado?',
                   )
                 ) {
                   interestMutation.mutate(interestPeriodId)
                 }
               }}
             >
-              Generate interest
+              Generar intereses
             </Button>
           </Group>
         }
@@ -351,31 +351,31 @@ export function FeeChargesPage() {
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
         <Stack gap={2}>
           <Text size="xs" c="dimmed" tt="uppercase">
-            Pending
+            Pendiente
           </Text>
           <Title order={4}>{arrears ? formatMoney(arrears.totalPending) : '—'}</Title>
         </Stack>
         <Stack gap={2}>
           <Text size="xs" c="dimmed" tt="uppercase">
-            Partial
+            Parcial
           </Text>
           <Title order={4}>{arrears ? formatMoney(arrears.totalPartial) : '—'}</Title>
         </Stack>
         <Stack gap={2}>
           <Text size="xs" c="dimmed" tt="uppercase">
-            Overdue
+            Vencido
           </Text>
           <Title order={4}>{arrears ? formatMoney(arrears.totalOverdue) : '—'}</Title>
         </Stack>
         <Stack gap={2}>
           <Text size="xs" c="dimmed" tt="uppercase">
-            Units in arrears
+            Unidades en mora
           </Text>
           <Title order={4}>{arrears?.unitCountInArrears ?? '—'}</Title>
         </Stack>
       </SimpleGrid>
 
-      <ListToolbar onAdd={openCreate} addLabel="Add charge" />
+      <ListToolbar onAdd={openCreate} addLabel="Agregar cargo" />
       <PagedEntityView
         loading={listQuery.isLoading}
         data={listQuery.data}
@@ -393,7 +393,7 @@ export function FeeChargesPage() {
         renderCard={(item) => (
           <EntityCard
             key={item.id}
-            title={`${item.unitCode ?? 'Unit'} · ${labelForOption(FEE_CHARGE_TYPE_OPTIONS, item.chargeType)}`}
+            title={`${item.unitCode ?? 'Unidad'} · ${labelForOption(FEE_CHARGE_TYPE_OPTIONS, item.chargeType)}`}
             subtitle={`${formatMoney(item.amount)} · ${labelForOption(FEE_CHARGE_STATUS_OPTIONS, item.status)}`}
             inactive={!item.isActive}
             onEdit={() => undefined}
@@ -401,7 +401,7 @@ export function FeeChargesPage() {
               const status = asEnumName(item.status, FEE_CHARGE_STATUS_OPTIONS)
               if (
                 (status === 'Pending' || status === 'Partial') &&
-                window.confirm(`Waive charge for ${item.unitCode ?? 'unit'}?`)
+                window.confirm(`¿Condonar cargo de ${item.unitCode ?? 'unidad'}?`)
               ) {
                 waiveMutation.mutate(item)
               }
@@ -410,11 +410,11 @@ export function FeeChargesPage() {
         )}
       />
 
-      <FormDrawer opened={drawer !== null} onClose={() => setDrawer(null)} title="New charge">
+      <FormDrawer opened={drawer !== null} onClose={() => setDrawer(null)} title="Nuevo cargo">
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Period"
+              label="Periodo"
               required
               searchable
               data={periodOptions}
@@ -422,7 +422,7 @@ export function FeeChargesPage() {
               {...form.getInputProps('billingPeriodId')}
             />
             <Select
-              label="Unit"
+              label="Unidad"
               required
               searchable
               data={unitOptions}
@@ -430,17 +430,17 @@ export function FeeChargesPage() {
               {...form.getInputProps('unitId')}
             />
             <Select
-              label="Type"
+              label="Tipo"
               required
               data={[...MANUAL_CHARGE_TYPE_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('chargeType')}
             />
-            <TextInput label="Description" required {...form.getInputProps('description')} />
-            <MoneyInput label="Amount" precision={2} required {...form.getInputProps('amount')} />
-            <TextInput label="Due date" type="date" required {...form.getInputProps('dueDate')} />
+            <TextInput label="Descripción" required {...form.getInputProps('description')} />
+            <MoneyInput label="Valor" precision={2} required {...form.getInputProps('amount')} />
+            <TextInput label="Fecha de vencimiento" type="date" required {...form.getInputProps('dueDate')} />
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Create charge
+              Crear cargo
             </Button>
           </Stack>
         </form>

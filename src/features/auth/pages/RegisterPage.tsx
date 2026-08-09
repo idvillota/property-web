@@ -19,9 +19,9 @@ export function RegisterPage() {
       adminDisplayName: '',
     },
     validate: {
-      tenantName: (v) => (v.trim().length < 2 ? 'Enter a tenant name' : null),
-      adminEmail: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
-      password: (v) => (v.length < 8 ? 'Minimum 8 characters' : null),
+      tenantName: (v) => (v.trim().length < 2 ? 'Ingresa un nombre de tenant' : null),
+      adminEmail: (v) => (/^\S+@\S+$/.test(v) ? null : 'Inválido'),
+      password: (v) => (v.length < 8 ? 'Mínimo 8 caracteres' : null),
     },
   })
 
@@ -34,14 +34,14 @@ export function RegisterPage() {
         adminDisplayName: values.adminDisplayName || undefined,
       })
       applyAuthSession(data)
-      notifications.show({ title: 'Tenant ready', message: data.tenantSlug, color: 'teal' })
+      notifications.show({ title: 'Tenant listo', message: data.tenantSlug, color: 'teal' })
       navigate('/dashboard')
     } catch (err: unknown) {
       const msg =
         typeof err === 'object' && err !== null && 'response' in err
-          ? String((err as { response?: { data?: { message?: string } } }).response?.data?.message ?? 'Could not register')
-          : 'Could not register'
-      notifications.show({ title: 'Registration failed', message: msg, color: 'red' })
+          ? String((err as { response?: { data?: { message?: string } } }).response?.data?.message ?? 'No se pudo registrar')
+          : 'No se pudo registrar'
+      notifications.show({ title: 'Registro fallido', message: msg, color: 'red' })
     }
   })
 
@@ -56,26 +56,26 @@ export function RegisterPage() {
 
         <Paper radius="md" p="xl" withBorder w="100%" shadow="md">
           <Title order={2} mb="xs" ta="center">
-            Create tenant
+            Crear tenant
           </Title>
           <Text c="dimmed" size="sm" mb="lg" ta="center">
-            Register your Property tenant, administrator, and default roles
+            Registra tu tenant, administrador y roles por defecto
           </Text>
           <form onSubmit={submit}>
             <Stack gap="sm">
-              <TextInput label="Tenant name" {...form.getInputProps('tenantName')} />
-              <TextInput label="Administrator email" {...form.getInputProps('adminEmail')} />
-              <TextInput label="Display name (optional)" {...form.getInputProps('adminDisplayName')} />
-              <PasswordInput label="Password" {...form.getInputProps('password')} />
+              <TextInput label="Nombre del tenant" {...form.getInputProps('tenantName')} />
+              <TextInput label="Correo del administrador" {...form.getInputProps('adminEmail')} />
+              <TextInput label="Nombre para mostrar (opcional)" {...form.getInputProps('adminDisplayName')} />
+              <PasswordInput label="Contraseña" {...form.getInputProps('password')} />
               <Button type="submit" fullWidth mt="sm">
-                Register and sign in
+                Registrar e iniciar sesión
               </Button>
             </Stack>
           </form>
           <Text size="sm" mt="md" ta="center">
-            Already have access?{' '}
+            ¿Ya tienes acceso?{' '}
             <Anchor component={Link} to="/login" size="sm">
-              Sign in
+              Iniciar sesión
             </Anchor>
           </Text>
         </Paper>

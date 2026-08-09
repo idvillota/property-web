@@ -33,9 +33,9 @@ export function BillingSettingsPage() {
     },
     validate: {
       dueDayOfMonth: (v) =>
-        v < 1 || v > 28 ? 'Due day must be between 1 and 28' : null,
-      monthlyBudgetAmount: (v) => (v < 0 ? 'Must be zero or greater' : null),
-      lateInterestMonthlyPercent: (v) => (v < 0 ? 'Must be zero or greater' : null),
+        v < 1 || v > 28 ? 'El día de vencimiento debe estar entre 1 y 28' : null,
+      monthlyBudgetAmount: (v) => (v < 0 ? 'Debe ser cero o mayor' : null),
+      lateInterestMonthlyPercent: (v) => (v < 0 ? 'Debe ser cero o mayor' : null),
     },
   })
 
@@ -63,7 +63,7 @@ export function BillingSettingsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Billing settings updated', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Configuración de cuotas actualizada', color: 'teal' })
       invalidate()
     },
     onError: (err) =>
@@ -73,12 +73,12 @@ export function BillingSettingsPage() {
   return (
     <Stack gap="md" maw={560}>
       <PageHeader
-        title="Billing settings"
-        description="Monthly budget, due day, and late interest for this property."
+        title="Configuración de cuotas"
+        description="Presupuesto mensual, día de vencimiento e intereses de mora de esta propiedad."
       />
 
-      <Alert color="gray" title="Ordinary unit fee">
-        Ordinary unit fee = budget × (coefficient / 100). Current budget:{' '}
+      <Alert color="gray" title="Cuota ordinaria por unidad">
+        Cuota ordinaria = presupuesto × (coeficiente / 100). Presupuesto actual:{' '}
         <Text span fw={600}>
           {formatMoney(form.values.monthlyBudgetAmount || 0)}
         </Text>
@@ -87,29 +87,29 @@ export function BillingSettingsPage() {
       <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
         <Stack gap="sm">
           <MoneyInput
-            label="Monthly budget amount"
+            label="Presupuesto mensual"
             precision={2}
             required
             {...form.getInputProps('monthlyBudgetAmount')}
           />
           <NumberInput
-            label="Due day of month"
-            description="Day 1–28 each billing period"
+            label="Día de vencimiento"
+            description="Día 1–28 de cada periodo de facturación"
             min={1}
             max={28}
             required
             {...form.getInputProps('dueDayOfMonth')}
           />
           <NumberInput
-            label="Late interest monthly %"
-            description="Applied when generating interest charges"
+            label="% interés de mora mensual"
+            description="Se aplica al generar cargos de intereses"
             min={0}
             decimalScale={4}
             {...form.getInputProps('lateInterestMonthlyPercent')}
           />
-          <Textarea label="Notes" minRows={3} {...form.getInputProps('notes')} />
+          <Textarea label="Notas" minRows={3} {...form.getInputProps('notes')} />
           <Button type="submit" loading={saveMutation.isPending || settingsQuery.isLoading}>
-            Save settings
+            Guardar configuración
           </Button>
         </Stack>
       </form>

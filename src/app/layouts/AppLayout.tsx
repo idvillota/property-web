@@ -40,48 +40,48 @@ type NavItem =
   | { to: string; label: string; platformAdmin: true; icon: TablerIcon }
 
 const NAV: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', permission: FeatureCodes.dashboardView, icon: IconLayoutDashboard },
+  { to: '/dashboard', label: 'Inicio', permission: FeatureCodes.dashboardView, icon: IconLayoutDashboard },
 
-  { section: 'Properties' },
-  {
-    to: '/neighborhoods',
-    label: 'Neighborhoods',
-    permission: FeatureCodes.structureNeighborhoods,
-    icon: IconMapPin,
-  },
+  { section: 'Propiedad' },
   {
     to: '/properties',
-    label: 'Properties',
+    label: 'Mi propiedad',
     permission: FeatureCodes.structureProperties,
     icon: IconBuildingCommunity,
   },
-  { to: '/people', label: 'People', permission: FeatureCodes.peopleManage, icon: IconUsers },
+  {
+    to: '/neighborhoods',
+    label: 'Barrios',
+    permission: FeatureCodes.structureNeighborhoods,
+    icon: IconMapPin,
+  },
+  { to: '/people', label: 'Personas', permission: FeatureCodes.peopleManage, icon: IconUsers },
 
-  { section: 'Administration' },
-  { to: '/settings', label: 'Tenant settings', permission: FeatureCodes.settingsTenant, icon: IconSettings },
+  { section: 'Administración' },
+  { to: '/settings', label: 'Configuración', permission: FeatureCodes.settingsTenant, icon: IconSettings },
   {
     to: '/settings/dashboard',
-    label: 'Configure dashboard',
+    label: 'Configurar inicio',
     permission: FeatureCodes.dashboardConfigure,
     icon: IconLayoutGrid,
   },
-  { to: '/employees', label: 'Employees', permission: FeatureCodes.organizationEmployees, icon: IconIdBadge },
-  { to: '/team', label: 'Invite team', permission: FeatureCodes.organizationTeam, icon: IconUserPlus },
+  { to: '/employees', label: 'Empleados', permission: FeatureCodes.organizationEmployees, icon: IconIdBadge },
+  { to: '/team', label: 'Invitar equipo', permission: FeatureCodes.organizationTeam, icon: IconUserPlus },
   {
     to: '/role-permissions',
-    label: 'Roles and permissions',
+    label: 'Roles y permisos',
     permission: FeatureCodes.organizationRoles,
     icon: IconShieldLock,
   },
   {
     to: '/platform/status',
-    label: 'Platform status',
+    label: 'Estado de la plataforma',
     platformAdmin: true,
     icon: IconServer,
   },
 
-  { section: 'Account' },
-  { to: '/settings/appearance', label: 'Appearance', permission: FeatureCodes.dashboardView, icon: IconPalette },
+  { section: 'Cuenta' },
+  { to: '/settings/appearance', label: 'Apariencia', permission: FeatureCodes.dashboardView, icon: IconPalette },
 ]
 
 export function AppLayout() {
@@ -135,7 +135,7 @@ export function AppLayout() {
       <AppShell.Header className="app-shell-header">
         <Group h="100%" px="md" wrap="nowrap" w="100%" justify="space-between" gap="sm">
           <Group gap="sm" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" aria-label="Open menu" />
+            <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" aria-label="Abrir menú" />
             <Stack gap={0} style={{ minWidth: 0 }}>
               <Text fw={600} size="sm" lineClamp={1}>
                 {tenantSlug}
@@ -190,7 +190,7 @@ export function AppLayout() {
           >
             <Group gap="sm">
               <IconLogout size={18} stroke={1.75} />
-              <Text size="sm">Sign out</Text>
+              <Text size="sm">Cerrar sesión</Text>
             </Group>
           </UnstyledButton>
         </ScrollArea>

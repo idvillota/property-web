@@ -26,8 +26,8 @@ export function NeighborhoodsPage() {
   const form = useForm({
     initialValues: { name: '', city: '', country: 'Colombia', isActive: true },
     validate: {
-      name: (v) => (v.trim().length < 1 ? 'Required' : null),
-      country: (v) => (v.trim().length < 1 ? 'Required' : null),
+      name: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
+      country: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
     },
   })
 
@@ -64,7 +64,7 @@ export function NeighborhoodsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Neighborhood saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Barrio guardado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -75,7 +75,7 @@ export function NeighborhoodsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/Neighborhoods/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Neighborhood deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Barrio desactivado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -86,7 +86,7 @@ export function NeighborhoodsPage() {
     return [
       {
         key: 'name',
-        header: 'Name',
+        header: 'Nombre',
         sortKey: 'name',
         filter: 'text',
         filterKey: 'name',
@@ -98,7 +98,7 @@ export function NeighborhoodsPage() {
       },
       {
         key: 'city',
-        header: 'City',
+        header: 'Ciudad',
         sortKey: 'city',
         filter: 'text',
         filterKey: 'city',
@@ -106,7 +106,7 @@ export function NeighborhoodsPage() {
       },
       {
         key: 'country',
-        header: 'Country',
+        header: 'País',
         sortKey: 'country',
         filter: 'text',
         filterKey: 'country',
@@ -120,7 +120,7 @@ export function NeighborhoodsPage() {
         width: 88,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -128,9 +128,9 @@ export function NeighborhoodsPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm(`Deactivate "${row.name}"?`)) deleteMutation.mutate(row.id)
+                if (window.confirm(`¿Desactivar "${row.name}"?`)) deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -143,12 +143,12 @@ export function NeighborhoodsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Neighborhoods"
-        description="Geographic areas used to organize horizontal properties."
+        title="Barrios"
+        description="Áreas geográficas para organizar propiedades horizontales."
       />
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add neighborhood"
+        addLabel="Agregar barrio"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -171,7 +171,7 @@ export function NeighborhoodsPage() {
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm(`Deactivate "${item.name}"?`)) deleteMutation.mutate(item.id)
+              if (window.confirm(`¿Desactivar "${item.name}"?`)) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -180,18 +180,18 @@ export function NeighborhoodsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New neighborhood' : 'Edit neighborhood'}
+        title={drawer === 'create' ? 'Nuevo barrio' : 'Editar barrio'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
-            <TextInput label="Name" required {...form.getInputProps('name')} />
-            <TextInput label="City" {...form.getInputProps('city')} />
-            <TextInput label="Country" required {...form.getInputProps('country')} />
+            <TextInput label="Nombre" required {...form.getInputProps('name')} />
+            <TextInput label="Ciudad" {...form.getInputProps('city')} />
+            <TextInput label="País" required {...form.getInputProps('country')} />
             {drawer !== 'create' && (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

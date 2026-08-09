@@ -22,8 +22,8 @@ export function LoginPage() {
     if (searchParams.get('session') !== 'expired' || sessionExpiredNotified.current) return
     sessionExpiredNotified.current = true
     notifications.show({
-      title: 'Session expired',
-      message: 'Sign in again to continue.',
+      title: 'Sesión expirada',
+      message: 'Inicia sesión de nuevo para continuar.',
       color: 'orange',
     })
   }, [searchParams])
@@ -35,15 +35,15 @@ export function LoginPage() {
       tenantSlug: '',
     },
     validate: {
-      email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
-      password: (v) => (v.length < 6 ? 'Minimum 6 characters' : null),
-      tenantSlug: (v) => (tenantChoicesRef.current && !v ? 'Select a tenant' : null),
+      email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Inválido'),
+      password: (v) => (v.length < 6 ? 'Mínimo 6 caracteres' : null),
+      tenantSlug: (v) => (tenantChoicesRef.current && !v ? 'Selecciona un tenant' : null),
     },
   })
 
   const completeLogin = (data: AuthResponse) => {
     applyAuthSession(data)
-    notifications.show({ title: 'Welcome', message: data.tenantSlug, color: 'teal' })
+    notifications.show({ title: 'Bienvenido', message: data.tenantSlug, color: 'teal' })
     const returnUrl = searchParams.get('returnUrl')
     const destination =
       returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/dashboard'
@@ -65,13 +65,13 @@ export function LoginPage() {
         if (!values.tenantSlug && multiTenant.tenants.length === 1) {
           form.setFieldValue('tenantSlug', multiTenant.tenants[0].slug)
         }
-        form.setFieldError('tenantSlug', 'Select a tenant')
+        form.setFieldError('tenantSlug', 'Selecciona un tenant')
         return
       }
 
       setTenantChoices(null)
       notifications.show({
-        title: 'Sign-in failed',
+        title: 'No se pudo iniciar sesión',
         message: getLoginErrorMessage(err),
         color: 'red',
       })
@@ -94,43 +94,43 @@ export function LoginPage() {
 
         <Paper radius="md" p="xl" withBorder w="100%" shadow="md">
           <Title order={2} mb="xs" ta="center">
-            Sign in
+            Iniciar sesión
           </Title>
           <Text c="dimmed" size="sm" mb="lg" ta="center">
-            Property platform for multi-tenant operations
+            Plataforma de administración de copropiedades
           </Text>
           <form onSubmit={submit}>
             <Stack gap="sm">
               {tenantChoices && (
-                <Alert color="blue" title="Multiple tenants" variant="light">
-                  Your account belongs to multiple tenants. Choose which one to open.
+                <Alert color="blue" title="Varios tenants" variant="light">
+                  Tu cuenta pertenece a varios tenants. Elige con cuál entrar.
                 </Alert>
               )}
               <TextInput
-                label="Email"
-                placeholder="you@company.com"
+                label="Correo"
+                placeholder="tu@empresa.com"
                 {...form.getInputProps('email')}
                 disabled={Boolean(tenantChoices)}
               />
               <PasswordInput
-                label="Password"
+                label="Contraseña"
                 {...form.getInputProps('password')}
                 disabled={Boolean(tenantChoices)}
               />
               {tenantChoices ? (
                 <Select
                   label="Tenant"
-                  placeholder="Select a tenant"
+                  placeholder="Selecciona un tenant"
                   data={tenantSelectData}
                   searchable
-                  nothingFoundMessage="No matches"
+                  nothingFoundMessage="Sin coincidencias"
                   {...form.getInputProps('tenantSlug')}
                 />
               ) : (
                 <TextInput
-                  label="Tenant slug"
-                  description="Optional if you belong to only one tenant"
-                  placeholder="my-property"
+                  label="Slug del tenant"
+                  description="Opcional si solo perteneces a un tenant"
+                  placeholder="mi-propiedad"
                   {...form.getInputProps('tenantSlug')}
                 />
               )}
@@ -144,18 +144,18 @@ export function LoginPage() {
                     form.clearFieldError('tenantSlug')
                   }}
                 >
-                  Use another account
+                  Usar otra cuenta
                 </Button>
               )}
               <Button type="submit" fullWidth mt="sm">
-                {tenantChoices ? 'Enter tenant' : 'Continue'}
+                {tenantChoices ? 'Entrar al tenant' : 'Continuar'}
               </Button>
             </Stack>
           </form>
           <Text size="sm" mt="md" ta="center">
-            New tenant?{' '}
+            ¿Nuevo tenant?{' '}
             <Anchor component={Link} to="/register" size="sm">
-              Create tenant
+              Crear tenant
             </Anchor>
           </Text>
         </Paper>

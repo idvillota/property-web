@@ -46,7 +46,7 @@ export function DashboardPanelChrome({
               variant="subtle"
               color="red"
               size="sm"
-              aria-label="Remove panel"
+              aria-label="Quitar panel"
               onMouseDown={(event) => event.stopPropagation()}
               onClick={() => onRemovePanel(panel.id)}
             >

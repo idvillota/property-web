@@ -34,23 +34,23 @@ export function DashboardPage() {
   return (
     <Stack gap="lg">
       <PageHeader
-        title="Dashboard"
-        description="Configured overview for your Property tenant."
+        title="Inicio"
+        description="Resumen configurado para tu tenant."
         actions={
           canConfigure ? (
             <Button component={Link} to="/settings/dashboard" variant="light">
-              Configure dashboard
+              Configurar inicio
             </Button>
           ) : undefined
         }
       />
 
       {layoutQuery.isLoading ? (
-        <Text c="dimmed">Loading dashboard…</Text>
+        <Text c="dimmed">Cargando inicio…</Text>
       ) : visiblePanels.length === 0 ? (
         <Text c="dimmed">
-          No widgets visible for your role.
-          {canConfigure ? ' Use Configure dashboard to build the board.' : null}
+          No hay widgets visibles para tu rol.
+          {canConfigure ? ' Usa Configurar inicio para armar el tablero.' : null}
         </Text>
       ) : (
         <DashboardGrid panels={visiblePanels} />

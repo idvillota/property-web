@@ -16,8 +16,8 @@ export type DashboardWidgetMeta = {
 export const DASHBOARD_WIDGET_CATALOG: DashboardWidgetMeta[] = [
   {
     widgetType: 'quick_links',
-    name: 'Quick links',
-    description: 'Shortcuts to common Property administration areas.',
+    name: 'Accesos rápidos',
+    description: 'Atajos a las áreas habituales de administración.',
     category: 'General',
     requiredPermission: FeatureCodes.dashboardView,
     defaultWidth: 12,

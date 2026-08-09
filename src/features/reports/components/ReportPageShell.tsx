@@ -31,13 +31,13 @@ export function ReportPageShell({
         size="sm"
         underline="hover"
       >
-        ← Reports
+        ← Reportes
       </Anchor>
       <PageHeader title={title} description={description} />
       {filters}
       {loading ? <Loader size="sm" /> : null}
       {error ? (
-        <Alert color="red" title="Could not load report">
+        <Alert color="red" title="No se pudo cargar el reporte">
           {error}
         </Alert>
       ) : null}

@@ -6,7 +6,7 @@ import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
 import type { RolePermissionMatrix } from '../../../api/types'
 import { PageHeader } from '../../../components/shared/PageHeader'
-import { FeatureCodes, ROLE_LABELS } from '../../../lib/permissions'
+import { FeatureCodes, ROLE_LABELS, featureLabel, featureModuleLabel } from '../../../lib/permissions'
 import { useAuthStore } from '../../../stores/authStore'
 
 export function RolePermissionsPage() {
@@ -42,7 +42,7 @@ export function RolePermissionsPage() {
       await api.put(`/api/role-permissions/${roleId}`, { featureCodes: codes })
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Permissions updated', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Permisos actualizados', color: 'teal' })
       void queryClient.invalidateQueries({ queryKey: ['rolePermissions'] })
     },
     onError: (err) =>
@@ -65,13 +65,13 @@ export function RolePermissionsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Roles and permissions"
-        description="Choose which modules each role can use. Changes apply on the next sign-in."
+        title="Roles y permisos"
+        description="Define qué módulos puede usar cada rol. Los cambios aplican en el próximo inicio de sesión."
       />
 
       {!canEdit && (
         <Text size="sm" c="orange">
-          Read-only: you do not have permission to edit roles.
+          Solo lectura: no tienes permiso para editar roles.
         </Text>
       )}
 
@@ -100,7 +100,7 @@ export function RolePermissionsPage() {
                       <Table.Tr>
                         <Table.Td colSpan={roles.length + 1}>
                           <Text fw={600} size="sm">
-                            {module}
+                            {featureModuleLabel(module)}
                           </Text>
                         </Table.Td>
                       </Table.Tr>
@@ -109,7 +109,7 @@ export function RolePermissionsPage() {
                         .map((feature) => (
                           <Table.Tr key={feature.id}>
                             <Table.Td>
-                              <Text size="sm">{feature.name}</Text>
+                              <Text size="sm">{featureLabel(feature.code, feature.name)}</Text>
                               <Text size="xs" c="dimmed">
                                 {feature.code}
                               </Text>
@@ -125,7 +125,7 @@ export function RolePermissionsPage() {
                                       onChange={(e) =>
                                         toggle(role.id, feature.code, e.currentTarget.checked)
                                       }
-                                      aria-label={`${ROLE_LABELS[role.name] ?? role.name} · ${feature.name}`}
+                                      aria-label={`${ROLE_LABELS[role.name] ?? role.name} · ${featureLabel(feature.code, feature.name)}`}
                                     />
                                   </Box>
                                 </Table.Td>

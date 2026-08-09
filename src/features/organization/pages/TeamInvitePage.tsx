@@ -17,8 +17,8 @@ export function TeamInvitePage() {
       role: 'Manager',
     },
     validate: {
-      email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Invalid email'),
-      role: (v) => (v ? null : 'Required'),
+      email: (v) => (/^\S+@\S+$/.test(v) ? null : 'Inválido'),
+      role: (v) => (v ? null : 'Obligatorio'),
     },
   })
 
@@ -34,41 +34,41 @@ export function TeamInvitePage() {
     },
     onSuccess: (data) => {
       notifications.show({
-        title: 'User invited',
-        message: `Tenant user ID: ${data.tenantUserId}`,
+        title: 'Usuario invitado',
+        message: `ID de usuario del tenant: ${data.tenantUserId}`,
         color: 'teal',
       })
       form.reset()
     },
     onError: (err) =>
-      notifications.show({ title: 'Invite failed', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({ title: 'Invitación fallida', message: getApiErrorMessage(err), color: 'red' }),
   })
 
   return (
     <Stack gap="md" maw={480}>
       <PageHeader
-        title="Invite team"
-        description="Add access for this tenant. Use the tenant user ID when linking an employee record."
+        title="Invitar equipo"
+        description="Otorga acceso a este tenant. Usa el ID de usuario del tenant al vincular un empleado."
       />
       <Paper withBorder p="md" radius="md">
         <form onSubmit={form.onSubmit(() => inviteMutation.mutate())}>
           <Stack gap="sm">
-            <TextInput label="Email" type="email" required {...form.getInputProps('email')} />
+            <TextInput label="Correo" type="email" required {...form.getInputProps('email')} />
             <PasswordInput
-              label="Password"
-              description="Required for new emails; leave empty if the user already exists globally"
+              label="Contraseña"
+              description="Obligatoria para correos nuevos; déjala vacía si el usuario ya existe"
               {...form.getInputProps('password')}
             />
-            <TextInput label="Display name" {...form.getInputProps('displayName')} />
-            <Select label="Role" data={[...TEAM_ROLES]} required {...form.getInputProps('role')} />
+            <TextInput label="Nombre para mostrar" {...form.getInputProps('displayName')} />
+            <Select label="Rol" data={[...TEAM_ROLES]} required {...form.getInputProps('role')} />
             <Button type="submit" fullWidth loading={inviteMutation.isPending} mt="sm">
-              Send invite
+              Enviar invitación
             </Button>
           </Stack>
         </form>
       </Paper>
       <Text size="xs" c="dimmed">
-        Administrators and managers can invite users. Invite role is Manager.
+        Administradores y gerentes pueden invitar usuarios. El rol de invitación es Gerente.
       </Text>
     </Stack>
   )

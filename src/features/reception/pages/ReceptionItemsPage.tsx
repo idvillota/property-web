@@ -100,8 +100,8 @@ export function ReceptionItemsPage() {
       isActive: true,
     },
     validate: {
-      itemType: (v) => (!v ? 'Required' : null),
-      receivedAt: (v) => (!v ? 'Required' : null),
+      itemType: (v) => (!v ? 'Obligatorio' : null),
+      receivedAt: (v) => (!v ? 'Obligatorio' : null),
     },
   })
 
@@ -159,7 +159,7 @@ export function ReceptionItemsPage() {
       return data
     },
     onSuccess: () => {
-      notifications.show({ title: 'Saved', message: 'Reception item saved', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Ítem de portería guardado', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
@@ -170,7 +170,7 @@ export function ReceptionItemsPage() {
   const deliverMutation = useMutation({
     mutationFn: (id: string) => api.post(`/api/ReceptionItems/${id}/deliver`, {}),
     onSuccess: () => {
-      notifications.show({ title: 'Delivered', message: 'Item marked as delivered', color: 'teal' })
+      notifications.show({ title: 'Entregado', message: 'Ítem marcado como entregado', color: 'teal' })
       invalidate()
     },
     onError: (err) =>
@@ -180,7 +180,7 @@ export function ReceptionItemsPage() {
   const returnMutation = useMutation({
     mutationFn: (id: string) => api.post(`/api/ReceptionItems/${id}/return`, {}),
     onSuccess: () => {
-      notifications.show({ title: 'Returned', message: 'Item marked as returned', color: 'teal' })
+      notifications.show({ title: 'Devuelto', message: 'Ítem marcado como devuelto', color: 'teal' })
       invalidate()
     },
     onError: (err) =>
@@ -190,7 +190,7 @@ export function ReceptionItemsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/api/ReceptionItems/${id}`),
     onSuccess: () => {
-      notifications.show({ title: 'Deactivated', message: 'Reception item deactivated', color: 'gray' })
+      notifications.show({ title: 'Desactivado', message: 'Ítem de portería desactivado', color: 'gray' })
       invalidate()
     },
     onError: (err) =>
@@ -203,7 +203,7 @@ export function ReceptionItemsPage() {
     return [
       {
         key: 'itemType',
-        header: 'Type',
+        header: 'Tipo',
         sortKey: 'itemtype',
         filter: 'select',
         filterKey: 'itemType',
@@ -212,7 +212,7 @@ export function ReceptionItemsPage() {
       },
       {
         key: 'unit',
-        header: 'Unit',
+        header: 'Unidad',
         sortKey: 'unitid',
         filter: 'select',
         filterKey: 'unitId',
@@ -222,7 +222,7 @@ export function ReceptionItemsPage() {
       },
       {
         key: 'recipient',
-        header: 'Recipient',
+        header: 'Destinatario',
         filter: 'none',
         render: (row) =>
           row.recipientName ||
@@ -234,14 +234,14 @@ export function ReceptionItemsPage() {
       },
       {
         key: 'receivedAt',
-        header: 'Received',
+        header: 'Recibido',
         sortKey: 'receivedatutc',
         filter: 'none',
         render: (row) => new Date(row.receivedAtUtc).toLocaleString(),
       },
       {
         key: 'status',
-        header: 'Status',
+        header: 'Estado',
         sortKey: 'status',
         filter: 'select',
         filterKey: 'status',
@@ -258,7 +258,7 @@ export function ReceptionItemsPage() {
       },
       {
         key: 'carrier',
-        header: 'Carrier / reference',
+        header: 'Transportadora / referencia',
         filter: 'none',
         render: (row) => {
           const parts = [row.carrierOrSender, row.trackingOrReference].filter(Boolean)
@@ -275,39 +275,39 @@ export function ReceptionItemsPage() {
           <Group gap={4} wrap="nowrap">
             {isPendingPickup(row.status) ? (
               <>
-                <Tooltip label="Mark delivered">
+                <Tooltip label="Marcar entregado">
                   <Button
                     size="compact-xs"
                     variant="light"
                     color="teal"
                     loading={deliverMutation.isPending}
                     onClick={() => {
-                      if (window.confirm('Mark this item as delivered?')) {
+                      if (window.confirm('¿Marcar este ítem como entregado?')) {
                         deliverMutation.mutate(row.id)
                       }
                     }}
                   >
-                    Delivered
+                    Entregado
                   </Button>
                 </Tooltip>
-                <Tooltip label="Mark returned">
+                <Tooltip label="Marcar devuelto">
                   <Button
                     size="compact-xs"
                     variant="light"
                     color="orange"
                     loading={returnMutation.isPending}
                     onClick={() => {
-                      if (window.confirm('Mark this item as returned?')) {
+                      if (window.confirm('¿Marcar este ítem como devuelto?')) {
                         returnMutation.mutate(row.id)
                       }
                     }}
                   >
-                    Returned
+                    Devuelto
                   </Button>
                 </Tooltip>
               </>
             ) : null}
-            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Edit">
+            <ActionIcon variant="light" size="md" onClick={() => openEdit(row)} aria-label="Editar">
               ✎
             </ActionIcon>
             <ActionIcon
@@ -315,9 +315,9 @@ export function ReceptionItemsPage() {
               color="red"
               size="md"
               onClick={() => {
-                if (window.confirm('Deactivate this reception item?')) deleteMutation.mutate(row.id)
+                if (window.confirm('¿Desactivar este ítem de portería?')) deleteMutation.mutate(row.id)
               }}
-              aria-label="Delete"
+              aria-label="Eliminar"
             >
               ✕
             </ActionIcon>
@@ -330,8 +330,8 @@ export function ReceptionItemsPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Reception"
-        description="Packages, letters, and visitor messages waiting at reception."
+        title="Portería"
+        description="Paquetes, cartas y mensajes de visitantes en portería."
       />
       {pendingCount > 0 ? (
         <Alert
@@ -341,7 +341,7 @@ export function ReceptionItemsPage() {
           title={
             <Group gap="xs">
               <Text fw={600} size="sm">
-                Pending pickup
+                Pendiente de retiro
               </Text>
               <Badge color="orange" variant="filled" size="sm">
                 {pendingCount}
@@ -350,17 +350,17 @@ export function ReceptionItemsPage() {
           }
         >
           {pendingCount === 1
-            ? '1 item is waiting to be picked up.'
-            : `${pendingCount} items are waiting to be picked up.`}
+            ? '1 ítem está pendiente de retiro.'
+            : `${pendingCount} ítems están pendientes de retiro.`}
         </Alert>
       ) : (
         <Alert color="teal" variant="light" icon={<IconPackage size={18} stroke={1.75} />}>
-          No items pending pickup.
+          No hay ítems pendientes de retiro.
         </Alert>
       )}
       <ListToolbar
         onAdd={openCreate}
-        addLabel="Add item"
+        addLabel="Agregar ítem"
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
@@ -386,7 +386,7 @@ export function ReceptionItemsPage() {
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
-              if (window.confirm('Deactivate this reception item?')) deleteMutation.mutate(item.id)
+              if (window.confirm('¿Desactivar este ítem de portería?')) deleteMutation.mutate(item.id)
             }}
           />
         )}
@@ -395,19 +395,19 @@ export function ReceptionItemsPage() {
       <FormDrawer
         opened={drawer !== null}
         onClose={() => setDrawer(null)}
-        title={drawer === 'create' ? 'New reception item' : 'Edit reception item'}
+        title={drawer === 'create' ? 'Nuevo ítem de portería' : 'Editar ítem de portería'}
       >
         <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
           <Stack gap="sm">
             <Select
-              label="Item type"
+              label="Tipo de ítem"
               required
               data={[...RECEPTION_ITEM_TYPE_OPTIONS]}
               comboboxProps={formDrawerSelectComboboxProps}
               {...form.getInputProps('itemType')}
             />
             <Select
-              label="Unit (optional)"
+              label="Unidad (opcional)"
               data={unitOptions}
               searchable
               clearable
@@ -416,7 +416,7 @@ export function ReceptionItemsPage() {
               onChange={(v) => form.setFieldValue('unitId', v)}
             />
             <Select
-              label="Person (optional)"
+              label="Persona (opcional)"
               data={personOptions}
               searchable
               clearable
@@ -424,21 +424,21 @@ export function ReceptionItemsPage() {
               value={form.values.personId || null}
               onChange={(v) => form.setFieldValue('personId', v)}
             />
-            <TextInput label="Recipient name" {...form.getInputProps('recipientName')} />
-            <TextInput label="Carrier / sender" {...form.getInputProps('carrierOrSender')} />
-            <TextInput label="Tracking / reference" {...form.getInputProps('trackingOrReference')} />
+            <TextInput label="Nombre del destinatario" {...form.getInputProps('recipientName')} />
+            <TextInput label="Transportadora / remitente" {...form.getInputProps('carrierOrSender')} />
+            <TextInput label="Guía / referencia" {...form.getInputProps('trackingOrReference')} />
             <TextInput
-              label="Received at"
+              label="Recibido el"
               type="datetime-local"
               required
               {...form.getInputProps('receivedAt')}
             />
-            <Textarea label="Notes" minRows={2} {...form.getInputProps('notes')} />
+            <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
             {drawer !== 'create' ? (
-              <Switch label="Active" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+              <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             ) : null}
             <Button type="submit" fullWidth loading={saveMutation.isPending}>
-              Save
+              Guardar
             </Button>
           </Stack>
         </form>

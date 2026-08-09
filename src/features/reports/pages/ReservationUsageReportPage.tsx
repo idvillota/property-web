@@ -34,20 +34,20 @@ export function ReservationUsageReportPage() {
 
   return (
     <ReportPageShell
-      title="Reservation usage"
-      description="Common area bookings over the selected period."
+      title="Uso de reservas"
+      description="Reservas de zonas comunes en el periodo seleccionado."
       filters={
         <Group>
           <TextInput
             type="date"
-            label="From"
+            label="Desde"
             value={from}
             onChange={(e) => setFrom(e.currentTarget.value)}
             w={180}
           />
           <TextInput
             type="date"
-            label="To"
+            label="Hasta"
             value={to}
             onChange={(e) => setTo(e.currentTarget.value)}
             w={180}
@@ -60,22 +60,22 @@ export function ReservationUsageReportPage() {
       {report ? (
         <Stack gap="lg">
           <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="md">
-            <Kpi label="Reservations" value={String(report.totals.reservationCount)} />
-            <Kpi label="Confirmed" value={String(report.totals.confirmedCount)} />
-            <Kpi label="Cancelled" value={String(report.totals.cancelledCount)} />
-            <Kpi label="Completed" value={String(report.totals.completedCount)} />
+            <Kpi label="Reservas" value={String(report.totals.reservationCount)} />
+            <Kpi label="Confirmadas" value={String(report.totals.confirmedCount)} />
+            <Kpi label="Canceladas" value={String(report.totals.cancelledCount)} />
+            <Kpi label="Completadas" value={String(report.totals.completedCount)} />
           </SimpleGrid>
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              By area
+              Por zona
             </Text>
             <Table striped withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Common area</Table.Th>
-                  <Table.Th ta="right">Count</Table.Th>
-                  <Table.Th ta="right">Confirmed</Table.Th>
+                  <Table.Th>Zona común</Table.Th>
+                  <Table.Th ta="right">Cantidad</Table.Th>
+                  <Table.Th ta="right">Confirmadas</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -96,17 +96,17 @@ export function ReservationUsageReportPage() {
 
           <Stack gap="xs">
             <Text fw={600} size="sm">
-              Recent reservations
+              Reservas recientes
             </Text>
             <Table striped highlightOnHover withTableBorder>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Area</Table.Th>
-                  <Table.Th>Unit</Table.Th>
-                  <Table.Th>Starts</Table.Th>
-                  <Table.Th>Ends</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th ta="right">Attendees</Table.Th>
+                  <Table.Th>Zona</Table.Th>
+                  <Table.Th>Unidad</Table.Th>
+                  <Table.Th>Inicia</Table.Th>
+                  <Table.Th>Termina</Table.Th>
+                  <Table.Th>Estado</Table.Th>
+                  <Table.Th ta="right">Asistentes</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -151,7 +151,7 @@ function EmptyRow({ cols }: { cols: number }) {
     <Table.Tr>
       <Table.Td colSpan={cols}>
         <Text c="dimmed" size="sm">
-          No data.
+          Sin datos.
         </Text>
       </Table.Td>
     </Table.Tr>
