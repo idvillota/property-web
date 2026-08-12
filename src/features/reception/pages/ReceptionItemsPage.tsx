@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Group,
+  Modal,
   Select,
   Stack,
   Switch,
@@ -16,10 +17,16 @@ import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { IconPackage } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
-import type { Person, ReceptionItem, ReceptionPendingCount, Unit } from '../../../api/types'
+import type {
+  Person,
+  ReceptionItem,
+  ReceptionPendingCount,
+  Unit,
+  UnitOccupancy,
+} from '../../../api/types'
 import { EntityCard } from '../../../components/crud/EntityCard'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
 import { ListToolbar } from '../../../components/crud/ListToolbar'
@@ -29,12 +36,14 @@ import type { ColumnDef } from '../../../components/data-table/types'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { StatusBadge } from '../../../components/shared/StatusBadge'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
+import { useBuildingById } from '../../../hooks/useBuildingById'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
 import { usePropertyId } from '../../../hooks/usePropertyId'
-import { localInputToUtcIso, utcIsoToLocalInput } from '../../../lib/datetime'
+import { localInputToUtcIso, utcIsoToLocalInput, localTodayStartInput, isLocalInputBeforeToday } from '../../../lib/datetime'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
+import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 import {
   asEnumName,
   enumIndex,
@@ -49,9 +58,33 @@ function personLabel(p: Person) {
   return `${p.firstName} ${p.lastName} (${p.documentNumber})`
 }
 
+function habitantOptionsFrom(
+  occupancies: UnitOccupancy[] | undefined,
+  people: Person[] | undefined,
+): { value: string; label: string }[] {
+  const peopleById = new Map((people ?? []).map((p) => [p.id, p]))
+  const byPerson = new Map<string, { value: string; label: string }>()
+  for (const occupancy of occupancies ?? []) {
+    if (byPerson.has(occupancy.personId)) continue
+    const person = peopleById.get(occupancy.personId)
+    byPerson.set(occupancy.personId, {
+      value: occupancy.personId,
+      label: person
+        ? personLabel(person)
+        : (occupancy.personName ?? occupancy.personId),
+    })
+  }
+  return [...byPerson.values()]
+}
+
 export function ReceptionItemsPage() {
   const propertyId = usePropertyId()
   const [drawer, setDrawer] = useState<'create' | ReceptionItem | null>(null)
+  const drawerRef = useRef(drawer)
+  drawerRef.current = drawer
+  const [deliverItem, setDeliverItem] = useState<ReceptionItem | null>(null)
+  const [deliveredToPersonId, setDeliveredToPersonId] = useState<string | null>(null)
+  const [deliverError, setDeliverError] = useState<string | null>(null)
   const invalidate = useInvalidate(['reception-items', 'reception-pending-count'])
   const list = usePagedListState('receivedatutc', {
     sortDir: 'desc',
@@ -76,23 +109,14 @@ export function ReceptionItemsPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+  const { buildingById } = useBuildingById(propertyId)
   const people = useEntityOptions<Person>('people-options', '/api/People')
-
-  const unitOptions = useMemo(
-    () => (units.data ?? []).map((u) => ({ value: u.id, label: u.code })),
-    [units.data],
-  )
-  const personOptions = useMemo(
-    () => (people.data ?? []).map((p) => ({ value: p.id, label: personLabel(p) })),
-    [people.data],
-  )
 
   const form = useForm({
     initialValues: {
       itemType: 'Package',
-      unitId: '' as string | null,
-      personId: '' as string | null,
-      recipientName: '',
+      unitId: '' as string,
+      personId: '' as string,
       carrierOrSender: '',
       trackingOrReference: '',
       notes: '',
@@ -101,16 +125,65 @@ export function ReceptionItemsPage() {
     },
     validate: {
       itemType: (v) => (!v ? 'Obligatorio' : null),
-      receivedAt: (v) => (!v ? 'Obligatorio' : null),
+      unitId: (v) => (!v ? 'Obligatorio' : null),
+      personId: (v) => (!v ? 'Obligatorio' : null),
+      receivedAt: (v) => {
+        if (!v) return 'Obligatorio'
+        if (!isLocalInputBeforeToday(v)) return null
+        const current = drawerRef.current
+        // Allow keeping an existing past value when editing older items.
+        if (
+          current !== null &&
+          current !== 'create' &&
+          utcIsoToLocalInput(current.receivedAtUtc) === v
+        ) {
+          return null
+        }
+        return 'La fecha de recepción no puede ser anterior a hoy'
+      },
     },
   })
+
+  const formUnitId = form.values.unitId || undefined
+  const formOccupancies = useEntityOptions<UnitOccupancy>(
+    'reception-form-occupancies',
+    '/api/UnitOccupancies',
+    formUnitId ? { unitId: formUnitId } : undefined,
+    !!formUnitId,
+  )
+  const deliverUnitId = deliverItem?.unitId || undefined
+  const deliverOccupancies = useEntityOptions<UnitOccupancy>(
+    'reception-deliver-occupancies',
+    '/api/UnitOccupancies',
+    deliverUnitId ? { unitId: deliverUnitId } : undefined,
+    !!deliverUnitId,
+  )
+
+  const unitOptions = useMemo(
+    () => toDwellingUnitSelectOptions(units.data ?? [], buildingById),
+    [units.data, buildingById],
+  )
+  const destinatarioOptions = useMemo(
+    () => habitantOptionsFrom(formOccupancies.data, people.data),
+    [formOccupancies.data, people.data],
+  )
+  const deliverHabitantOptions = useMemo(
+    () => habitantOptionsFrom(deliverOccupancies.data, people.data),
+    [deliverOccupancies.data, people.data],
+  )
+
+  useEffect(() => {
+    if (!form.values.personId || !formUnitId || formOccupancies.isLoading) return
+    if (!destinatarioOptions.some((o) => o.value === form.values.personId)) {
+      form.setFieldValue('personId', '')
+    }
+  }, [destinatarioOptions, form.values.personId, formUnitId, formOccupancies.isLoading])
 
   const openCreate = () => {
     form.setValues({
       itemType: 'Package',
-      unitId: null,
-      personId: null,
-      recipientName: '',
+      unitId: '',
+      personId: '',
       carrierOrSender: '',
       trackingOrReference: '',
       notes: '',
@@ -123,9 +196,8 @@ export function ReceptionItemsPage() {
   const openEdit = (item: ReceptionItem) => {
     form.setValues({
       itemType: asEnumName(item.itemType, RECEPTION_ITEM_TYPE_OPTIONS) || 'Package',
-      unitId: item.unitId,
-      personId: item.personId,
-      recipientName: item.recipientName ?? '',
+      unitId: item.unitId ?? '',
+      personId: item.personId ?? '',
       carrierOrSender: item.carrierOrSender ?? '',
       trackingOrReference: item.trackingOrReference ?? '',
       notes: item.notes ?? '',
@@ -135,14 +207,19 @@ export function ReceptionItemsPage() {
     setDrawer(item)
   }
 
+  const openDeliver = (item: ReceptionItem) => {
+    setDeliverError(null)
+    setDeliveredToPersonId(item.personId)
+    setDeliverItem(item)
+  }
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       const payload = {
         horizontalPropertyId: propertyId,
         itemType: enumIndex(form.values.itemType, RECEPTION_ITEM_TYPE_OPTIONS),
-        unitId: form.values.unitId || null,
-        personId: form.values.personId || null,
-        recipientName: form.values.recipientName.trim() || null,
+        unitId: form.values.unitId,
+        personId: form.values.personId,
         carrierOrSender: form.values.carrierOrSender.trim() || null,
         trackingOrReference: form.values.trackingOrReference.trim() || null,
         notes: form.values.notes.trim() || null,
@@ -154,6 +231,13 @@ export function ReceptionItemsPage() {
       }
       const { data } = await api.put<ReceptionItem>(`/api/ReceptionItems/${drawer!.id}`, {
         ...payload,
+        status: enumIndex(
+          asEnumName(drawer!.status, RECEPTION_ITEM_STATUS_OPTIONS) || 'PendingPickup',
+          RECEPTION_ITEM_STATUS_OPTIONS,
+        ),
+        deliveredAtUtc: drawer!.deliveredAtUtc,
+        deliveredByEmployeeId: drawer!.deliveredByEmployeeId,
+        deliveredToPersonId: drawer!.deliveredToPersonId,
         isActive: form.values.isActive,
       })
       return data
@@ -164,17 +248,33 @@ export function ReceptionItemsPage() {
       invalidate()
     },
     onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({
+        title: 'No se pudo guardar',
+        message: getApiErrorMessage(err),
+        color: 'red',
+      }),
   })
 
   const deliverMutation = useMutation({
-    mutationFn: (id: string) => api.post(`/api/ReceptionItems/${id}/deliver`, {}),
+    mutationFn: async () => {
+      if (!deliverItem || !deliveredToPersonId) {
+        throw new Error('Selecciona quién recibe la entrega.')
+      }
+      const { data } = await api.post<ReceptionItem>(`/api/ReceptionItems/${deliverItem.id}/deliver`, {
+        deliveredToPersonId,
+      })
+      return data
+    },
     onSuccess: () => {
       notifications.show({ title: 'Entregado', message: 'Ítem marcado como entregado', color: 'teal' })
+      setDeliverItem(null)
+      setDeliveredToPersonId(null)
+      setDeliverError(null)
       invalidate()
     },
-    onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+    onError: (err) => {
+      setDeliverError(getApiErrorMessage(err, 'No se pudo registrar la entrega.'))
+    },
   })
 
   const returnMutation = useMutation({
@@ -184,7 +284,11 @@ export function ReceptionItemsPage() {
       invalidate()
     },
     onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({
+        title: 'No se pudo devolver',
+        message: getApiErrorMessage(err),
+        color: 'red',
+      }),
   })
 
   const deleteMutation = useMutation({
@@ -194,7 +298,11 @@ export function ReceptionItemsPage() {
       invalidate()
     },
     onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({
+        title: 'No se pudo desactivar',
+        message: getApiErrorMessage(err),
+        color: 'red',
+      }),
   })
 
   const pendingCount = pendingQuery.data?.pendingPickupCount ?? 0
@@ -224,13 +332,7 @@ export function ReceptionItemsPage() {
         key: 'recipient',
         header: 'Destinatario',
         filter: 'none',
-        render: (row) =>
-          row.recipientName ||
-          row.personName ||
-          (row.personId
-            ? personOptions.find((p) => p.value === row.personId)?.label
-            : null) ||
-          '—',
+        render: (row) => row.personName || row.recipientName || '—',
       },
       {
         key: 'receivedAt',
@@ -238,6 +340,19 @@ export function ReceptionItemsPage() {
         sortKey: 'receivedatutc',
         filter: 'none',
         render: (row) => new Date(row.receivedAtUtc).toLocaleString(),
+      },
+      {
+        key: 'deliveredAt',
+        header: 'Entregado',
+        sortKey: 'deliveredatutc',
+        filter: 'none',
+        render: (row) => (row.deliveredAtUtc ? new Date(row.deliveredAtUtc).toLocaleString() : '—'),
+      },
+      {
+        key: 'deliveredTo',
+        header: 'Entregado a',
+        filter: 'none',
+        render: (row) => row.deliveredToPersonName || '—',
       },
       {
         key: 'status',
@@ -280,12 +395,7 @@ export function ReceptionItemsPage() {
                     size="compact-xs"
                     variant="light"
                     color="teal"
-                    loading={deliverMutation.isPending}
-                    onClick={() => {
-                      if (window.confirm('¿Marcar este ítem como entregado?')) {
-                        deliverMutation.mutate(row.id)
-                      }
-                    }}
+                    onClick={() => openDeliver(row)}
                   >
                     Entregado
                   </Button>
@@ -325,7 +435,7 @@ export function ReceptionItemsPage() {
         ),
       },
     ]
-  }, [deleteMutation, deliverMutation, personOptions, returnMutation, unitOptions])
+  }, [deleteMutation, returnMutation, unitOptions])
 
   return (
     <Stack gap="md">
@@ -382,7 +492,7 @@ export function ReceptionItemsPage() {
           <EntityCard
             key={item.id}
             title={labelForOption(RECEPTION_ITEM_TYPE_OPTIONS, item.itemType)}
-            subtitle={`${item.recipientName || item.personName || '—'} · ${labelForOption(RECEPTION_ITEM_STATUS_OPTIONS, item.status)}`}
+            subtitle={`${item.personName || item.recipientName || '—'} · ${labelForOption(RECEPTION_ITEM_STATUS_OPTIONS, item.status)}`}
             inactive={!item.isActive}
             onEdit={() => openEdit(item)}
             onDelete={() => {
@@ -407,30 +517,40 @@ export function ReceptionItemsPage() {
               {...form.getInputProps('itemType')}
             />
             <Select
-              label="Unidad (opcional)"
+              label="Unidad"
+              required
               data={unitOptions}
               searchable
-              clearable
               comboboxProps={formDrawerSelectComboboxProps}
               value={form.values.unitId || null}
-              onChange={(v) => form.setFieldValue('unitId', v)}
+              onChange={(v) => {
+                form.setFieldValue('unitId', v ?? '')
+                form.setFieldValue('personId', '')
+              }}
+              error={form.errors.unitId}
             />
             <Select
-              label="Persona (opcional)"
-              data={personOptions}
+              label="Destinatario"
+              required
+              placeholder={form.values.unitId ? 'Seleccione un habitante' : 'Primero elige la unidad'}
+              data={destinatarioOptions}
               searchable
-              clearable
+              disabled={!form.values.unitId}
               comboboxProps={formDrawerSelectComboboxProps}
               value={form.values.personId || null}
-              onChange={(v) => form.setFieldValue('personId', v)}
+              onChange={(v) => form.setFieldValue('personId', v ?? '')}
+              error={form.errors.personId}
+              nothingFoundMessage={
+                formOccupancies.isLoading ? 'Cargando…' : 'No hay habitantes en esta unidad'
+              }
             />
-            <TextInput label="Nombre del destinatario" {...form.getInputProps('recipientName')} />
             <TextInput label="Transportadora / remitente" {...form.getInputProps('carrierOrSender')} />
             <TextInput label="Guía / referencia" {...form.getInputProps('trackingOrReference')} />
             <TextInput
               label="Recibido el"
               type="datetime-local"
               required
+              min={drawer === 'create' ? localTodayStartInput() : undefined}
               {...form.getInputProps('receivedAt')}
             />
             <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
@@ -443,6 +563,65 @@ export function ReceptionItemsPage() {
           </Stack>
         </form>
       </FormDrawer>
+
+      <Modal
+        opened={deliverItem !== null}
+        onClose={() => {
+          setDeliverItem(null)
+          setDeliverError(null)
+          setDeliveredToPersonId(null)
+        }}
+        title="Registrar entrega"
+        centered
+      >
+        <Stack gap="sm">
+          <Text size="sm" c="dimmed">
+            Indica quién recibe el ítem. La fecha y hora de entrega se registrarán automáticamente.
+          </Text>
+          {deliverError ? (
+            <Alert color="orange" variant="light" title="No se pudo entregar" withCloseButton onClose={() => setDeliverError(null)}>
+              {deliverError}
+            </Alert>
+          ) : null}
+          <Select
+            label="Entregado a"
+            required
+            placeholder={
+              deliverItem?.unitId
+                ? 'Seleccione un habitante de la unidad'
+                : 'Este ítem no tiene unidad asociada'
+            }
+            data={deliverHabitantOptions}
+            searchable
+            disabled={!deliverItem?.unitId}
+            comboboxProps={formDrawerSelectComboboxProps}
+            value={deliveredToPersonId}
+            onChange={setDeliveredToPersonId}
+            nothingFoundMessage={
+              deliverOccupancies.isLoading ? 'Cargando…' : 'No hay habitantes en esta unidad'
+            }
+          />
+          <Group justify="flex-end" mt="xs">
+            <Button
+              variant="default"
+              onClick={() => {
+                setDeliverItem(null)
+                setDeliverError(null)
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              color="teal"
+              loading={deliverMutation.isPending}
+              disabled={!deliveredToPersonId}
+              onClick={() => deliverMutation.mutate()}
+            >
+              Confirmar entrega
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Stack>
   )
 }

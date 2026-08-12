@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Alert,
   Button,
   Group,
   NumberInput,
@@ -26,6 +27,7 @@ import type { ColumnDef } from '../../../components/data-table/types'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { StatusBadge } from '../../../components/shared/StatusBadge'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
+import { useBuildingById } from '../../../hooks/useBuildingById'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
@@ -40,6 +42,7 @@ import {
 } from '../../../lib/amenitiesEnums'
 import { localInputToUtcIso, utcIsoToLocalInput } from '../../../lib/datetime'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
+import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 
 function personLabel(p: Person) {
   return `${p.firstName} ${p.lastName} (${p.documentNumber})`
@@ -48,6 +51,7 @@ function personLabel(p: Person) {
 export function ReservationsPage() {
   const propertyId = usePropertyId()
   const [drawer, setDrawer] = useState<'create' | Reservation | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const invalidate = useInvalidate(['reservations', 'common-area-options'])
   const list = usePagedListState('startsatutc', {
     sortDir: 'desc',
@@ -65,6 +69,7 @@ export function ReservationsPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+  const { buildingById } = useBuildingById(propertyId)
   const people = useEntityOptions<Person>('people-options', '/api/People')
 
   const areaOptions = useMemo(
@@ -72,8 +77,8 @@ export function ReservationsPage() {
     [areas.data],
   )
   const unitOptions = useMemo(
-    () => (units.data ?? []).map((u) => ({ value: u.id, label: u.code })),
-    [units.data],
+    () => toDwellingUnitSelectOptions(units.data ?? [], buildingById),
+    [units.data, buildingById],
   )
   const personOptions = useMemo(
     () => (people.data ?? []).map((p) => ({ value: p.id, label: personLabel(p) })),
@@ -109,6 +114,7 @@ export function ReservationsPage() {
   })
 
   const openCreate = () => {
+    setSaveError(null)
     form.setValues({
       commonAreaId: areaOptions[0]?.value ?? '',
       unitId: unitOptions[0]?.value ?? '',
@@ -125,6 +131,7 @@ export function ReservationsPage() {
   }
 
   const openEdit = (item: Reservation) => {
+    setSaveError(null)
     form.setValues({
       commonAreaId: item.commonAreaId,
       unitId: item.unitId,
@@ -165,12 +172,14 @@ export function ReservationsPage() {
       return data
     },
     onSuccess: () => {
+      setSaveError(null)
       notifications.show({ title: 'Guardado', message: 'Reserva guardada', color: 'teal' })
       setDrawer(null)
       invalidate()
     },
-    onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+    onError: (err) => {
+      setSaveError(getApiErrorMessage(err, 'Revisa los datos e inténtalo de nuevo.'))
+    },
   })
 
   const statusMutation = useMutation({
@@ -189,7 +198,11 @@ export function ReservationsPage() {
       invalidate()
     },
     onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({
+        title: 'No se pudo actualizar',
+        message: getApiErrorMessage(err, 'Revisa el estado e inténtalo de nuevo.'),
+        color: 'red',
+      }),
   })
 
   const deleteMutation = useMutation({
@@ -199,7 +212,11 @@ export function ReservationsPage() {
       invalidate()
     },
     onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+      notifications.show({
+        title: 'No se pudo desactivar',
+        message: getApiErrorMessage(err, 'Inténtalo de nuevo en un momento.'),
+        color: 'red',
+      }),
   })
 
   const columns = useMemo((): ColumnDef<Reservation>[] => {
@@ -358,11 +375,34 @@ export function ReservationsPage() {
 
       <FormDrawer
         opened={drawer !== null}
-        onClose={() => setDrawer(null)}
+        onClose={() => {
+          setSaveError(null)
+          setDrawer(null)
+        }}
         title={drawer === 'create' ? 'Nueva reserva' : 'Editar reserva'}
       >
-        <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
+        <form
+          onSubmit={form.onSubmit(() => {
+            setSaveError(null)
+            saveMutation.mutate()
+          })}
+        >
           <Stack gap="sm">
+            {saveError ? (
+              <Alert
+                color="orange"
+                variant="light"
+                title={
+                  drawer === 'create'
+                    ? 'No es posible crear la reserva'
+                    : 'No es posible guardar la reserva'
+                }
+                withCloseButton
+                onClose={() => setSaveError(null)}
+              >
+                {saveError}
+              </Alert>
+            ) : null}
             <Select
               label="Zona común"
               required

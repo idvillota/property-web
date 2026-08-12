@@ -28,13 +28,13 @@ import { ReceptionReportPage } from './features/reports/pages/ReceptionReportPag
 import { ReportsHubPage } from './features/reports/pages/ReportsHubPage'
 import { ReservationUsageReportPage } from './features/reports/pages/ReservationUsageReportPage'
 import { PropertyWorkspaceLayout } from './features/structure/layouts/PropertyWorkspaceLayout'
-import { BuildingsPage } from './features/structure/pages/BuildingsPage'
-import { FloorsPage } from './features/structure/pages/FloorsPage'
 import { NeighborhoodsPage } from './features/structure/pages/NeighborhoodsPage'
+import { VehicleBrandsPage } from './features/structure/pages/VehicleBrandsPage'
 import { OccupanciesPage } from './features/structure/pages/OccupanciesPage'
 import { PropertiesPage } from './features/structure/pages/PropertiesPage'
 import { PropertyOverviewPage } from './features/structure/pages/PropertyOverviewPage'
-import { UnitsPage } from './features/structure/pages/UnitsPage'
+import { StructureWorkspacePage } from './features/structure/pages/StructureWorkspacePage'
+import { VehiclesPage } from './features/structure/pages/VehiclesPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
 import { useAuthStore } from './stores/authStore'
 
@@ -58,13 +58,17 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/settings/dashboard" element={<DashboardSettingsPage />} />
               <Route path="/neighborhoods" element={<NeighborhoodsPage />} />
+              <Route path="/vehicle-brands" element={<VehicleBrandsPage />} />
               <Route path="/properties" element={<PropertiesPage />} />
               <Route path="/properties/:propertyId" element={<PropertyWorkspaceLayout />}>
                 <Route index element={<PropertyOverviewPage />} />
-                <Route path="buildings" element={<BuildingsPage />} />
-                <Route path="floors" element={<FloorsPage />} />
-                <Route path="units" element={<UnitsPage />} />
+                <Route path="estructura" element={<StructureWorkspacePage />} />
+                <Route path="matriz" element={<Navigate to="../estructura" replace />} />
+                <Route path="buildings" element={<Navigate to="../estructura" replace />} />
+                <Route path="floors" element={<Navigate to="../estructura" replace />} />
+                <Route path="units" element={<Navigate to="../estructura" replace />} />
                 <Route path="occupancies" element={<OccupanciesPage />} />
+                <Route path="vehicles" element={<VehiclesPage />} />
                 <Route path="billing" element={<BillingSettingsPage />} />
                 <Route path="periods" element={<BillingPeriodsPage />} />
                 <Route path="charges" element={<FeeChargesPage />} />

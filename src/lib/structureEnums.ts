@@ -6,6 +6,7 @@ export const UNIT_TYPE_OPTIONS = [
   { value: 'Storage', label: 'Depósito' },
   { value: 'Commercial', label: 'Comercial' },
   { value: 'Other', label: 'Otro' },
+  { value: 'Terrace', label: 'Terraza' },
 ] as const
 
 /** Fallback when API still returns numeric enum values. */
@@ -16,6 +17,7 @@ const UNIT_TYPE_BY_NUMBER: Record<number, string> = {
   3: 'Storage',
   4: 'Commercial',
   5: 'Other',
+  6: 'Terrace',
 }
 
 export const PROPERTY_USE_TYPE_OPTIONS = [
@@ -40,6 +42,11 @@ export const OCCUPANCY_ROLE_OPTIONS = [
   { value: 'AuthorizedOccupant', label: 'Ocupante autorizado' },
 ] as const
 
+export const VEHICLE_TYPE_OPTIONS = [
+  { value: 'Car', label: 'Carro' },
+  { value: 'Motorbike', label: 'Moto' },
+] as const
+
 export function normalizeUnitType(value: string | number | null | undefined): string | null {
   if (value === null || value === undefined || value === '') return null
   if (typeof value === 'number') return UNIT_TYPE_BY_NUMBER[value] ?? null
@@ -50,6 +57,12 @@ export function normalizeUnitType(value: string | number | null | undefined): st
     return UNIT_TYPE_BY_NUMBER[asNumber] ?? null
   }
   return asString
+}
+
+/** Habitable units only (excludes parking, storage, terrace, etc.). */
+export function isDwellingUnitType(value: string | number | null | undefined): boolean {
+  const t = normalizeUnitType(value)
+  return t === 'Apartment' || t === 'House'
 }
 
 export function labelForOption(

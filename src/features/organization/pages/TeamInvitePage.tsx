@@ -47,7 +47,7 @@ export function TeamInvitePage() {
   return (
     <Stack gap="md" maw={480}>
       <PageHeader
-        title="Invitar equipo"
+        title="Equipo"
         description="Otorga acceso a este tenant. Usa el ID de usuario del tenant al vincular un empleado."
       />
       <Paper withBorder p="md" radius="md">

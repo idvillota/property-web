@@ -114,7 +114,7 @@ export function DashboardSettingsPage() {
   return (
     <Stack gap="lg">
       <PageHeader
-        title="Configurar inicio"
+        title="Panel de inicio"
         description="Arrastra y redimensiona widgets. Solo los administradores pueden editar el inicio."
         actions={
           <Group>

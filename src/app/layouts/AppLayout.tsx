@@ -14,6 +14,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import {
   IconBuildingCommunity,
+  IconCar,
   IconIdBadge,
   IconLayoutDashboard,
   IconLayoutGrid,
@@ -41,47 +42,63 @@ type NavItem =
 
 const NAV: NavItem[] = [
   { to: '/dashboard', label: 'Inicio', permission: FeatureCodes.dashboardView, icon: IconLayoutDashboard },
-
-  { section: 'Propiedad' },
   {
     to: '/properties',
     label: 'Mi propiedad',
     permission: FeatureCodes.structureProperties,
     icon: IconBuildingCommunity,
   },
+
+  { section: 'Catálogos' },
   {
     to: '/neighborhoods',
     label: 'Barrios',
     permission: FeatureCodes.structureNeighborhoods,
     icon: IconMapPin,
   },
-  { to: '/people', label: 'Personas', permission: FeatureCodes.peopleManage, icon: IconUsers },
-
-  { section: 'Administración' },
-  { to: '/settings', label: 'Configuración', permission: FeatureCodes.settingsTenant, icon: IconSettings },
   {
-    to: '/settings/dashboard',
-    label: 'Configurar inicio',
-    permission: FeatureCodes.dashboardConfigure,
-    icon: IconLayoutGrid,
+    to: '/vehicle-brands',
+    label: 'Marcas de vehículos',
+    permission: FeatureCodes.structureVehicleBrands,
+    icon: IconCar,
+  },
+
+  { section: 'Organización' },
+  {
+    to: '/people',
+    label: 'Directorio de personas',
+    permission: FeatureCodes.peopleManage,
+    icon: IconUsers,
   },
   { to: '/employees', label: 'Empleados', permission: FeatureCodes.organizationEmployees, icon: IconIdBadge },
-  { to: '/team', label: 'Invitar equipo', permission: FeatureCodes.organizationTeam, icon: IconUserPlus },
+  { to: '/team', label: 'Equipo', permission: FeatureCodes.organizationTeam, icon: IconUserPlus },
   {
     to: '/role-permissions',
     label: 'Roles y permisos',
     permission: FeatureCodes.organizationRoles,
     icon: IconShieldLock,
   },
+
+  { section: 'Sistema' },
+  {
+    to: '/settings',
+    label: 'Datos del conjunto',
+    permission: FeatureCodes.settingsTenant,
+    icon: IconSettings,
+  },
+  {
+    to: '/settings/dashboard',
+    label: 'Panel de inicio',
+    permission: FeatureCodes.dashboardConfigure,
+    icon: IconLayoutGrid,
+  },
+  { to: '/settings/appearance', label: 'Apariencia', permission: FeatureCodes.dashboardView, icon: IconPalette },
   {
     to: '/platform/status',
     label: 'Estado de la plataforma',
     platformAdmin: true,
     icon: IconServer,
   },
-
-  { section: 'Cuenta' },
-  { to: '/settings/appearance', label: 'Apariencia', permission: FeatureCodes.dashboardView, icon: IconPalette },
 ]
 
 export function AppLayout() {

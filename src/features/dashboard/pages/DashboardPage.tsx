@@ -39,7 +39,7 @@ export function DashboardPage() {
         actions={
           canConfigure ? (
             <Button component={Link} to="/settings/dashboard" variant="light">
-              Configurar inicio
+              Panel de inicio
             </Button>
           ) : undefined
         }
@@ -50,7 +50,7 @@ export function DashboardPage() {
       ) : visiblePanels.length === 0 ? (
         <Text c="dimmed">
           No hay widgets visibles para tu rol.
-          {canConfigure ? ' Usa Configurar inicio para armar el tablero.' : null}
+          {canConfigure ? ' Usa Panel de inicio para armar el tablero.' : null}
         </Text>
       ) : (
         <DashboardGrid panels={visiblePanels} />

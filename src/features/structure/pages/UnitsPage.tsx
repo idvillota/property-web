@@ -26,9 +26,17 @@ import {
 } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
-import type { Building, CoefficientSummary, Floor, Unit, UnitHousehold } from '../../../api/types'
+import type {
+  Building,
+  CoefficientSummary,
+  Floor,
+  StructureComposerStatus,
+  Unit,
+  UnitHousehold,
+} from '../../../api/types'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
@@ -36,11 +44,17 @@ import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePropertyId } from '../../../hooks/usePropertyId'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { labelForOption, normalizeUnitType, UNIT_TYPE_OPTIONS } from '../../../lib/structureEnums'
+import { formatUnitOptionLabel } from '../../../lib/unitLabels'
 import { PersonChip } from '../components/PersonChip'
 
 function isDwelling(unitType: string | number | null | undefined) {
   const t = normalizeUnitType(unitType)
   return t === 'Apartment' || t === 'House'
+}
+
+function isAmenity(unitType: string | number | null | undefined) {
+  const t = normalizeUnitType(unitType)
+  return t === 'Parking' || t === 'Terrace' || t === 'Storage'
 }
 
 export function UnitsPage() {
@@ -60,6 +74,12 @@ export function UnitsPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+
+  const buildingById = useMemo(() => {
+    const map = new Map<string, Building>()
+    for (const b of buildings.data ?? []) map.set(b.id, b)
+    return map
+  }, [buildings.data])
 
   useEffect(() => {
     if (!buildingId && (buildings.data?.length ?? 0) > 0) {
@@ -89,6 +109,16 @@ export function UnitsPage() {
     queryFn: async () => {
       const { data } = await api.get<CoefficientSummary>(
         `/api/Units/coefficient-summary?horizontalPropertyId=${encodeURIComponent(propertyId)}`,
+      )
+      return data
+    },
+  })
+
+  const structureQuery = useQuery({
+    queryKey: ['structure-composer-status', propertyId],
+    queryFn: async () => {
+      const { data } = await api.get<StructureComposerStatus>(
+        `/api/StructureComposer/status?horizontalPropertyId=${encodeURIComponent(propertyId)}`,
       )
       return data
     },
@@ -148,9 +178,13 @@ export function UnitsPage() {
   const linkedUnitOptions = useMemo(() => {
     const editingId = drawer !== null && drawer !== 'create' ? drawer.id : null
     return (units.data ?? [])
-      .filter((u) => u.id !== editingId)
-      .map((u) => ({ value: u.id, label: u.code }))
-  }, [units.data, drawer])
+      .filter((u) => u.id !== editingId && isDwelling(u.unitType))
+      .map((u) => {
+        const base = formatUnitOptionLabel(u, buildingById)
+        const kind = normalizeUnitType(u.unitType) === 'House' ? 'Casa' : 'Apto'
+        return { value: u.id, label: `${base} · ${kind}` }
+      })
+  }, [units.data, drawer, buildingById])
 
   const visibleUnits = useMemo(() => {
     return (units.data ?? []).filter((u) => {
@@ -216,8 +250,13 @@ export function UnitsPage() {
             ? null
             : Number(form.values.privateOpenAreaM2),
         contributionModuleCode: form.values.contributionModuleCode.trim() || null,
-        linkedUnitId: form.values.linkedUnitId || null,
+        linkedUnitId: isAmenity(form.values.unitType) ? form.values.linkedUnitId || null : null,
+        parkingCount: drawer !== 'create' && drawer ? drawer.parkingCount : 0,
+        terraceCount: drawer !== 'create' && drawer ? drawer.terraceCount : 0,
+        storageCount: drawer !== 'create' && drawer ? drawer.storageCount : 0,
+        isDoubleParking: drawer !== 'create' && drawer ? drawer.isDoubleParking : false,
         isBillable: form.values.isBillable,
+        isPaymentUpToDate: drawer !== 'create' && drawer ? drawer.isPaymentUpToDate : true,
       }
       if (drawer === 'create') {
         const { data } = await api.post<Unit>('/api/Units', payload)
@@ -252,6 +291,17 @@ export function UnitsPage() {
           Agregar unidad
         </Button>
       </Group>
+
+      {structureQuery.data && !structureQuery.data.hasStructure ? (
+        <Alert color="teal" title="Sin estructura">
+          Primero genera bloques, pisos y unidades con el asistente.
+          <div>
+            <Button component={Link} to={`/properties/${propertyId}/estructura`} mt="sm" size="xs">
+              Configurar estructura
+            </Button>
+          </div>
+        </Alert>
+      ) : null}
 
       {total !== undefined && (
         <Alert color="teal" title="Coeficientes por área">
@@ -521,15 +571,18 @@ export function UnitsPage() {
               label="Código módulo de contribución"
               {...form.getInputProps('contributionModuleCode')}
             />
-            <Select
-              label="Unidad vinculada"
-              clearable
-              searchable
-              data={linkedUnitOptions}
-              comboboxProps={formDrawerSelectComboboxProps}
-              value={form.values.linkedUnitId}
-              onChange={(v) => form.setFieldValue('linkedUnitId', v)}
-            />
+            {isAmenity(form.values.unitType) && (
+              <Select
+                label="Apartamento / casa asociado"
+                description="Solo apartamentos o casas. Parqueaderos, terrazas y bodegas se vinculan a una vivienda."
+                clearable
+                searchable
+                data={linkedUnitOptions}
+                comboboxProps={formDrawerSelectComboboxProps}
+                value={form.values.linkedUnitId}
+                onChange={(v) => form.setFieldValue('linkedUnitId', v)}
+              />
+            )}
             <Switch label="Facturable" {...form.getInputProps('isBillable', { type: 'checkbox' })} />
             {drawer !== 'create' && (
               <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />

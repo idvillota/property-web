@@ -16,6 +16,7 @@ import type { ListQueryState, PagedResult } from '../../api/paging'
 import { SortHeader } from './SortHeader'
 import type { ColumnAlign, ColumnDef } from './types'
 import { EntityListToolbar } from './EntityListToolbar'
+import { visibleColumnFilterCount } from './scopeFilters'
 
 type Props<T> = {
   columns: ColumnDef<T>[]
@@ -101,7 +102,7 @@ export function DataTableView<T>({
 }: Props<T>) {
   const [showColumnFilters, setShowColumnFilters] = useState(false)
   const rows = data?.items ?? []
-  const activeColumnFilterCount = Object.keys(listState.columnFilters).length
+  const activeColumnFilterCount = visibleColumnFilterCount(listState.columnFilters)
   const hasActiveFilters =
     activeColumnFilterCount > 0 || listState.search.trim().length > 0
 

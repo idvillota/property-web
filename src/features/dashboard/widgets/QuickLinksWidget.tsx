@@ -31,14 +31,14 @@ const LINKS: QuickLink[] = [
   },
   {
     to: '/people',
-    label: 'Personas',
+    label: 'Directorio de personas',
     description: 'Propietarios, arrendatarios y contactos',
     permission: FeatureCodes.peopleManage,
     icon: IconUsers,
   },
   {
     to: '/settings/dashboard',
-    label: 'Configurar inicio',
+    label: 'Panel de inicio',
     description: 'Organiza los widgets del inicio',
     permission: FeatureCodes.dashboardConfigure,
     icon: IconLayoutGrid,
@@ -66,8 +66,8 @@ const LINKS: QuickLink[] = [
   },
   {
     to: '/settings',
-    label: 'Configuración',
-    description: 'Datos legales y de la propiedad',
+    label: 'Datos del conjunto',
+    description: 'Datos legales y del conjunto residencial',
     permission: FeatureCodes.settingsTenant,
     icon: IconSettings,
   },

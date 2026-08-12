@@ -73,7 +73,7 @@ export function BillingSettingsPage() {
   return (
     <Stack gap="md" maw={560}>
       <PageHeader
-        title="Configuración de cuotas"
+        title="Cuotas"
         description="Presupuesto mensual, día de vencimiento e intereses de mora de esta propiedad."
       />
 

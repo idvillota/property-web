@@ -6,6 +6,7 @@ import { EntityList } from '../crud/EntityList'
 import { EntityListToolbar } from './EntityListToolbar'
 import { DataTableView } from './DataTableView'
 import type { ColumnDef } from './types'
+import { visibleColumnFilterCount } from './scopeFilters'
 
 type Props<T> = {
   loading: boolean
@@ -75,7 +76,7 @@ export function PagedEntityView<T extends { id: string }>({
   }
 
   const items = data?.items ?? []
-  const activeColumnFilterCount = Object.keys(listState.columnFilters).length
+  const activeColumnFilterCount = visibleColumnFilterCount(listState.columnFilters)
 
   return (
     <Stack gap="md">

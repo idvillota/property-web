@@ -114,7 +114,7 @@ export function TenantSettingsPage() {
       queryClient.setQueryData(['tenantSettings'], data)
       void queryClient.invalidateQueries({ queryKey: ['horizontal-property'] })
       void queryClient.invalidateQueries({ queryKey: ['horizontal-properties'] })
-      notifications.show({ title: 'Guardado', message: 'Configuración de la propiedad actualizada', color: 'teal' })
+      notifications.show({ title: 'Guardado', message: 'Datos del conjunto actualizados', color: 'teal' })
     },
     onError: (err) =>
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
@@ -137,7 +137,7 @@ export function TenantSettingsPage() {
     return (
       <Stack gap="md" maw={640}>
         <PageHeader
-          title="Configuración"
+          title="Datos del conjunto"
           description="Datos legales y de la copropiedad de este tenant"
         />
         <Alert color="yellow" title="Sin propiedad">
@@ -153,7 +153,7 @@ export function TenantSettingsPage() {
   return (
     <Stack gap="lg" maw={640}>
       <PageHeader
-        title="Configuración"
+        title="Datos del conjunto"
         description="Identidad legal y datos de la propiedad (un tenant = una copropiedad)"
       />
 

@@ -27,6 +27,7 @@ import type { ColumnDef } from '../../../components/data-table/types'
 import { MoneyInput } from '../../../components/shared/MoneyInput'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
+import { useBuildingById } from '../../../hooks/useBuildingById'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
@@ -42,6 +43,7 @@ import {
 import { localInputToUtcIso, utcIsoToLocalInput } from '../../../lib/datetime'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { formatMoney } from '../../../lib/money'
+import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 
 type AllocRow = { feeChargeId: string; amount: number; label: string; balance: number }
 
@@ -65,9 +67,10 @@ export function PaymentsPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+  const { buildingById } = useBuildingById(propertyId)
   const unitOptions = useMemo(
-    () => (units.data ?? []).map((u) => ({ value: u.id, label: u.code })),
-    [units.data],
+    () => toDwellingUnitSelectOptions(units.data ?? [], buildingById),
+    [units.data, buildingById],
   )
 
   const form = useForm({

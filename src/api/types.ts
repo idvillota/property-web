@@ -177,8 +177,38 @@ export type Unit = {
   coefficient: number
   contributionModuleCode: string | null
   linkedUnitId: string | null
+  parkingCount: number
+  terraceCount: number
+  storageCount: number
+  isDoubleParking: boolean
   isBillable: boolean
+  isPaymentUpToDate: boolean
   isActive: boolean
+}
+
+export type StructureWorkspaceFloor = {
+  id: string
+  name: string
+  number: number | null
+  sortOrder: number
+  units: Unit[]
+}
+
+export type StructureWorkspaceBuilding = {
+  id: string
+  name: string
+  code: string | null
+  sortOrder: number
+  floors: StructureWorkspaceFloor[]
+}
+
+export type StructureWorkspace = {
+  horizontalPropertyId: string
+  hasStructure: boolean
+  buildingCount: number
+  floorCount: number
+  unitCount: number
+  buildings: StructureWorkspaceBuilding[]
 }
 
 export type Person = {
@@ -206,7 +236,91 @@ export type UnitOccupancy = {
   personName?: string
 }
 
+export type StructureComposerStatus = {
+  horizontalPropertyId: string
+  hasStructure: boolean
+  buildingCount: number
+  floorCount: number
+  unitCount: number
+}
+
+export type StructureComposerBuildingInput = {
+  name: string
+  code: string | null
+  floorFrom: number
+  floorTo: number
+  unitsPerFloor: number
+  includeBasement: boolean
+  includeRooftop: boolean
+  codePattern: string
+  defaultUnitType: string
+  defaultAreaM2: number
+}
+
+export type StructureComposerRequest = {
+  horizontalPropertyId: string
+  buildings: StructureComposerBuildingInput[]
+  parking: {
+    count: number
+    prefix: string
+    areaM2: number
+    linkToApartmentsInOrder: boolean
+  } | null
+  storage: {
+    count: number
+    prefix: string
+    areaM2: number
+  } | null
+  unitOverrides: Array<{
+    code: string
+    unitType?: string
+    areaM2?: number
+    parkingCount?: number
+    terraceCount?: number
+    storageCount?: number
+    remove?: boolean
+  }>
+}
+
+export type StructureComposerPreviewUnit = {
+  code: string
+  unitType: string
+  areaM2: number
+  buildingCode: string | null
+  floorName: string | null
+  linkedUnitCode: string | null
+}
+
+export type StructureComposerPreview = {
+  buildingCount: number
+  floorCount: number
+  unitCount: number
+  dwellingCount: number
+  parkingCount: number
+  storageCount: number
+  totalAreaM2: number
+  warnings: string[]
+  buildings: Array<{
+    name: string
+    code: string | null
+    floors: Array<{
+      name: string
+      number: number | null
+      units: StructureComposerPreviewUnit[]
+    }>
+  }>
+  ancillaryUnits: StructureComposerPreviewUnit[]
+}
+
+export type StructureComposerCommitResult = {
+  buildingsCreated: number
+  floorsCreated: number
+  unitsCreated: number
+  totalCoefficient: number
+}
+
 export type UnitHouseholdPerson = {
+  occupancyId: string
   personId: string
   fullName: string
   documentLabel: string
@@ -215,6 +329,31 @@ export type UnitHouseholdPerson = {
   role: string
   isPrimary: boolean
   receivesBilling: boolean
+}
+
+export type UnitAmenityLink = {
+  unitId: string
+  code: string
+}
+
+export type VehicleBrand = {
+  id: string
+  name: string
+  isActive: boolean
+}
+
+export type Vehicle = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string | null
+  unitCode: string | null
+  vehicleBrandId: string
+  vehicleType: string
+  brand: string
+  model: string
+  color: string
+  plate: string
+  isActive: boolean
 }
 
 export type UnitHousehold = {
@@ -227,8 +366,14 @@ export type UnitHousehold = {
   floorName: string | null
   privateBuiltAreaM2: number
   coefficient: number
+  parkingCount: number
+  terraceCount: number
+  storageCount: number
   owners: UnitHouseholdPerson[]
   habitants: UnitHouseholdPerson[]
+  relatedParkings: UnitAmenityLink[]
+  relatedTerraces: UnitAmenityLink[]
+  relatedStorages: UnitAmenityLink[]
 }
 
 export type PersonOverview = {
@@ -400,6 +545,7 @@ export type ReceptionItem = {
   receivedByEmployeeId: string | null
   deliveredAtUtc: string | null
   deliveredByEmployeeId: string | null
+  deliveredToPersonId: string | null
   carrierOrSender: string | null
   trackingOrReference: string | null
   recipientName: string | null
@@ -407,6 +553,7 @@ export type ReceptionItem = {
   isActive: boolean
   unitCode?: string
   personName?: string
+  deliveredToPersonName?: string
 }
 
 export type ReceptionPendingCount = {

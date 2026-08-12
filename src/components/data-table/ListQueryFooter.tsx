@@ -1,6 +1,7 @@
 import type { ListQueryState, PagedResult } from '../../api/paging'
 import type { ColumnDef } from './types'
 import { EntityListToolbar } from './EntityListToolbar'
+import { visibleColumnFilterCount } from './scopeFilters'
 
 type Props = {
   data: PagedResult<unknown> | undefined
@@ -37,7 +38,7 @@ export function ListQueryFooter({
       onClearColumnFilters={onClearColumnFilters}
       onRemoveColumnFilter={onColumnFilter ? (key) => onColumnFilter(key, '') : undefined}
       searchPlaceholder={searchPlaceholder}
-      activeColumnFilterCount={Object.keys(listState.columnFilters).length}
+      activeColumnFilterCount={visibleColumnFilterCount(listState.columnFilters)}
     />
   )
 }

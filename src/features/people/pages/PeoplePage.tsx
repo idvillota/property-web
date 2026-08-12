@@ -204,7 +204,7 @@ export function PeoplePage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Personas"
+        title="Directorio de personas"
         description="Toca un nombre para ver unidades, estado de pagos y reservas."
       />
       <ListToolbar

@@ -15,6 +15,7 @@ import type { ReactNode } from 'react'
 import type { ListQueryState, PagedResult } from '../../api/paging'
 import { PAGE_SIZE_OPTIONS } from '../../api/paging'
 import type { ColumnDef } from './types'
+import { visibleColumnFilters } from './scopeFilters'
 
 export type ActiveFilterChip = {
   key: string
@@ -41,7 +42,7 @@ function buildFilterChips(
   columns: ColumnDef<unknown>[],
   columnFilters: Record<string, string>,
 ): ActiveFilterChip[] {
-  return Object.entries(columnFilters).map(([key, value]) => {
+  return Object.entries(visibleColumnFilters(columnFilters)).map(([key, value]) => {
     const col = columns.find((c) => (c.filterKey ?? c.key) === key)
     const header = col?.header ?? key
     const displayValue =

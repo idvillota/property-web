@@ -23,12 +23,14 @@ import { activeColumn } from '../../../components/data-table/tableColumns'
 import type { ColumnDef } from '../../../components/data-table/types'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
+import { useBuildingById } from '../../../hooks/useBuildingById'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
 import { usePropertyId } from '../../../hooks/usePropertyId'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { labelForOption, OCCUPANCY_ROLE_OPTIONS } from '../../../lib/structureEnums'
+import { formatUnitOptionLabel, toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 
 function personLabel(p: Person) {
   return `${p.firstName} ${p.lastName} (${p.documentNumber})`
@@ -55,6 +57,7 @@ export function OccupanciesPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+  const { buildingById } = useBuildingById(propertyId)
   const people = useEntityOptions<Person>('people-options', '/api/People')
 
   const form = useForm({
@@ -77,8 +80,8 @@ export function OccupanciesPage() {
   })
 
   const unitOptions = useMemo(
-    () => (units.data ?? []).map((u) => ({ value: u.id, label: u.code })),
-    [units.data],
+    () => toDwellingUnitSelectOptions(units.data ?? [], buildingById),
+    [units.data, buildingById],
   )
   const personOptions = useMemo(
     () => (people.data ?? []).map((p) => ({ value: p.id, label: personLabel(p) })),
@@ -87,9 +90,9 @@ export function OccupanciesPage() {
 
   const unitCodeById = useMemo(() => {
     const map = new Map<string, string>()
-    for (const u of units.data ?? []) map.set(u.id, u.code)
+    for (const u of units.data ?? []) map.set(u.id, formatUnitOptionLabel(u, buildingById))
     return map
-  }, [units.data])
+  }, [units.data, buildingById])
 
   const personNameById = useMemo(() => {
     const map = new Map<string, string>()
@@ -232,7 +235,7 @@ export function OccupanciesPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Ocupaciones"
+        title="Personas y ocupaciones"
         description="Vincule personas a unidades como propietarios, arrendatarios o residentes."
       />
       <ListToolbar

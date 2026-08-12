@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AppThemeProvider>
-        <Notifications position="top-center" />
+        <Notifications position="top-center" zIndex={1000} />
         <BrowserRouter>
           <App />
         </BrowserRouter>

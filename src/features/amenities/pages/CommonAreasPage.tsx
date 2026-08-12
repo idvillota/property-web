@@ -224,7 +224,7 @@ export function CommonAreasPage() {
   return (
     <Stack gap="md">
       <PageHeader
-        title="Zonas comunes"
+        title="Zonas"
         description="Amenidades disponibles para reserva: salón social, BBQ, piscina, gimnasio y más."
       />
       <ListToolbar

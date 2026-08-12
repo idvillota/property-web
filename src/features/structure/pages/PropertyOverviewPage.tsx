@@ -1,8 +1,8 @@
-import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core'
+import { Alert, Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useOutletContext } from 'react-router-dom'
 import { api } from '../../../api/client'
-import type { CoefficientSummary } from '../../../api/types'
+import type { CoefficientSummary, StructureComposerStatus } from '../../../api/types'
 import { usePropertyId } from '../../../hooks/usePropertyId'
 import { labelForOption, PROPERTY_USE_TYPE_OPTIONS } from '../../../lib/structureEnums'
 import type { PropertyWorkspaceContext } from '../layouts/PropertyWorkspaceLayout'
@@ -16,6 +16,16 @@ export function PropertyOverviewPage() {
     queryFn: async () => {
       const { data } = await api.get<CoefficientSummary>(
         `/api/Units/coefficient-summary?horizontalPropertyId=${encodeURIComponent(propertyId)}`,
+      )
+      return data
+    },
+  })
+
+  const structureQuery = useQuery({
+    queryKey: ['structure-composer-status', propertyId],
+    queryFn: async () => {
+      const { data } = await api.get<StructureComposerStatus>(
+        `/api/StructureComposer/status?horizontalPropertyId=${encodeURIComponent(propertyId)}`,
       )
       return data
     },
@@ -41,9 +51,20 @@ export function PropertyOverviewPage() {
           ) : null}
         </Stack>
         <Button component={Link} to="/settings" variant="light">
-          Editar configuración
+          Datos del conjunto
         </Button>
       </Group>
+
+      {structureQuery.data && !structureQuery.data.hasStructure ? (
+        <Alert color="teal" title="Configura la estructura">
+          Aún no hay bloques ni unidades. Usa el asistente para generar pisos y unidades de una vez.
+          <div>
+            <Button component={Link} to={`/properties/${propertyId}/estructura`} mt="sm" size="xs">
+              Configurar estructura
+            </Button>
+          </div>
+        </Alert>
+      ) : null}
 
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
         <Stack gap={2}>

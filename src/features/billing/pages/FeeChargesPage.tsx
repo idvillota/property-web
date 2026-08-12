@@ -33,6 +33,7 @@ import { MoneyInput } from '../../../components/shared/MoneyInput'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { StatusBadge } from '../../../components/shared/StatusBadge'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
+import { useBuildingById } from '../../../hooks/useBuildingById'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
@@ -49,6 +50,7 @@ import {
 } from '../../../lib/billingEnums'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { formatMoney } from '../../../lib/money'
+import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 
 function statusVariant(
   status: string | number,
@@ -84,6 +86,7 @@ export function FeeChargesPage() {
   const units = useEntityOptions<Unit>('unit-options', '/api/Units', {
     horizontalPropertyId: propertyId,
   })
+  const { buildingById } = useBuildingById(propertyId)
 
   const arrearsQuery = useQuery({
     queryKey: ['arrears-summary', propertyId],
@@ -107,8 +110,8 @@ export function FeeChargesPage() {
     [periods.data],
   )
   const unitOptions = useMemo(
-    () => (units.data ?? []).map((u) => ({ value: u.id, label: u.code })),
-    [units.data],
+    () => toDwellingUnitSelectOptions(units.data ?? [], buildingById),
+    [units.data, buildingById],
   )
 
   const form = useForm({

@@ -17,15 +17,19 @@ export const ROUTE_PERMISSIONS: Record<string, FeatureCode> = {
   '/team': FeatureCodes.organizationTeam,
   '/role-permissions': FeatureCodes.organizationRoles,
   '/neighborhoods': FeatureCodes.structureNeighborhoods,
+  '/vehicle-brands': FeatureCodes.structureVehicleBrands,
   '/properties': FeatureCodes.structureProperties,
   '/people': FeatureCodes.peopleManage,
 }
 
 const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, FeatureCode]> = [
+  [/^\/properties\/[^/]+\/estructura(?:\/|$)/, FeatureCodes.structureBuildings],
+  [/^\/properties\/[^/]+\/matriz(?:\/|$)/, FeatureCodes.structureBuildings],
   [/^\/properties\/[^/]+\/buildings(?:\/|$)/, FeatureCodes.structureBuildings],
   [/^\/properties\/[^/]+\/floors(?:\/|$)/, FeatureCodes.structureFloors],
   [/^\/properties\/[^/]+\/units(?:\/|$)/, FeatureCodes.structureUnits],
   [/^\/properties\/[^/]+\/occupancies(?:\/|$)/, FeatureCodes.peopleManage],
+  [/^\/properties\/[^/]+\/vehicles(?:\/|$)/, FeatureCodes.structureUnits],
   [/^\/properties\/[^/]+\/billing(?:\/|$)/, FeatureCodes.billingSettings],
   [/^\/properties\/[^/]+\/periods(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/charges(?:\/|$)/, FeatureCodes.billingCharges],

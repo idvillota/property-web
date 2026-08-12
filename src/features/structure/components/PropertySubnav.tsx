@@ -1,17 +1,16 @@
 import { Group, NavLink, Stack, Text } from '@mantine/core'
 import {
-  IconBuilding,
   IconCalendarCheck,
   IconCalendarEvent,
+  IconCar,
   IconCash,
   IconChartBar,
   IconCreditCard,
-  IconDoor,
   IconHome,
-  IconLayersIntersect,
   IconPackage,
   IconPool,
   IconReceipt,
+  IconSitemap,
   IconUsersGroup,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
@@ -38,42 +37,53 @@ type NavSection = {
 
 const SECTIONS: NavSection[] = [
   {
-    label: 'Estructura',
+    label: 'Copropiedad',
     items: [
       { to: '', label: 'Resumen', permission: FeatureCodes.structureProperties, icon: IconHome },
-      { to: 'buildings', label: 'Bloques', permission: FeatureCodes.structureBuildings, icon: IconBuilding },
-      { to: 'floors', label: 'Pisos', permission: FeatureCodes.structureFloors, icon: IconLayersIntersect },
-      { to: 'units', label: 'Unidades', permission: FeatureCodes.structureUnits, icon: IconDoor },
-      { to: 'occupancies', label: 'Ocupaciones', permission: FeatureCodes.peopleManage, icon: IconUsersGroup },
+      {
+        to: 'estructura',
+        label: 'Edificios y unidades',
+        permission: FeatureCodes.structureBuildings,
+        icon: IconSitemap,
+      },
+      {
+        to: 'occupancies',
+        label: 'Personas y ocupaciones',
+        permission: FeatureCodes.peopleManage,
+        icon: IconUsersGroup,
+      },
+      {
+        to: 'vehicles',
+        label: 'Vehículos',
+        permission: FeatureCodes.structureUnits,
+        icon: IconCar,
+      },
     ],
   },
   {
-    label: 'Facturación',
+    label: 'Cartera',
     items: [
-      { to: 'billing', label: 'Configuración', permission: FeatureCodes.billingSettings, icon: IconCash },
+      { to: 'billing', label: 'Cuotas', permission: FeatureCodes.billingSettings, icon: IconCash },
       { to: 'periods', label: 'Periodos', permission: FeatureCodes.billingCharges, icon: IconCalendarEvent },
       { to: 'charges', label: 'Cargos', permission: FeatureCodes.billingCharges, icon: IconReceipt },
       { to: 'payments', label: 'Pagos', permission: FeatureCodes.billingPayments, icon: IconCreditCard },
     ],
   },
   {
-    label: 'Zonas comunes',
+    label: 'Comunidad',
     items: [
-      { to: 'common-areas', label: 'Zonas comunes', permission: FeatureCodes.amenitiesAreas, icon: IconPool },
+      { to: 'common-areas', label: 'Zonas', permission: FeatureCodes.amenitiesAreas, icon: IconPool },
       {
         to: 'reservations',
         label: 'Reservas',
         permission: FeatureCodes.amenitiesReservations,
         icon: IconCalendarCheck,
       },
+      { to: 'reception', label: 'Portería', permission: FeatureCodes.receptionManage, icon: IconPackage },
     ],
   },
   {
-    label: 'Portería',
-    items: [{ to: 'reception', label: 'Portería', permission: FeatureCodes.receptionManage, icon: IconPackage }],
-  },
-  {
-    label: 'Reportes',
+    label: 'Análisis',
     items: [{ to: 'reports', label: 'Reportes', permission: FeatureCodes.reportsView, icon: IconChartBar }],
   },
 ]
