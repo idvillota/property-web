@@ -229,6 +229,7 @@ export type UnitOccupancy = {
   role: string
   isPrimary: boolean
   receivesBilling: boolean
+  isCommunicationResponsible: boolean
   startDate: string
   endDate: string | null
   isActive: boolean
@@ -329,6 +330,7 @@ export type UnitHouseholdPerson = {
   role: string
   isPrimary: boolean
   receivesBilling: boolean
+  isCommunicationResponsible: boolean
 }
 
 export type UnitAmenityLink = {
@@ -539,6 +541,7 @@ export type ReceptionItem = {
   horizontalPropertyId: string
   unitId: string | null
   personId: string | null
+  direction: string | number
   itemType: string | number
   status: string | number
   receivedAtUtc: string
@@ -549,6 +552,9 @@ export type ReceptionItem = {
   carrierOrSender: string | null
   trackingOrReference: string | null
   recipientName: string | null
+  authorizedPickupName1: string | null
+  authorizedPickupName2: string | null
+  deliveredToExternalName: string | null
   notes: string | null
   isActive: boolean
   unitCode?: string

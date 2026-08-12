@@ -27,9 +27,11 @@ export function ListToolbar({
             styles={{ root: { minHeight: 44 } }}
           />
         )}
-        {extra}
       </Group>
-      <Button onClick={onAdd}>{addLabel}</Button>
+      <Group gap="sm" align="center" wrap="wrap" justify="flex-end">
+        {extra}
+        <Button onClick={onAdd}>{addLabel}</Button>
+      </Group>
     </Group>
   )
 }

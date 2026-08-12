@@ -67,6 +67,7 @@ export function OccupanciesPage() {
       role: 'Owner',
       isPrimary: true,
       receivesBilling: true,
+      isCommunicationResponsible: true,
       startDate: '',
       endDate: '',
       isActive: true,
@@ -107,6 +108,7 @@ export function OccupanciesPage() {
       role: 'Owner',
       isPrimary: true,
       receivesBilling: true,
+      isCommunicationResponsible: true,
       startDate: new Date().toISOString().slice(0, 10),
       endDate: '',
       isActive: true,
@@ -121,6 +123,7 @@ export function OccupanciesPage() {
       role: item.role,
       isPrimary: item.isPrimary,
       receivesBilling: item.receivesBilling,
+      isCommunicationResponsible: item.isCommunicationResponsible,
       startDate: item.startDate?.slice(0, 10) ?? '',
       endDate: item.endDate?.slice(0, 10) ?? '',
       isActive: item.isActive,
@@ -136,6 +139,7 @@ export function OccupanciesPage() {
         role: form.values.role,
         isPrimary: form.values.isPrimary,
         receivesBilling: form.values.receivesBilling,
+        isCommunicationResponsible: form.values.isCommunicationResponsible,
         startDate: form.values.startDate,
         endDate: form.values.endDate.trim() || null,
       }
@@ -194,6 +198,12 @@ export function OccupanciesPage() {
         filterKey: 'role',
         filterOptions: OCCUPANCY_ROLE_OPTIONS.map((o) => ({ value: o.value, label: o.label })),
         render: (row) => labelForOption(OCCUPANCY_ROLE_OPTIONS, row.role),
+      },
+      {
+        key: 'isCommunicationResponsible',
+        header: 'Resp. comunicaciones',
+        filter: 'none',
+        render: (row) => (row.isCommunicationResponsible ? 'Sí' : '—'),
       },
       {
         key: 'startDate',
@@ -308,6 +318,11 @@ export function OccupanciesPage() {
             <Switch
               label="Recibe facturación"
               {...form.getInputProps('receivesBilling', { type: 'checkbox' })}
+            />
+            <Switch
+              label="Responsable de comunicaciones"
+              description="Recibe avisos de facturas públicas y comunicaciones de la unidad."
+              {...form.getInputProps('isCommunicationResponsible', { type: 'checkbox' })}
             />
             <TextInput label="Fecha de inicio" type="date" required {...form.getInputProps('startDate')} />
             <TextInput label="Fecha de fin" type="date" {...form.getInputProps('endDate')} />

@@ -175,6 +175,7 @@ export function UnitPersonasPanel({
         role: linkRole,
         isPrimary: isOwner && !hasOwners,
         receivesBilling: isOwner && !hasOwners,
+        isCommunicationResponsible: isOwner && !hasOwners,
         startDate: todayIso(),
         endDate: null,
       })
