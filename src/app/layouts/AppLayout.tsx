@@ -12,94 +12,20 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import {
-  IconBuildingCommunity,
-  IconCar,
-  IconIdBadge,
-  IconLayoutDashboard,
-  IconLayoutGrid,
-  IconLogout,
-  IconMapPin,
-  IconPalette,
-  IconServer,
-  IconSettings,
-  IconShieldLock,
-  IconUserPlus,
-  IconUsers,
-} from '@tabler/icons-react'
-import type { TablerIcon } from '@tabler/icons-react'
+import { IconLogout } from '@tabler/icons-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { AppLogo } from '../../components/shared/AppLogo'
 import { clearAuthSession } from '../../features/auth/applyAuthSession'
-import { FeatureCodes, ROLE_LABELS } from '../../lib/permissions'
+import { useCurrentProperty } from '../../hooks/useCurrentProperty'
+import { ROLE_LABELS } from '../../lib/permissions'
 import { useAuthStore } from '../../stores/authStore'
-
-type NavItem =
-  | { section: string }
-  | { to: string; label: string; permission: string; icon: TablerIcon }
-  | { to: string; label: string; platformAdmin: true; icon: TablerIcon }
-
-const NAV: NavItem[] = [
-  { to: '/dashboard', label: 'Inicio', permission: FeatureCodes.dashboardView, icon: IconLayoutDashboard },
-  {
-    to: '/properties',
-    label: 'Mi propiedad',
-    permission: FeatureCodes.structureProperties,
-    icon: IconBuildingCommunity,
-  },
-
-  { section: 'Catálogos' },
-  {
-    to: '/neighborhoods',
-    label: 'Barrios',
-    permission: FeatureCodes.structureNeighborhoods,
-    icon: IconMapPin,
-  },
-  {
-    to: '/vehicle-brands',
-    label: 'Marcas de vehículos',
-    permission: FeatureCodes.structureVehicleBrands,
-    icon: IconCar,
-  },
-
-  { section: 'Organización' },
-  {
-    to: '/people',
-    label: 'Directorio de personas',
-    permission: FeatureCodes.peopleManage,
-    icon: IconUsers,
-  },
-  { to: '/employees', label: 'Empleados', permission: FeatureCodes.organizationEmployees, icon: IconIdBadge },
-  { to: '/team', label: 'Equipo', permission: FeatureCodes.organizationTeam, icon: IconUserPlus },
-  {
-    to: '/role-permissions',
-    label: 'Roles y permisos',
-    permission: FeatureCodes.organizationRoles,
-    icon: IconShieldLock,
-  },
-
-  { section: 'Sistema' },
-  {
-    to: '/settings',
-    label: 'Datos del conjunto',
-    permission: FeatureCodes.settingsTenant,
-    icon: IconSettings,
-  },
-  {
-    to: '/settings/dashboard',
-    label: 'Panel de inicio',
-    permission: FeatureCodes.dashboardConfigure,
-    icon: IconLayoutGrid,
-  },
-  { to: '/settings/appearance', label: 'Apariencia', permission: FeatureCodes.dashboardView, icon: IconPalette },
-  {
-    to: '/platform/status',
-    label: 'Estado de la plataforma',
-    platformAdmin: true,
-    icon: IconServer,
-  },
-]
+import {
+  buildAppNav,
+  filterVisibleNav,
+  resolveActiveNavId,
+  type AppNavLeaf,
+} from '../navConfig'
 
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure()
@@ -111,6 +37,9 @@ export function AppLayout() {
   const tenantSlug = useAuthStore((s) => s.tenantSlug)
   const permissions = useAuthStore((s) => s.permissions)
   const isPlatformAdmin = useAuthStore((s) => s.isPlatformAdmin)
+  const currentProperty = useCurrentProperty()
+  const propertyId = currentProperty.data?.id ?? null
+  const propertyReady = !currentProperty.isLoading && Boolean(propertyId)
 
   const userSubtitle = useMemo(() => {
     const roleLabels = roles.map((role) => ROLE_LABELS[role] ?? role)
@@ -118,25 +47,15 @@ export function AppLayout() {
     return `${email} - ${roleLabels.join(', ')}`
   }, [email, roles])
 
-  const visibleNav = useMemo(() => {
-    const canSee = (item: Exclude<NavItem, { section: string }>) => {
-      if ('platformAdmin' in item) return item.platformAdmin && isPlatformAdmin
-      return permissions.includes(item.permission)
-    }
+  const visibleNav = useMemo(
+    () => filterVisibleNav(buildAppNav(propertyId), permissions, isPlatformAdmin),
+    [propertyId, permissions, isPlatformAdmin],
+  )
 
-    return NAV.filter((item) => {
-      if ('section' in item) {
-        const sectionIndex = NAV.indexOf(item)
-        for (let i = sectionIndex + 1; i < NAV.length; i++) {
-          const next = NAV[i]
-          if ('section' in next) break
-          if (canSee(next)) return true
-        }
-        return false
-      }
-      return canSee(item)
-    })
-  }, [permissions, isPlatformAdmin])
+  const activeNavId = useMemo(() => {
+    const links = visibleNav.filter((item): item is AppNavLeaf => item.kind === 'link')
+    return resolveActiveNavId(location.pathname, links)
+  }, [visibleNav, location.pathname])
 
   return (
     <AppShell
@@ -172,28 +91,36 @@ export function AppLayout() {
 
       <AppShell.Navbar p="md">
         <ScrollArea flex={1} offsetScrollbars>
-          {visibleNav.map((item, i) =>
-            'section' in item ? (
-              <Divider key={`s-${i}`} label={item.section} labelPosition="left" my="sm" />
-            ) : (
+          {visibleNav.map((item, i) => {
+            if (item.kind === 'section') {
+              return (
+                <Divider key={`s-${item.area}-${i}`} label={item.label} labelPosition="left" my="sm" />
+              )
+            }
+
+            const disabled = Boolean(item.requiresProperty && !propertyReady)
+            const icon = (
+              <ThemeIcon variant="light" size="md" radius="md">
+                <item.icon size={16} stroke={1.75} />
+              </ThemeIcon>
+            )
+
+            if (disabled) {
+              return <NavLink key={item.id} label={item.label} disabled leftSection={icon} />
+            }
+
+            return (
               <NavLink
-                key={item.to}
+                key={item.id}
                 component={Link}
                 to={item.to}
                 label={item.label}
-                leftSection={
-                  <ThemeIcon variant="light" size="md" radius="md">
-                    <item.icon size={16} stroke={1.75} />
-                  </ThemeIcon>
-                }
-                active={
-                  location.pathname === item.to ||
-                  (item.to !== '/dashboard' && location.pathname.startsWith(`${item.to}/`))
-                }
+                leftSection={icon}
+                active={activeNavId === item.id}
                 onClick={close}
               />
-            ),
-          )}
+            )
+          })}
           <Divider my="sm" />
           <UnstyledButton
             mt="xs"

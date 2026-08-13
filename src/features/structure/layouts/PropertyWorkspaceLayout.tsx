@@ -5,7 +5,6 @@ import { api } from '../../../api/client'
 import type { HorizontalProperty } from '../../../api/types'
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { usePropertyId } from '../../../hooks/usePropertyId'
-import { PropertySubnav } from '../components/PropertySubnav'
 
 export function PropertyWorkspaceLayout() {
   const propertyId = usePropertyId()
@@ -50,7 +49,6 @@ export function PropertyWorkspaceLayout() {
           </Text>
         }
       />
-      <PropertySubnav propertyId={propertyId} />
       <Outlet context={{ property }} />
     </Stack>
   )

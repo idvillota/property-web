@@ -3,8 +3,9 @@ import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { resolveDefaultLandingPath } from '../../../app/navConfig'
 import { api } from '../../../api/client'
-import type { AuthResponse, LoginTenantOption } from '../../../api/types'
+import type { AuthResponse, HorizontalProperty, LoginTenantOption } from '../../../api/types'
 import { AppLogo } from '../../../components/shared/AppLogo'
 import { ColorSchemeToggle } from '../../../components/shared/ColorSchemeToggle'
 import { applyAuthSession } from '../applyAuthSession'
@@ -41,13 +42,24 @@ export function LoginPage() {
     },
   })
 
-  const completeLogin = (data: AuthResponse) => {
+  const completeLogin = async (data: AuthResponse) => {
     applyAuthSession(data)
     notifications.show({ title: 'Bienvenido', message: data.tenantSlug, color: 'teal' })
     const returnUrl = searchParams.get('returnUrl')
-    const destination =
-      returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/dashboard'
-    navigate(destination)
+    if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+      navigate(returnUrl)
+      return
+    }
+
+    let propertyId: string | null = null
+    try {
+      const { data: property } = await api.get<HorizontalProperty>('/api/HorizontalProperties/current')
+      propertyId = property.id
+    } catch {
+      propertyId = null
+    }
+
+    navigate(resolveDefaultLandingPath(data.permissions, propertyId, data.isPlatformAdmin))
   }
 
   const submit = form.onSubmit(async (values) => {

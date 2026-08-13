@@ -1,6 +1,8 @@
 import { Center, Stack, Text, Title } from '@mantine/core'
 import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
+import { resolveDefaultLandingPath } from '../app/navConfig'
+import { useCurrentProperty } from '../hooks/useCurrentProperty'
 import type { FeatureCode } from '../lib/permissions'
 import { useAuthStore } from '../stores/authStore'
 
@@ -11,8 +13,12 @@ type FeatureGuardProps = {
 
 export function FeatureGuard({ permission, children }: FeatureGuardProps) {
   const hasPermission = useAuthStore((s) => s.hasPermission)
+  const permissions = useAuthStore((s) => s.permissions)
+  const isPlatformAdmin = useAuthStore((s) => s.isPlatformAdmin)
+  const propertyId = useCurrentProperty().data?.id ?? null
 
   if (!hasPermission(permission)) {
+    const fallback = resolveDefaultLandingPath(permissions, propertyId, isPlatformAdmin)
     return (
       <>
         <Center mih="50vh">
@@ -23,7 +29,7 @@ export function FeatureGuard({ permission, children }: FeatureGuardProps) {
             </Text>
           </Stack>
         </Center>
-        <Navigate to="/dashboard" replace />
+        <Navigate to={fallback} replace />
       </>
     )
   }

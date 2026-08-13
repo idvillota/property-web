@@ -4,6 +4,7 @@ import {
   Button,
   Divider,
   Group,
+  Paper,
   Select,
   Stack,
   Switch,
@@ -113,6 +114,14 @@ export function VehiclesPage() {
     () => (brands.data ?? []).map((b) => ({ value: b.id, label: b.name })),
     [brands.data],
   )
+
+  const parkingFilterOptions = useMemo(() => {
+    const units = (parkings.data ?? []).map((u) => ({
+      value: u.id,
+      label: formatUnitOptionLabel(u, buildingById),
+    }))
+    return [{ value: 'unassigned', label: 'Sin asignar' }, ...units]
+  }, [parkings.data, buildingById])
 
   const form = useForm({
     initialValues: {
@@ -288,6 +297,32 @@ export function VehiclesPage() {
         includeInactive={list.state.includeInactive}
         onIncludeInactiveChange={list.setIncludeInactive}
       />
+      <Paper withBorder p="sm" radius="md">
+        <Group gap="md" align="flex-end" wrap="wrap">
+          <Stack gap={4} style={{ flex: '1 1 220px', minWidth: 200 }}>
+            <Text size="sm" fw={500}>
+              Parqueadero
+            </Text>
+            <Select
+              placeholder="Todos los parqueaderos"
+              searchable
+              clearable
+              data={parkingFilterOptions}
+              value={list.state.columnFilters.unitId ?? null}
+              onChange={(v) => list.setColumnFilter('unitId', v ?? '')}
+            />
+          </Stack>
+          {list.state.columnFilters.unitId ? (
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => list.setColumnFilter('unitId', '')}
+            >
+              Limpiar filtros
+            </Button>
+          ) : null}
+        </Group>
+      </Paper>
       <PagedEntityView
         loading={listQuery.isLoading}
         data={listQuery.data}

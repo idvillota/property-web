@@ -28,6 +28,7 @@ export const ROLE_LABELS: Record<string, string> = {
   Administrator: 'Administrador',
   Owner: 'Propietario',
   Manager: 'Gerente',
+  Receptionist: 'Recepcionista',
 }
 
 /** Spanish labels for API feature codes (UI only; codes stay English). */

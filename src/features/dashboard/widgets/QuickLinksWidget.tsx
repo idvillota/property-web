@@ -1,16 +1,21 @@
 import { Anchor, Group, Stack, Text, ThemeIcon } from '@mantine/core'
 import {
-  IconBuildingCommunity,
+  IconCash,
+  IconChartBar,
   IconIdBadge,
   IconLayoutGrid,
+  IconPackage,
   IconSettings,
   IconShieldLock,
+  IconSitemap,
   IconUserPlus,
-  IconUsers,
+  IconUsersGroup,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
+import { propertyPath } from '../../../app/navConfig'
 import { FeatureCodes } from '../../../lib/permissions'
+import { useCurrentProperty } from '../../../hooks/useCurrentProperty'
 import { useAuthStore } from '../../../stores/authStore'
 
 type QuickLink = {
@@ -21,61 +26,85 @@ type QuickLink = {
   icon: TablerIcon
 }
 
-const LINKS: QuickLink[] = [
-  {
-    to: '/properties',
-    label: 'Mi propiedad',
-    description: 'Espacio de trabajo de la copropiedad',
-    permission: FeatureCodes.structureProperties,
-    icon: IconBuildingCommunity,
-  },
-  {
-    to: '/people',
-    label: 'Directorio de personas',
-    description: 'Propietarios, arrendatarios y contactos',
-    permission: FeatureCodes.peopleManage,
-    icon: IconUsers,
-  },
-  {
-    to: '/settings/dashboard',
-    label: 'Panel de inicio',
-    description: 'Organiza los widgets del inicio',
-    permission: FeatureCodes.dashboardConfigure,
-    icon: IconLayoutGrid,
-  },
-  {
-    to: '/team',
-    label: 'Equipo',
-    description: 'Invita usuarios a este tenant',
-    permission: FeatureCodes.organizationTeam,
-    icon: IconUserPlus,
-  },
-  {
-    to: '/role-permissions',
-    label: 'Roles',
-    description: 'Administra permisos por rol',
-    permission: FeatureCodes.organizationRoles,
-    icon: IconShieldLock,
-  },
-  {
-    to: '/employees',
-    label: 'Empleados',
-    description: 'Mantén los registros de personal',
-    permission: FeatureCodes.organizationEmployees,
-    icon: IconIdBadge,
-  },
-  {
-    to: '/settings',
-    label: 'Datos del conjunto',
-    description: 'Datos legales y del conjunto residencial',
-    permission: FeatureCodes.settingsTenant,
-    icon: IconSettings,
-  },
-]
-
 export function QuickLinksWidget() {
   const permissions = useAuthStore((s) => s.permissions)
-  const visible = LINKS.filter((link) => permissions.includes(link.permission))
+  const propertyId = useCurrentProperty().data?.id ?? null
+  const p = (suffix = '') => propertyPath(propertyId, suffix)
+
+  const links: QuickLink[] = [
+    {
+      to: p('reception'),
+      label: 'Portería',
+      description: 'Entregas entrantes y salientes',
+      permission: FeatureCodes.receptionManage,
+      icon: IconPackage,
+    },
+    {
+      to: p('payments'),
+      label: 'Pagos',
+      description: 'Registrar pagos de cuotas',
+      permission: FeatureCodes.billingPayments,
+      icon: IconCash,
+    },
+    {
+      to: p('estructura'),
+      label: 'Estructura',
+      description: 'Edificios, pisos y unidades',
+      permission: FeatureCodes.structureBuildings,
+      icon: IconSitemap,
+    },
+    {
+      to: p('occupancies'),
+      label: 'Personas y ocupaciones',
+      description: 'Habitantes y responsables',
+      permission: FeatureCodes.peopleManage,
+      icon: IconUsersGroup,
+    },
+    {
+      to: p('reports'),
+      label: 'Reportes',
+      description: 'Cartera, ocupación y más',
+      permission: FeatureCodes.reportsView,
+      icon: IconChartBar,
+    },
+    {
+      to: '/team',
+      label: 'Equipo',
+      description: 'Invita usuarios a este tenant',
+      permission: FeatureCodes.organizationTeam,
+      icon: IconUserPlus,
+    },
+    {
+      to: '/role-permissions',
+      label: 'Roles',
+      description: 'Administra permisos por rol',
+      permission: FeatureCodes.organizationRoles,
+      icon: IconShieldLock,
+    },
+    {
+      to: '/employees',
+      label: 'Empleados',
+      description: 'Mantén los registros de personal',
+      permission: FeatureCodes.organizationEmployees,
+      icon: IconIdBadge,
+    },
+    {
+      to: '/settings/dashboard',
+      label: 'Panel de inicio',
+      description: 'Organiza los widgets del inicio',
+      permission: FeatureCodes.dashboardConfigure,
+      icon: IconLayoutGrid,
+    },
+    {
+      to: '/settings',
+      label: 'Datos del conjunto',
+      description: 'Datos legales y del conjunto residencial',
+      permission: FeatureCodes.settingsTenant,
+      icon: IconSettings,
+    },
+  ]
+
+  const visible = links.filter((link) => permissions.includes(link.permission))
 
   if (visible.length === 0) {
     return (
