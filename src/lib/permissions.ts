@@ -19,6 +19,7 @@ export const FeatureCodes = {
   amenitiesAreas: 'amenities.areas',
   amenitiesReservations: 'amenities.reservations',
   receptionManage: 'reception.manage',
+  muralManage: 'mural.manage',
   reportsView: 'reports.view',
 } as const
 
@@ -52,6 +53,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'amenities.areas': 'Zonas comunes',
   'amenities.reservations': 'Reservas',
   'reception.manage': 'Portería',
+  'mural.manage': 'Mural',
   'reports.view': 'Reportes',
 }
 
@@ -63,6 +65,7 @@ export const FEATURE_MODULE_LABELS: Record<string, string> = {
   Billing: 'Facturación',
   Amenities: 'Amenidades',
   Reception: 'Portería',
+  Community: 'Comunidad',
   Reports: 'Reportes',
 }
 

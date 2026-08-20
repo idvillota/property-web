@@ -4,6 +4,7 @@ import {
   IconChartBar,
   IconIdBadge,
   IconLayoutGrid,
+  IconNews,
   IconPackage,
   IconSettings,
   IconShieldLock,
@@ -38,6 +39,13 @@ export function QuickLinksWidget() {
       description: 'Entregas entrantes y salientes',
       permission: FeatureCodes.receptionManage,
       icon: IconPackage,
+    },
+    {
+      to: p('mural'),
+      label: 'Mural',
+      description: 'Avisos oficiales y de la comunidad',
+      permission: FeatureCodes.muralManage,
+      icon: IconNews,
     },
     {
       to: p('payments'),

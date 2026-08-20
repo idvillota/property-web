@@ -19,6 +19,7 @@ import { BillingPeriodsPage } from './features/billing/pages/BillingPeriodsPage'
 import { BillingSettingsPage } from './features/billing/pages/BillingSettingsPage'
 import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
 import { PaymentsPage } from './features/billing/pages/PaymentsPage'
+import { MuralPage } from './features/community/pages/MuralPage'
 import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
 import { CarteraReportPage } from './features/reports/pages/CarteraReportPage'
 import { CoefficientsReportPage } from './features/reports/pages/CoefficientsReportPage'
@@ -75,6 +76,7 @@ export default function App() {
                 <Route path="payments" element={<PaymentsPage />} />
                 <Route path="common-areas" element={<CommonAreasPage />} />
                 <Route path="reservations" element={<ReservationsPage />} />
+                <Route path="mural" element={<MuralPage />} />
                 <Route path="reception" element={<ReceptionItemsPage />} />
                 <Route path="reports" element={<ReportsHubPage />} />
                 <Route path="reports/cartera" element={<CarteraReportPage />} />

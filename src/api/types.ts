@@ -566,6 +566,29 @@ export type ReceptionPendingCount = {
   pendingPickupCount: number
 }
 
+export type MuralPost = {
+  id: string
+  horizontalPropertyId: string
+  kind: string | number
+  category: string | number
+  title: string
+  body: string
+  contactPhone: string | null
+  contactEmail: string | null
+  contactNote: string | null
+  areaLabel: string | null
+  unitId: string | null
+  unitCode?: string | null
+  authorUserId: string | null
+  authorDisplayName: string
+  isPinned: boolean
+  isHidden: boolean
+  publishedAtUtc: string
+  expiresAtUtc: string | null
+  isActive: boolean
+  isExpired: boolean
+}
+
 export type ReportsOverview = {
   unitCount: number
   billableUnitCount: number

@@ -104,7 +104,7 @@ function AmenityKindSection({
   kind,
   propertyId,
   dwelling,
-  household,
+  household: _household,
   linked,
   onChanged,
 }: {
