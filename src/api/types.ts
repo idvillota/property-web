@@ -36,6 +36,54 @@ export type PortalHome = {
   quickLinks: PortalQuickLink[]
 }
 
+export type PortalAccountUnit = {
+  unitId: string
+  code: string
+  openBalance: number
+  overdueBalance: number
+  openChargeCount: number
+}
+
+export type PortalAccountPayment = {
+  paymentId: string
+  unitId: string
+  unitCode: string
+  amount: number
+  paidAt: string
+  method: string | number
+}
+
+export type PortalAccount = {
+  personId: string
+  personFullName: string
+  openBalance: number
+  overdueBalance: number
+  openChargeCount: number
+  units: PortalAccountUnit[]
+  recentPayments: PortalAccountPayment[]
+}
+
+export type PortalAccountCharge = {
+  feeChargeId: string
+  description: string
+  periodKey: string | null
+  chargeType: string | number
+  amount: number
+  amountPaid: number
+  balance: number
+  dueDate: string
+  status: string | number
+}
+
+export type PortalAccountUnitDetail = {
+  unitId: string
+  code: string
+  openBalance: number
+  overdueBalance: number
+  openCharges: PortalAccountCharge[]
+  recentPayments: PortalAccountPayment[]
+}
+
 export type TenantModuleFlags = {
   portal: boolean
   digitalPayments: boolean

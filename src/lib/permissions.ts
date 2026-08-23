@@ -24,6 +24,7 @@ export const FeatureCodes = {
   reportsView: 'reports.view',
   auditView: 'audit.view',
   portalAccess: 'portal.access',
+  portalAccountRead: 'portal.account.read',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -62,6 +63,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'reports.view': 'Reportes',
   'audit.view': 'Auditoría',
   'portal.access': 'Portal residentes',
+  'portal.account.read': 'Estado de cuenta (portal)',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
