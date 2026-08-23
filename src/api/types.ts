@@ -84,6 +84,39 @@ export type PortalAccountUnitDetail = {
   recentPayments: PortalAccountPayment[]
 }
 
+export type PortalCommonArea = {
+  id: string
+  horizontalPropertyId: string
+  name: string
+  areaType: string | number
+  capacity: number
+  requiresDeposit: boolean
+  depositAmount: number | null
+  rulesNotes: string | null
+  minDurationMinutes: number | null
+  maxDurationMinutes: number | null
+}
+
+export type PortalReservationSlot = {
+  startsAtUtc: string
+  endsAtUtc: string
+}
+
+export type PortalReservation = {
+  id: string
+  commonAreaId: string
+  commonAreaName: string
+  unitId: string
+  unitCode: string
+  startsAtUtc: string
+  endsAtUtc: string
+  status: string | number
+  attendeesCount: number
+  notes: string | null
+  isActive: boolean
+  canCancel: boolean
+}
+
 export type TenantModuleFlags = {
   portal: boolean
   digitalPayments: boolean

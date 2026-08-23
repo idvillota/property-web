@@ -41,6 +41,7 @@ import { PortalLayout } from './features/portal/layouts/PortalLayout'
 import { PortalProtectedRoute } from './features/portal/PortalProtectedRoute'
 import { PortalComingSoonPage } from './features/portal/pages/PortalComingSoonPage'
 import { PortalAccountPage } from './features/portal/pages/PortalAccountPage'
+import { PortalReservationsPage } from './features/portal/pages/PortalReservationsPage'
 import { PortalHomePage } from './features/portal/pages/PortalHomePage'
 import { PortalLoginPage } from './features/portal/pages/PortalLoginPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
@@ -73,7 +74,7 @@ export default function App() {
           <Route element={<PortalLayout />}>
             <Route path="/portal" element={<PortalHomePage />} />
             <Route path="/portal/cuenta" element={<PortalAccountPage />} />
-            <Route path="/portal/reservas" element={<PortalComingSoonPage title="Reservas" />} />
+            <Route path="/portal/reservas" element={<PortalReservationsPage />} />
             <Route path="/portal/mural" element={<PortalComingSoonPage title="Mural" />} />
             <Route path="/portal/pqrs" element={<PortalComingSoonPage title="PQRS" />} />
           </Route>
