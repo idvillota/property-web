@@ -378,6 +378,21 @@ export type UnitHousehold = {
   relatedStorages: UnitAmenityLink[]
 }
 
+export type UserPersonLink = {
+  id: string
+  userId: string
+  userEmail: string
+  personId: string
+  personFullName: string
+  isActive: boolean
+  unitIds: string[]
+}
+
+export type LinkUserToPersonRequest = {
+  userId?: string | null
+  email?: string | null
+}
+
 export type PersonOverview = {
   personId: string
   fullName: string

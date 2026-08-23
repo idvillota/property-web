@@ -25,6 +25,7 @@ import {
   OCCUPANCY_ROLE_OPTIONS,
   UNIT_TYPE_OPTIONS,
 } from '../../../lib/structureEnums'
+import { PersonAccessLinkPanel } from './PersonAccessLinkPanel'
 
 const RESERVATION_STATUS: Record<string, string> = {
   Pending: 'Pendiente',
@@ -109,6 +110,8 @@ export function PersonOverviewDrawer({ personId, onClose }: Props) {
               </Text>
             </Paper>
           </SimpleGrid>
+
+          {personId ? <PersonAccessLinkPanel personId={personId} /> : null}
 
           <Stack gap="xs">
             <Group gap={8}>
