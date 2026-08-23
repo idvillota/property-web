@@ -46,6 +46,7 @@ import { PortalAccountPage } from './features/portal/pages/PortalAccountPage'
 import { PortalPayPage } from './features/portal/pages/PortalPayPage'
 import { PortalPayResultPage } from './features/portal/pages/PortalPayResultPage'
 import { PortalReservationsPage } from './features/portal/pages/PortalReservationsPage'
+import { PortalMuralPage } from './features/portal/pages/PortalMuralPage'
 import { PortalHomePage } from './features/portal/pages/PortalHomePage'
 import { PortalLoginPage } from './features/portal/pages/PortalLoginPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
@@ -81,7 +82,7 @@ export default function App() {
             <Route path="/portal/cuenta/pagar" element={<PortalPayPage />} />
             <Route path="/portal/cuenta/pagar/resultado" element={<PortalPayResultPage />} />
             <Route path="/portal/reservas" element={<PortalReservationsPage />} />
-            <Route path="/portal/mural" element={<PortalComingSoonPage title="Mural" />} />
+            <Route path="/portal/mural" element={<PortalMuralPage />} />
             <Route path="/portal/pqrs" element={<PortalComingSoonPage title="PQRS" />} />
           </Route>
         </Route>

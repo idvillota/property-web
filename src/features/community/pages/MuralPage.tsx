@@ -44,6 +44,7 @@ import {
   MURAL_CATEGORY_OPTIONS,
   MURAL_KIND_OPTIONS,
 } from '../../../lib/muralEnums'
+import { muralPageListsPosts } from '../lib/muralPageListsPosts'
 
 function defaultExpiryIso() {
   const d = new Date()
@@ -205,6 +206,7 @@ export function MuralPage() {
   const categoryFilter = list.state.columnFilters.category || ''
   const items = listQuery.data?.items ?? []
   const totalPages = listQuery.data?.totalPages ?? 1
+  const listsPosts = !list.state.includeInactive && muralPageListsPosts(items)
 
   const composeForm = (
     <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
@@ -375,6 +377,7 @@ export function MuralPage() {
             <h1 className="mural-board__brand">Mural</h1>
             <p className="mural-board__lede">
               Avisos oficiales y de vecinos — un tablero, no una tabla.
+              {listsPosts ? ` · ${items.length} activo${items.length === 1 ? '' : 's'}` : ''}
             </p>
           </div>
           {!isMobile ? (
@@ -428,6 +431,12 @@ export function MuralPage() {
                 borderColor: 'transparent',
               },
             }}
+          />
+          <Switch
+            size="xs"
+            label="Incluir inactivos"
+            checked={list.state.includeInactive}
+            onChange={(e) => list.setIncludeInactive(e.currentTarget.checked)}
           />
         </div>
 

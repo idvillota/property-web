@@ -27,6 +27,7 @@ export const FeatureCodes = {
   portalAccountRead: 'portal.account.read',
   portalReservations: 'portal.reservations',
   portalPay: 'portal.pay',
+  portalMuralRead: 'portal.mural.read',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -68,6 +69,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'portal.account.read': 'Estado de cuenta (portal)',
   'portal.reservations': 'Reservas (portal)',
   'portal.pay': 'Pagar PSE (portal)',
+  'portal.mural.read': 'Mural (portal)',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
