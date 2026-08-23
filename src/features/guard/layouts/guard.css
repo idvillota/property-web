@@ -1,0 +1,80 @@
+.guard-shell {
+  min-height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgb(20 120 110 / 18%), transparent 55%),
+    linear-gradient(180deg, #0f1c1a 0%, #152422 40%, #101a18 100%);
+  color: #f2f7f5;
+}
+
+.guard-shell__header {
+  padding: 14px 16px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+}
+
+.guard-shell__brand {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.guard-shell__main {
+  flex: 1;
+  padding: 8px 12px 88px;
+  overflow: auto;
+}
+
+.guard-shell__nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: min(430px, 100%);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: rgb(12 22 20 / 92%);
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  backdrop-filter: blur(12px);
+}
+
+.guard-shell__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  color: rgb(210 224 220 / 70%);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.guard-shell__tab--active {
+  color: #7dffe6;
+  background: rgb(125 255 230 / 10%);
+}
+
+.guard-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 4%);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.guard-card + .guard-card {
+  margin-top: 8px;
+}

@@ -794,6 +794,9 @@ export type VisitLog = {
   status: string | number
   notes: string | null
   visitorWasReused?: boolean
+  approvalExpiresAtUtc?: string | null
+  decidedAtUtc?: string | null
+  overrideReason?: string | null
 }
 
 export type MuralPost = {

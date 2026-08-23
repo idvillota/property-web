@@ -48,8 +48,14 @@ import { PortalPayResultPage } from './features/portal/pages/PortalPayResultPage
 import { PortalReservationsPage } from './features/portal/pages/PortalReservationsPage'
 import { PortalMuralPage } from './features/portal/pages/PortalMuralPage'
 import { PortalPqrsPage } from './features/portal/pages/PortalPqrsPage'
+import { PortalVisitsPage } from './features/portal/pages/PortalVisitsPage'
 import { PortalHomePage } from './features/portal/pages/PortalHomePage'
 import { PortalLoginPage } from './features/portal/pages/PortalLoginPage'
+import { GuardLayout } from './features/guard/layouts/GuardLayout'
+import { GuardDeliveriesPage } from './features/guard/pages/GuardDeliveriesPage'
+import { GuardVisitsPage } from './features/guard/pages/GuardVisitsPage'
+import { GuardParkingPage } from './features/guard/pages/GuardParkingPage'
+import { ReceptionHubPage } from './features/reception/pages/ReceptionHubPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
 import { useAuthStore } from './stores/authStore'
 import { FeatureCodes } from './lib/permissions'
@@ -84,12 +90,19 @@ export default function App() {
             <Route path="/portal/cuenta/pagar/resultado" element={<PortalPayResultPage />} />
             <Route path="/portal/reservas" element={<PortalReservationsPage />} />
             <Route path="/portal/mural" element={<PortalMuralPage />} />
+            <Route path="/portal/visitas" element={<PortalVisitsPage />} />
             <Route path="/portal/pqrs" element={<PortalPqrsPage />} />
             <Route path="/portal/pqrs/nuevo" element={<PortalPqrsPage />} />
           </Route>
         </Route>
 
         <Route element={<ProtectedRoute />}>
+          <Route element={<GuardLayout />}>
+            <Route path="/guard" element={<Navigate to="/guard/entregas" replace />} />
+            <Route path="/guard/entregas" element={<GuardDeliveriesPage />} />
+            <Route path="/guard/visitas" element={<GuardVisitsPage />} />
+            <Route path="/guard/parking" element={<GuardParkingPage />} />
+          </Route>
           <Route element={<FeatureRoute />}>
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -118,6 +131,8 @@ export default function App() {
                 <Route path="mural" element={<MuralPage />} />
                 <Route path="pqrs" element={<PqrsInboxPage />} />
                 <Route path="reception" element={<ReceptionItemsPage />} />
+                <Route path="reception/hub" element={<Navigate to="entregas" replace />} />
+                <Route path="reception/hub/:tab" element={<ReceptionHubPage />} />
                 <Route path="reception/visitors" element={<VisitorsPage />} />
                 <Route path="reports" element={<ReportsHubPage />} />
                 <Route path="reports/cartera" element={<CarteraReportPage />} />

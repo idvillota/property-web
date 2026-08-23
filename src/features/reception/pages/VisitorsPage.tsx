@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Group, Select, Stack, Text, Textarea, TextInput } from '@mantine/core'
+import { Alert, Button, Card, Group, Select, Stack, Switch, Text, Textarea, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
 import { useMutation } from '@tanstack/react-query'
@@ -64,6 +64,7 @@ export function VisitorsPage() {
       lastName: '',
       unitId: '',
       notes: '',
+      requiresApproval: true,
     },
     validate: {
       documentType: (v) => (!v ? 'Obligatorio' : null),
@@ -95,6 +96,7 @@ export function VisitorsPage() {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim() || null,
         notes: values.notes.trim() || null,
+        requiresApproval: values.requiresApproval,
       })
       return data
     },
@@ -202,6 +204,11 @@ export function VisitorsPage() {
             {...form.getInputProps('unitId')}
           />
           <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
+          <Switch
+            label="Requiere autorización del habitante"
+            description="El residente aprueba o rechaza desde el portal"
+            {...form.getInputProps('requiresApproval', { type: 'checkbox' })}
+          />
           <Button type="submit" loading={registerMutation.isPending}>
             Registrar visita
           </Button>

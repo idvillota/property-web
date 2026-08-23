@@ -144,6 +144,7 @@ export function ReceptionItemsPage() {
       authorizedPickupName1: '',
       authorizedPickupName2: '',
       notes: '',
+      notify: true,
       isActive: true,
     },
     validate: {
@@ -218,6 +219,7 @@ export function ReceptionItemsPage() {
       authorizedPickupName1: '',
       authorizedPickupName2: '',
       notes: '',
+      notify: true,
       isActive: true,
     })
     setDrawer('create')
@@ -234,6 +236,7 @@ export function ReceptionItemsPage() {
       authorizedPickupName1: item.authorizedPickupName1 ?? '',
       authorizedPickupName2: item.authorizedPickupName2 ?? '',
       notes: item.notes ?? '',
+      notify: true,
       isActive: item.isActive,
     })
     setDrawer(item)
@@ -260,6 +263,7 @@ export function ReceptionItemsPage() {
         authorizedPickupName1: outbound ? form.values.authorizedPickupName1.trim() || null : null,
         authorizedPickupName2: outbound ? form.values.authorizedPickupName2.trim() || null : null,
         notes: form.values.notes.trim() || null,
+        ...(drawer === 'create' ? { notify: form.values.notify } : {}),
       }
       if (drawer === 'create') {
         const { data } = await api.post<ReceptionItem>('/api/ReceptionItems', payload)
@@ -753,6 +757,13 @@ export function ReceptionItemsPage() {
               </>
             )}
             <Textarea label="Notas" minRows={2} {...form.getInputProps('notes')} />
+            {drawer === 'create' ? (
+              <Switch
+                label="Notificar al residente"
+                description="Envía email al contacto de la unidad"
+                {...form.getInputProps('notify', { type: 'checkbox' })}
+              />
+            ) : null}
             {drawer !== 'create' ? (
               <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             ) : null}

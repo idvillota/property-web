@@ -20,6 +20,7 @@ export const FeatureCodes = {
   amenitiesReservations: 'amenities.reservations',
   receptionManage: 'reception.manage',
   receptionVisits: 'reception.visits',
+  receptionIntercom: 'reception.intercom',
   muralManage: 'mural.manage',
   reportsView: 'reports.view',
   auditView: 'audit.view',
@@ -28,6 +29,7 @@ export const FeatureCodes = {
   portalReservations: 'portal.reservations',
   portalPay: 'portal.pay',
   portalMuralRead: 'portal.mural.read',
+  portalVisits: 'portal.visits',
   pqrsCreate: 'pqrs.create',
   pqrsManage: 'pqrs.manage',
 } as const
@@ -64,6 +66,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'amenities.reservations': 'Reservas',
   'reception.manage': 'Portería',
   'reception.visits': 'Visitantes',
+  'reception.intercom': 'Citofonía',
   'mural.manage': 'Mural',
   'reports.view': 'Reportes',
   'audit.view': 'Auditoría',
@@ -72,6 +75,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'portal.reservations': 'Reservas (portal)',
   'portal.pay': 'Pagar PSE (portal)',
   'portal.mural.read': 'Mural (portal)',
+  'portal.visits': 'Autorizar visitas (portal)',
   'pqrs.create': 'Crear PQRS (portal)',
   'pqrs.manage': 'Bandeja PQRS',
 }
