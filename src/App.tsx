@@ -20,6 +20,7 @@ import { BillingSettingsPage } from './features/billing/pages/BillingSettingsPag
 import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
 import { PaymentsPage } from './features/billing/pages/PaymentsPage'
 import { PaymentIntentsPage } from './features/billing/pages/PaymentIntentsPage'
+import { DunningPage } from './features/billing/pages/DunningPage'
 import { MuralPage } from './features/community/pages/MuralPage'
 import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
 import { VisitorsPage } from './features/reception/pages/VisitorsPage'
@@ -108,6 +109,7 @@ export default function App() {
                 <Route path="charges" element={<FeeChargesPage />} />
                 <Route path="payments" element={<PaymentsPage />} />
                 <Route path="payment-intents" element={<PaymentIntentsPage />} />
+                <Route path="billing/dunning" element={<DunningPage />} />
                 <Route path="common-areas" element={<CommonAreasPage />} />
                 <Route path="reservations" element={<ReservationsPage />} />
                 <Route path="mural" element={<MuralPage />} />

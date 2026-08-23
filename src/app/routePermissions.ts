@@ -43,6 +43,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/charges(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/payments(?:\/|$)/, FeatureCodes.billingPayments],
   [/^\/properties\/[^/]+\/payment-intents(?:\/|$)/, FeatureCodes.billingPayments],
+  [/^\/properties\/[^/]+\/billing\/dunning(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
   [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
   [/^\/properties\/[^/]+\/mural(?:\/|$)/, FeatureCodes.muralManage],

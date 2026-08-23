@@ -611,6 +611,28 @@ export type FeeSettings = {
   notes: string | null
 }
 
+export type DunningRule = {
+  id: string
+  horizontalPropertyId: string
+  daysOverdue: number
+  isEnabled: boolean
+  cooldownDays: number
+  emailSubjectTemplate: string
+  emailBodyTemplate: string
+}
+
+export type DunningSendLog = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string
+  unitCode: string | null
+  dunningRuleId: string
+  daysOverdueSnapshot: number
+  balanceSnapshot: number
+  toEmail: string
+  sentAtUtc: string
+}
+
 export type BillingPeriod = {
   id: string
   horizontalPropertyId: string

@@ -164,6 +164,16 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       requiresProperty: true,
       activeMatch: 'prefix',
     },
+    {
+      kind: 'link',
+      id: 'cartera-dunning',
+      to: p('billing/dunning'),
+      label: 'Cobranza',
+      icon: IconReceipt,
+      permission: FeatureCodes.billingCharges,
+      requiresProperty: true,
+      activeMatch: 'prefix',
+    },
 
     { kind: 'section', area: 'contabilidad', label: 'Contabilidad' },
     {
