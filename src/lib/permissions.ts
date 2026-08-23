@@ -21,6 +21,7 @@ export const FeatureCodes = {
   receptionManage: 'reception.manage',
   muralManage: 'mural.manage',
   reportsView: 'reports.view',
+  auditView: 'audit.view',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -55,6 +56,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'reception.manage': 'Portería',
   'mural.manage': 'Mural',
   'reports.view': 'Reportes',
+  'audit.view': 'Auditoría',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
