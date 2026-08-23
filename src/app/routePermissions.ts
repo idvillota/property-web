@@ -59,7 +59,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
     { anyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits] },
   ],
   [/^\/properties\/[^/]+\/reception(?:\/|$)/, FeatureCodes.receptionManage],
-  [/^\/guard(?:\/|$)/, { anyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits] }],
+  [/^\/guard(?:\/|$)/, { anyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits, FeatureCodes.visitorParking] }],
   [/^\/properties\/[^/]+\/reports(?:\/|$)/, FeatureCodes.reportsView],
   [/^\/properties\/[^/]+\/accounting\/coa(?:\/|$)/, FeatureCodes.accountingCoa],
   [/^\/properties\/[^/]+\/accounting\/journals(?:\/|$)/, FeatureCodes.accountingJournals],
@@ -70,6 +70,14 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/accounting\/reports(?:\/|$)/, FeatureCodes.accountingReports],
   [/^\/properties\/[^/]+\/accounting\/bank-rec(?:\/|$)/, FeatureCodes.accountingBank],
   [/^\/properties\/[^/]+\/accounting(?:\/|$)/, FeatureCodes.accountingCoa],
+  [/^\/properties\/[^/]+\/assemblies(?:\/|$)/, FeatureCodes.assemblyManage],
+  [/^\/properties\/[^/]+\/visitor-parking(?:\/|$)/, FeatureCodes.visitorParking],
+  [/^\/properties\/[^/]+\/library(?:\/|$)/, FeatureCodes.docsLibrary],
+  [/^\/properties\/[^/]+\/maintenance(?:\/|$)/, FeatureCodes.maintenancePlan],
+  [/^\/properties\/[^/]+\/insurance(?:\/|$)/, FeatureCodes.insurancePolicies],
+  [/^\/properties\/[^/]+\/polls(?:\/|$)/, FeatureCodes.pollsManage],
+  [/^\/portal\/library(?:\/|$)/, FeatureCodes.portalLibrary],
+  [/^\/portal\/polls(?:\/|$)/, FeatureCodes.portalPolls],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 

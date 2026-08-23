@@ -40,6 +40,15 @@ export const FeatureCodes = {
   accountingTax: 'accounting.tax',
   accountingReports: 'accounting.reports',
   accountingBank: 'accounting.bank',
+  assemblyManage: 'assembly.manage',
+  assemblyVote: 'assembly.vote',
+  visitorParking: 'visitor.parking',
+  docsLibrary: 'docs.library',
+  maintenancePlan: 'maintenance.plan',
+  insurancePolicies: 'insurance.policies',
+  pollsManage: 'polls.manage',
+  portalLibrary: 'portal.library',
+  portalPolls: 'portal.polls',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -95,6 +104,15 @@ export const FEATURE_LABELS: Record<string, string> = {
   'accounting.tax': 'Retenciones',
   'accounting.reports': 'Estados financieros',
   'accounting.bank': 'Conciliación bancaria',
+  'assembly.manage': 'Gestionar asambleas',
+  'assembly.vote': 'Votar en asamblea',
+  'visitor.parking': 'Parqueadero visitantes',
+  'docs.library': 'Biblioteca digital',
+  'maintenance.plan': 'Mantenimiento preventivo',
+  'insurance.policies': 'Pólizas de seguros',
+  'polls.manage': 'Encuestas y votaciones',
+  'portal.library': 'Biblioteca (portal)',
+  'portal.polls': 'Encuestas (portal)',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
@@ -109,6 +127,7 @@ export const FEATURE_MODULE_LABELS: Record<string, string> = {
   Reports: 'Reportes',
   Portal: 'Portal',
   Accounting: 'Contabilidad',
+  Assemblies: 'Asambleas',
 }
 
 export function featureLabel(code: string, fallbackName?: string) {

@@ -66,6 +66,14 @@ import { GuardDeliveriesPage } from './features/guard/pages/GuardDeliveriesPage'
 import { GuardVisitsPage } from './features/guard/pages/GuardVisitsPage'
 import { GuardParkingPage } from './features/guard/pages/GuardParkingPage'
 import { ReceptionHubPage } from './features/reception/pages/ReceptionHubPage'
+import { AssembliesPage, AssemblyAttendancePage, AssemblyVotesPage } from './features/assemblies/pages/AssembliesPage'
+import { VisitorParkingSettingsPage } from './features/parking/pages/VisitorParkingSettingsPage'
+import { LibraryPage } from './features/community/pages/LibraryPage'
+import { MaintenancePage } from './features/community/pages/MaintenancePage'
+import { InsurancePage } from './features/community/pages/InsurancePage'
+import { PollsPage } from './features/community/pages/PollsPage'
+import { PortalLibraryPage } from './features/portal/pages/PortalLibraryPage'
+import { PortalPollsPage } from './features/portal/pages/PortalPollsPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
 import { useAuthStore } from './stores/authStore'
 import { FeatureCodes } from './lib/permissions'
@@ -103,6 +111,8 @@ export default function App() {
             <Route path="/portal/visitas" element={<PortalVisitsPage />} />
             <Route path="/portal/pqrs" element={<PortalPqrsPage />} />
             <Route path="/portal/pqrs/nuevo" element={<PortalPqrsPage />} />
+            <Route path="/portal/library" element={<PortalLibraryPage />} />
+            <Route path="/portal/polls" element={<PortalPollsPage />} />
           </Route>
         </Route>
 
@@ -160,6 +170,14 @@ export default function App() {
                 <Route path="accounting/tax" element={<TaxPage />} />
                 <Route path="accounting/reports" element={<AccountingReportsPage />} />
                 <Route path="accounting/bank-rec" element={<BankRecPage />} />
+                <Route path="assemblies" element={<AssembliesPage />} />
+                <Route path="assemblies/:assemblyId/attendance" element={<AssemblyAttendancePage />} />
+                <Route path="assemblies/:assemblyId/votes" element={<AssemblyVotesPage />} />
+                <Route path="visitor-parking/settings" element={<VisitorParkingSettingsPage />} />
+                <Route path="library" element={<LibraryPage />} />
+                <Route path="maintenance" element={<MaintenancePage />} />
+                <Route path="insurance" element={<InsurancePage />} />
+                <Route path="polls" element={<PollsPage />} />
               </Route>
               <Route path="/people" element={<PeoplePage />} />
               <Route path="/employees" element={<EmployeesPage />} />
