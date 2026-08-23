@@ -1,5 +1,9 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import { isPlatformOnlyRoute, resolveRoutePermission } from '../app/routePermissions'
+import {
+  isAnyOfPermission,
+  isPlatformOnlyRoute,
+  resolveRoutePermission,
+} from '../app/routePermissions'
 import { FeatureGuard } from './FeatureGuard'
 import { PlatformGuard } from './PlatformGuard'
 
@@ -14,14 +18,22 @@ export function FeatureRoute() {
     )
   }
 
-  const permission = resolveRoutePermission(pathname)
+  const requirement = resolveRoutePermission(pathname)
 
-  if (!permission) {
+  if (!requirement) {
     return <Outlet />
   }
 
+  if (isAnyOfPermission(requirement)) {
+    return (
+      <FeatureGuard anyOf={requirement.anyOf}>
+        <Outlet />
+      </FeatureGuard>
+    )
+  }
+
   return (
-    <FeatureGuard permission={permission}>
+    <FeatureGuard permission={requirement}>
       <Outlet />
     </FeatureGuard>
   )

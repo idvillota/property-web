@@ -7,18 +7,26 @@ import type { FeatureCode } from '../lib/permissions'
 import { useAuthStore } from '../stores/authStore'
 
 type FeatureGuardProps = {
-  permission: FeatureCode
+  permission?: FeatureCode
+  /** Allow access when the user holds any of these codes (REC-010). */
+  anyOf?: FeatureCode[]
   children: ReactNode
 }
 
-export function FeatureGuard({ permission, children }: FeatureGuardProps) {
+export function FeatureGuard({ permission, anyOf, children }: FeatureGuardProps) {
   const hasPermission = useAuthStore((s) => s.hasPermission)
   const permissions = useAuthStore((s) => s.permissions)
   const isPlatformAdmin = useAuthStore((s) => s.isPlatformAdmin)
   const modules = useAuthStore((s) => s.modules)
   const propertyId = useCurrentProperty().data?.id ?? null
 
-  if (!hasPermission(permission)) {
+  const allowed = anyOf?.length
+    ? anyOf.some((code) => hasPermission(code))
+    : permission
+      ? hasPermission(permission)
+      : true
+
+  if (!allowed) {
     const fallback = resolveDefaultLandingPath(permissions, propertyId, isPlatformAdmin, modules)
     return (
       <>

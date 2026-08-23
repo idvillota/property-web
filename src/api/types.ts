@@ -625,6 +625,21 @@ export type ReceptionPendingCount = {
   pendingPickupCount: number
 }
 
+export type VisitLog = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string
+  unitCode: string
+  visitorPersonId: string
+  visitorFullName: string
+  documentType: string | number
+  documentNumber: string
+  enteredAtUtc: string
+  status: string | number
+  notes: string | null
+  visitorWasReused?: boolean
+}
+
 export type MuralPost = {
   id: string
   horizontalPropertyId: string

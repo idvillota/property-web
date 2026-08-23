@@ -49,7 +49,10 @@ export type AppNavLeaf = {
   to: string
   label: string
   icon: TablerIcon
+  /** Required single permission (ignored if permissionsAnyOf is set). */
   permission?: string
+  /** Show link when the user has any of these permissions. */
+  permissionsAnyOf?: string[]
   platformAdmin?: boolean
   /** ARCH-002 — hide when tenant module flag is off. */
   tenantModule?: TenantModuleNavKey
@@ -96,6 +99,16 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       label: 'Entregas',
       icon: IconPackage,
       permission: FeatureCodes.receptionManage,
+      requiresProperty: true,
+      activeMatch: 'exact',
+    },
+    {
+      kind: 'link',
+      id: 'porteria-visitantes',
+      to: p('reception/visitors'),
+      label: 'Visitantes',
+      icon: IconIdBadge,
+      permissionsAnyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits],
       requiresProperty: true,
       activeMatch: 'prefix',
     },
@@ -411,6 +424,8 @@ export function filterVisibleNav(
   const canSee = (item: AppNavLeaf) => {
     if (item.platformAdmin) return isPlatformAdmin
     if (item.tenantModule && !isTenantModuleEnabled(modules, item.tenantModule)) return false
+    if (item.permissionsAnyOf?.length)
+      return item.permissionsAnyOf.some((code) => permissions.includes(code))
     if (!item.permission) return true
     return permissions.includes(item.permission)
   }

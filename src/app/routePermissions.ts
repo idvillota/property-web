@@ -7,6 +7,14 @@ export function isPlatformOnlyRoute(pathname: string): boolean {
   return PLATFORM_ONLY_ROUTES.has(pathname)
 }
 
+export type RoutePermissionRequirement = FeatureCode | { anyOf: FeatureCode[] }
+
+export function isAnyOfPermission(
+  requirement: RoutePermissionRequirement,
+): requirement is { anyOf: FeatureCode[] } {
+  return typeof requirement === 'object' && requirement !== null && 'anyOf' in requirement
+}
+
 /** Route path → required feature permission (must match AppLayout nav). */
 export const ROUTE_PERMISSIONS: Record<string, FeatureCode> = {
   '/dashboard': FeatureCodes.dashboardView,
@@ -22,7 +30,7 @@ export const ROUTE_PERMISSIONS: Record<string, FeatureCode> = {
   '/people': FeatureCodes.peopleManage,
 }
 
-const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, FeatureCode]> = [
+const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/estructura(?:\/|$)/, FeatureCodes.structureBuildings],
   [/^\/properties\/[^/]+\/matriz(?:\/|$)/, FeatureCodes.structureBuildings],
   [/^\/properties\/[^/]+\/buildings(?:\/|$)/, FeatureCodes.structureBuildings],
@@ -37,12 +45,17 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, FeatureCode]> = [
   [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
   [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
   [/^\/properties\/[^/]+\/mural(?:\/|$)/, FeatureCodes.muralManage],
+  // More specific than /reception — manage OR visits (REC-010)
+  [
+    /^\/properties\/[^/]+\/reception\/visitors(?:\/|$)/,
+    { anyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits] },
+  ],
   [/^\/properties\/[^/]+\/reception(?:\/|$)/, FeatureCodes.receptionManage],
   [/^\/properties\/[^/]+\/reports(?:\/|$)/, FeatureCodes.reportsView],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 
-export function resolveRoutePermission(pathname: string): FeatureCode | null {
+export function resolveRoutePermission(pathname: string): RoutePermissionRequirement | null {
   const exact = ROUTE_PERMISSIONS[pathname]
   if (exact) return exact
 

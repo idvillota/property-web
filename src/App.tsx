@@ -21,6 +21,7 @@ import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
 import { PaymentsPage } from './features/billing/pages/PaymentsPage'
 import { MuralPage } from './features/community/pages/MuralPage'
 import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
+import { VisitorsPage } from './features/reception/pages/VisitorsPage'
 import { CarteraReportPage } from './features/reports/pages/CarteraReportPage'
 import { CoefficientsReportPage } from './features/reports/pages/CoefficientsReportPage'
 import { CollectionsReportPage } from './features/reports/pages/CollectionsReportPage'
@@ -103,6 +104,7 @@ export default function App() {
                 <Route path="reservations" element={<ReservationsPage />} />
                 <Route path="mural" element={<MuralPage />} />
                 <Route path="reception" element={<ReceptionItemsPage />} />
+                <Route path="reception/visitors" element={<VisitorsPage />} />
                 <Route path="reports" element={<ReportsHubPage />} />
                 <Route path="reports/cartera" element={<CarteraReportPage />} />
                 <Route path="reports/collections" element={<CollectionsReportPage />} />
