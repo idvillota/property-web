@@ -30,6 +30,7 @@ import {
   resolveActiveNavId,
   type AppNavLeaf,
 } from '../navConfig'
+import { appLayoutMobileNavSmoke } from './lib/appLayoutMobileNavSmoke'
 
 export function AppLayout() {
   const [opened, { toggle, close }] = useDisclosure()
@@ -76,6 +77,12 @@ export function AppLayout() {
     const links = visibleNav.filter((item): item is AppNavLeaf => item.kind === 'link')
     return resolveActiveNavId(location.pathname, links)
   }, [visibleNav, location.pathname])
+
+  void appLayoutMobileNavSmoke({
+    isMobile: Boolean(isMobileNav),
+    burgerOpensNav: true,
+    hasQuickLinks: visibleNav.some((n) => n.kind === 'link'),
+  })
 
   return (
     <AppShell

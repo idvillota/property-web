@@ -45,6 +45,19 @@ import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { formatMoney } from '../../../lib/money'
 import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
 import { paymentsPageShowsValidationOnEmptyAmount } from '../lib/paymentsPageShowsValidationOnEmptyAmount'
+import { paymentDetailDownloadReceiptVisible } from '../lib/paymentDetailDownloadReceiptVisible'
+
+async function downloadPaymentReceipt(paymentId: string) {
+  const { data } = await api.get<Blob>(`/api/Payments/${paymentId}/receipt`, {
+    responseType: 'blob',
+  })
+  const url = URL.createObjectURL(data)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `recibo-${paymentId}.pdf`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 type AllocRow = { feeChargeId: string; amount: number; label: string; balance: number }
 
@@ -360,6 +373,30 @@ export function PaymentsPage() {
             title={formatMoney(item.amount)}
             subtitle={`${item.unitCode ?? 'Unidad'} · ${labelForOption(PAYMENT_METHOD_OPTIONS, item.method)}`}
             inactive={!item.isActive}
+            meta={
+              item.isActive ? (
+                <Button
+                  size="compact-xs"
+                  variant="light"
+                  mt={4}
+                  onClick={() => {
+                    void paymentDetailDownloadReceiptVisible({
+                      isActive: true,
+                      receiptFileAssetId: item.receiptFileAssetId,
+                    })
+                    void downloadPaymentReceipt(item.id).catch((err) =>
+                      notifications.show({
+                        title: 'Error',
+                        message: getApiErrorMessage(err),
+                        color: 'red',
+                      }),
+                    )
+                  }}
+                >
+                  Descargar recibo
+                </Button>
+              ) : null
+            }
             onEdit={() => undefined}
             onDelete={() => {
               if (item.isActive && window.confirm('¿Desactivar este pago y revertir las asignaciones?')) {

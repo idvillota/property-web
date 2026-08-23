@@ -12,6 +12,7 @@ import { TeamInvitePage } from './features/organization/pages/TeamInvitePage'
 import { PeoplePage } from './features/people/pages/PeoplePage'
 import { TenantSettingsPage } from './features/settings/pages/TenantSettingsPage'
 import { AppearanceSettingsPage } from './features/settings/pages/AppearanceSettingsPage'
+import { AuditPage } from './features/organization/pages/AuditPage'
 import { PlatformStatusPage } from './features/platform/pages/PlatformStatusPage'
 import { CommonAreasPage } from './features/amenities/pages/CommonAreasPage'
 import { ReservationsPage } from './features/amenities/pages/ReservationsPage'
@@ -149,6 +150,7 @@ export default function App() {
               <Route path="/platform/status" element={<PlatformStatusPage />} />
               <Route path="/settings" element={<TenantSettingsPage />} />
               <Route path="/settings/appearance" element={<AppearanceSettingsPage />} />
+              <Route path="/settings/audit" element={<AuditPage />} />
             </Route>
           </Route>
         </Route>

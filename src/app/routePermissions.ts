@@ -21,6 +21,7 @@ export const ROUTE_PERMISSIONS: Record<string, FeatureCode> = {
   '/settings/dashboard': FeatureCodes.dashboardConfigure,
   '/settings': FeatureCodes.settingsTenant,
   '/settings/appearance': FeatureCodes.dashboardView,
+  '/settings/audit': FeatureCodes.auditView,
   '/employees': FeatureCodes.organizationEmployees,
   '/team': FeatureCodes.organizationTeam,
   '/role-permissions': FeatureCodes.organizationRoles,

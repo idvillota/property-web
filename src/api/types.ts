@@ -51,6 +51,7 @@ export type PortalAccountPayment = {
   amount: number
   paidAt: string
   method: string | number
+  hasReceipt?: boolean
 }
 
 export type PortalAccount = {
@@ -530,6 +531,8 @@ export type UnitHousehold = {
   relatedParkings: UnitAmenityLink[]
   relatedTerraces: UnitAmenityLink[]
   relatedStorages: UnitAmenityLink[]
+  openBalance?: number
+  overdueBalance?: number
 }
 
 export type UserPersonLink = {
@@ -717,6 +720,7 @@ export type Payment = {
   allocations?: PaymentAllocation[]
   /** Open charge balance for the unit after create (BIL-004). */
   unitOpenBalanceAfter?: number
+  receiptFileAssetId?: string | null
 }
 
 export type CommonArea = {

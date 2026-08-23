@@ -43,6 +43,7 @@ import {
 } from '../components/StructureContextPanel'
 import { StructureBuildingTree } from '../components/StructureBuildingTree'
 import { UnitInspectorPanel } from '../components/UnitInspectorPanel'
+import { setupModeBlocksWhenNoUnits } from '../lib/setupModeBlocksWhenNoUnits'
 
 function canAssignOwner(unitType: string | number | null | undefined) {
   const t = normalizeUnitType(unitType)
@@ -387,8 +388,14 @@ function SetupMode({ propertyId }: { propertyId: string }) {
     <Stack gap="lg">
       <PageHeader
         title="Estructura"
-        description="Define bloques, pisos y unidades. La planta se actualiza al instante."
+        description="Paso 1: dimensiones · Paso 2: planta · Paso 3: confirmar creación"
       />
+
+      {totals.units < 1 ? (
+        <Text size="sm" c="dimmed">
+          Habilita al menos una unidad en la planta para continuar.
+        </Text>
+      ) : null}
 
       <Box
         style={{
@@ -441,8 +448,14 @@ function SetupMode({ propertyId }: { propertyId: string }) {
             <Button
               color="teal"
               loading={commitMutation.isPending}
-              onClick={() => commitMutation.mutate()}
-              disabled={totals.units < 1}
+              onClick={() => {
+                if (setupModeBlocksWhenNoUnits(totals.units)) return
+                const ok = window.confirm(
+                  `Se crearán ${totals.buildings} bloques, ${totals.floors} pisos y ${totals.units} unidades. ¿Confirmar?`,
+                )
+                if (ok) commitMutation.mutate()
+              }}
+              disabled={setupModeBlocksWhenNoUnits(totals.units)}
             >
               Crear {totals.units} unidades
             </Button>

@@ -379,6 +379,15 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
     },
     {
       kind: 'link',
+      id: 'admin-auditoria',
+      to: '/settings/audit',
+      label: 'Auditoría',
+      icon: IconShieldLock,
+      permission: FeatureCodes.auditView,
+      activeMatch: 'prefix',
+    },
+    {
+      kind: 'link',
       id: 'admin-plataforma',
       to: '/platform/status',
       label: 'Estado de la plataforma',

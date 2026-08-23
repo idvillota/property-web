@@ -9,6 +9,20 @@ import { FeatureCodes } from '../../../lib/permissions'
 import { formatMoney } from '../../../lib/money'
 import { useAuthStore } from '../../../stores/authStore'
 import { portalAccountPageRendersBalances } from '../lib/portalAccountRendersBalances'
+import { paymentDetailDownloadReceiptVisible } from '../../billing/lib/paymentDetailDownloadReceiptVisible'
+import { notifications } from '@mantine/notifications'
+
+async function downloadPortalReceipt(paymentId: string) {
+  const { data } = await api.get<Blob>(`/api/portal/cuenta/pagos/${paymentId}/receipt`, {
+    responseType: 'blob',
+  })
+  const url = URL.createObjectURL(data)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `recibo-${paymentId}.pdf`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 function formatPaidAt(iso: string) {
   try {
@@ -191,13 +205,35 @@ export function PortalAccountPage() {
                     Pagos recientes
                   </Text>
                   {detailQuery.data.recentPayments.map((pay) => (
-                    <Group key={pay.paymentId} justify="space-between">
+                    <Group key={pay.paymentId} justify="space-between" wrap="wrap">
                       <Text size="sm" c="dimmed">
                         {formatPaidAt(pay.paidAt)}
                       </Text>
-                      <Text size="sm" fw={500}>
-                        {formatMoney(pay.amount)}
-                      </Text>
+                      <Group gap="xs">
+                        <Text size="sm" fw={500}>
+                          {formatMoney(pay.amount)}
+                        </Text>
+                        {paymentDetailDownloadReceiptVisible({
+                          isActive: true,
+                          hasReceipt: pay.hasReceipt ?? true,
+                        }) ? (
+                          <Button
+                            size="compact-xs"
+                            variant="light"
+                            onClick={() => {
+                              void downloadPortalReceipt(pay.paymentId).catch((err) =>
+                                notifications.show({
+                                  title: 'Error',
+                                  message: getApiErrorMessage(err),
+                                  color: 'red',
+                                }),
+                              )
+                            }}
+                          >
+                            Recibo
+                          </Button>
+                        ) : null}
+                      </Group>
                     </Group>
                   ))}
                 </Stack>
@@ -213,13 +249,30 @@ export function PortalAccountPage() {
             Pagos recientes
           </Text>
           {account.recentPayments.map((pay) => (
-            <Group key={pay.paymentId} justify="space-between">
+            <Group key={pay.paymentId} justify="space-between" wrap="wrap">
               <Text size="sm" c="dimmed">
                 {pay.unitCode} · {formatPaidAt(pay.paidAt)}
               </Text>
-              <Text size="sm" fw={500}>
-                {formatMoney(pay.amount)}
-              </Text>
+              <Group gap="xs">
+                <Text size="sm" fw={500}>
+                  {formatMoney(pay.amount)}
+                </Text>
+                <Button
+                  size="compact-xs"
+                  variant="light"
+                  onClick={() => {
+                    void downloadPortalReceipt(pay.paymentId).catch((err) =>
+                      notifications.show({
+                        title: 'Error',
+                        message: getApiErrorMessage(err),
+                        color: 'red',
+                      }),
+                    )
+                  }}
+                >
+                  Recibo
+                </Button>
+              </Group>
             </Group>
           ))}
         </Stack>

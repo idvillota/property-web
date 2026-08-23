@@ -39,6 +39,8 @@ import {
 } from './UnitAmenityLinksPanel'
 import { UnitPersonasPanel } from './UnitPersonasPanel'
 import { UnitVehiclesPanel } from './UnitVehiclesPanel'
+import { formatMoney } from '../../../lib/money'
+import { unitInspectorShowsBalanceAndAmenities } from '../lib/unitInspectorShowsBalanceAndAmenities'
 
 function isDwellingUnit(unitType: string | number | null | undefined) {
   const t = normalizeUnitType(unitType)
@@ -288,9 +290,17 @@ export function UnitInspectorPanel({
                 <Badge
                   size="sm"
                   variant="light"
-                  color={selected.unit.isPaymentUpToDate ? 'teal' : 'red'}
+                  color={
+                    (household?.openBalance ?? 0) > 0 || !selected.unit.isPaymentUpToDate
+                      ? 'red'
+                      : 'teal'
+                  }
                 >
-                  {selected.unit.isPaymentUpToDate ? 'Al día' : 'Pendiente'}
+                  {(household?.openBalance ?? 0) > 0
+                    ? `Saldo ${formatMoney(household!.openBalance)}`
+                    : selected.unit.isPaymentUpToDate
+                      ? 'Al día'
+                      : 'Pendiente'}
                 </Badge>
               </div>
               {parking && (
@@ -357,6 +367,10 @@ export function UnitInspectorPanel({
                 />
               </Stack>
             )}
+            {void unitInspectorShowsBalanceAndAmenities({
+              openBalance: household?.openBalance ?? 0,
+              amenitiesVisible: dwelling,
+            })}
 
             {amenity && (
               <Stack gap="sm">
