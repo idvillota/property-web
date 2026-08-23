@@ -6,6 +6,7 @@ import {
   FloatingWindow,
   Group,
   Loader,
+  MultiSelect,
   Pagination,
   SegmentedControl,
   Select,
@@ -25,12 +26,13 @@ import {
   IconSearch,
   IconX,
 } from '@tabler/icons-react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
-import type { MuralPost } from '../../../api/types'
+import type { Building, Floor, MuralPost } from '../../../api/types'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
+import { useEntityOptions } from '../../../hooks/useEntityOptions'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
 import { usePagedListState } from '../../../hooks/usePagedListState'
@@ -44,6 +46,8 @@ import {
   MURAL_CATEGORY_OPTIONS,
   MURAL_KIND_OPTIONS,
 } from '../../../lib/muralEnums'
+import { OCCUPANCY_ROLE_OPTIONS } from '../../../lib/structureEnums'
+import { muralComposeSegmentSelector } from '../lib/muralComposeSegmentSelector'
 import { muralPageListsPosts } from '../lib/muralPageListsPosts'
 
 function defaultExpiryIso() {
@@ -86,6 +90,15 @@ export function MuralPage() {
     pageSize: 24,
   })
   const listQuery = usePagedListQuery<MuralPost>('mural-posts', '/api/MuralPosts', list)
+  const buildings = useEntityOptions<Building>('mural-building-options', '/api/Buildings', {
+    horizontalPropertyId: propertyId,
+  })
+  const floors = useEntityOptions<Floor>(
+    'mural-floor-options',
+    '/api/Floors',
+    { horizontalPropertyId: propertyId },
+    Boolean(propertyId),
+  )
 
   useEffect(() => {
     list.setFilter('horizontalPropertyId', propertyId)
@@ -105,6 +118,9 @@ export function MuralPage() {
       isHidden: false,
       expiresAt: defaultExpiryIso(),
       isActive: true,
+      audienceBuildingIds: [] as string[],
+      audienceFloorIds: [] as string[],
+      audienceOccupancyRoles: [] as string[],
     },
     validate: {
       title: (v) => (v.trim().length < 3 ? 'Mínimo 3 caracteres' : null),
@@ -126,6 +142,9 @@ export function MuralPage() {
       isHidden: false,
       expiresAt: defaultExpiryIso(),
       isActive: true,
+      audienceBuildingIds: [],
+      audienceFloorIds: [],
+      audienceOccupancyRoles: [],
     })
     setShowExtras(false)
     setDetail(null)
@@ -146,6 +165,11 @@ export function MuralPage() {
       isHidden: item.isHidden,
       expiresAt: item.expiresAtUtc ? item.expiresAtUtc.slice(0, 10) : '',
       isActive: item.isActive,
+      audienceBuildingIds: item.audienceBuildingIds ?? [],
+      audienceFloorIds: item.audienceFloorIds ?? [],
+      audienceOccupancyRoles: (item.audienceOccupancyRoles ?? []).map((r) =>
+        asEnumName(r, OCCUPANCY_ROLE_OPTIONS),
+      ).filter(Boolean),
     })
     setShowExtras(true)
     setDetail(null)
@@ -170,6 +194,11 @@ export function MuralPage() {
         unitId: null,
         isPinned: form.values.kind === 'Official' && form.values.isPinned,
         expiresAtUtc,
+        audienceBuildingIds: form.values.audienceBuildingIds,
+        audienceFloorIds: form.values.audienceFloorIds,
+        audienceOccupancyRoles: form.values.audienceOccupancyRoles.map((r) =>
+          enumIndex(r, OCCUPANCY_ROLE_OPTIONS),
+        ),
       }
       if (compose === 'create') {
         const { data } = await api.post<MuralPost>('/api/MuralPosts', payload)
@@ -208,6 +237,51 @@ export function MuralPage() {
   const totalPages = listQuery.data?.totalPages ?? 1
   const listsPosts = !list.state.includeInactive && muralPageListsPosts(items)
 
+  const buildingOptions = (buildings.data ?? []).map((b) => ({
+    value: b.id,
+    label: b.name,
+  }))
+  const selectedBuildingIds = form.values.audienceBuildingIds
+  const floorOptions = (floors.data ?? [])
+    .filter((f) => selectedBuildingIds.length === 0 || selectedBuildingIds.includes(f.buildingId))
+    .map((f) => ({
+      value: f.id,
+      label: f.name,
+    }))
+  const segmentPreview = muralComposeSegmentSelector(
+    {
+      buildingIds: form.values.audienceBuildingIds,
+      floorIds: form.values.audienceFloorIds,
+      occupancyRoles: form.values.audienceOccupancyRoles,
+    },
+    { buildings: buildingOptions, floors: floorOptions },
+  )
+
+  const audiencePreviewQuery = useQuery({
+    queryKey: [
+      'mural-audience-preview',
+      propertyId,
+      form.values.audienceBuildingIds,
+      form.values.audienceFloorIds,
+      form.values.audienceOccupancyRoles,
+    ],
+    enabled: compose != null && Boolean(propertyId),
+    queryFn: async () => {
+      const { data } = await api.post<{ summary: string; isBroadcast: boolean }>(
+        '/api/MuralPosts/audience-preview',
+        {
+          horizontalPropertyId: propertyId,
+          audienceBuildingIds: form.values.audienceBuildingIds,
+          audienceFloorIds: form.values.audienceFloorIds,
+          audienceOccupancyRoles: form.values.audienceOccupancyRoles.map((r) =>
+            enumIndex(r, OCCUPANCY_ROLE_OPTIONS),
+          ),
+        },
+      )
+      return data
+    },
+  })
+
   const composeForm = (
     <form onSubmit={form.onSubmit(() => saveMutation.mutate())}>
       <Stack gap="sm">
@@ -229,6 +303,51 @@ export function MuralPage() {
           placeholder="Qué pasó, cuándo y qué deben saber los vecinos…"
           {...form.getInputProps('body')}
         />
+
+        <MultiSelect
+          label="Torres (audiencia)"
+          placeholder="Vacío = todas"
+          data={buildingOptions}
+          searchable
+          clearable
+          comboboxProps={formDrawerSelectComboboxProps}
+          value={form.values.audienceBuildingIds}
+          onChange={(ids) => {
+            form.setFieldValue('audienceBuildingIds', ids)
+            const allowed = new Set(
+              (floors.data ?? [])
+                .filter((f) => ids.length === 0 || ids.includes(f.buildingId))
+                .map((f) => f.id),
+            )
+            form.setFieldValue(
+              'audienceFloorIds',
+              form.values.audienceFloorIds.filter((id) => allowed.has(id)),
+            )
+          }}
+        />
+        <MultiSelect
+          label="Pisos (audiencia)"
+          placeholder="Vacío = todos"
+          data={floorOptions}
+          searchable
+          clearable
+          comboboxProps={formDrawerSelectComboboxProps}
+          {...form.getInputProps('audienceFloorIds')}
+        />
+        <MultiSelect
+          label="Roles de ocupación"
+          placeholder="Vacío = todos"
+          data={[...OCCUPANCY_ROLE_OPTIONS]}
+          searchable
+          clearable
+          comboboxProps={formDrawerSelectComboboxProps}
+          {...form.getInputProps('audienceOccupancyRoles')}
+        />
+        <Text size="sm" c="dimmed">
+          {audiencePreviewQuery.data?.summary
+            ? `Quién recibirá: ${audiencePreviewQuery.data.summary}`
+            : segmentPreview.previewLabel}
+        </Text>
 
         <UnstyledButton
           type="button"
@@ -310,7 +429,32 @@ export function MuralPage() {
         {detail.authorDisplayName} · {formatPublished(detail.publishedAtUtc)}
         {detail.areaLabel ? ` · ${detail.areaLabel}` : ''}
         {detail.unitCode ? ` · ${detail.unitCode}` : ''}
+        {typeof detail.readPercent === 'number'
+          ? ` · ${detail.readPercent}% leído (${detail.readCount ?? 0}/${detail.recipientCount ?? 0})`
+          : ''}
       </Text>
+      {(detail.audienceBuildingIds?.length ||
+        detail.audienceFloorIds?.length ||
+        detail.audienceOccupancyRoles?.length) ? (
+        <Text size="xs" c="teal.7" fw={600}>
+          {
+            muralComposeSegmentSelector(
+              {
+                buildingIds: detail.audienceBuildingIds ?? [],
+                floorIds: detail.audienceFloorIds ?? [],
+                occupancyRoles: (detail.audienceOccupancyRoles ?? []).map((r) =>
+                  asEnumName(r, OCCUPANCY_ROLE_OPTIONS),
+                ),
+              },
+              { buildings: buildingOptions, floors: floorOptions },
+            ).previewLabel
+          }
+        </Text>
+      ) : (
+        <Text size="xs" c="dimmed">
+          Audiencia: todo el conjunto
+        </Text>
+      )}
       {(detail.contactPhone || detail.contactEmail || detail.contactNote) && (
         <Stack
           gap={4}
@@ -504,6 +648,9 @@ export function MuralPage() {
                     <p className="mural-slip__body">{item.body}</p>
                     <div className="mural-slip__foot">
                       {item.authorDisplayName} · {formatPublished(item.publishedAtUtc)}
+                      {typeof item.readPercent === 'number'
+                        ? ` · ${item.readPercent}% leído`
+                        : ''}
                     </div>
                   </button>
                 )

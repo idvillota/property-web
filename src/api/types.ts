@@ -817,6 +817,44 @@ export type MuralPost = {
   expiresAtUtc: string | null
   isActive: boolean
   isExpired: boolean
+  audienceBuildingIds?: string[]
+  audienceFloorIds?: string[]
+  audienceOccupancyRoles?: Array<string | number>
+  readCount?: number
+  recipientCount?: number
+  readPercent?: number
+}
+
+export type PqrsComment = {
+  id: string
+  pqrsCaseId: string
+  authorUserId: string | null
+  authorPersonId: string | null
+  authorDisplayName: string
+  body: string
+  isInternal: boolean
+  postedAtUtc: string
+}
+
+export type PqrsCase = {
+  id: string
+  horizontalPropertyId: string
+  unitId: string
+  unitCode?: string | null
+  createdByPersonId: string
+  createdByPersonName?: string | null
+  createdByUserId: string | null
+  category: string | number
+  subject: string
+  description: string
+  status: string | number
+  dueAtUtc: string | null
+  assignedToUserId: string | null
+  attachmentFileAssetIds: string[]
+  isActive: boolean
+  createdAtUtc: string
+  updatedAtUtc?: string | null
+  comments?: PqrsComment[]
 }
 
 export type ReportsOverview = {

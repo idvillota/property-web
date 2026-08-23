@@ -47,6 +47,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
   [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
   [/^\/properties\/[^/]+\/mural(?:\/|$)/, FeatureCodes.muralManage],
+  [/^\/properties\/[^/]+\/pqrs(?:\/|$)/, FeatureCodes.pqrsManage],
   // More specific than /reception — manage OR visits (REC-010)
   [
     /^\/properties\/[^/]+\/reception\/visitors(?:\/|$)/,

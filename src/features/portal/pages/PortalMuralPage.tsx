@@ -1,6 +1,6 @@
 import { Alert, Button, Group, Loader, Stack, Text, Title } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
@@ -8,6 +8,7 @@ import type { MuralPost } from '../../../api/types'
 import { FeatureCodes } from '../../../lib/permissions'
 import { labelForOption, MURAL_CATEGORY_OPTIONS, MURAL_KIND_OPTIONS } from '../../../lib/muralEnums'
 import { useAuthStore } from '../../../stores/authStore'
+import { muralDetailMarksReadOnOpen } from '../../community/lib/muralDetailMarksReadOnOpen'
 import { muralPageListsPosts } from '../../community/lib/muralPageListsPosts'
 
 function formatPublished(iso: string) {
@@ -25,6 +26,8 @@ function formatPublished(iso: string) {
 export function PortalMuralPage() {
   const hasRead = useAuthStore((s) => s.hasPermission(FeatureCodes.portalMuralRead))
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [markReadCalled, setMarkReadCalled] = useState(false)
+  const markedIds = useRef(new Set<string>())
 
   const feedQuery = useQuery({
     queryKey: ['portalMural'],
@@ -34,6 +37,22 @@ export function PortalMuralPage() {
       return data
     },
   })
+
+  const markReadMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      await api.post(`/api/portal/mural/${postId}/read`)
+    },
+    onSuccess: (_data, postId) => {
+      markedIds.current.add(postId)
+      setMarkReadCalled(true)
+    },
+  })
+
+  useEffect(() => {
+    if (!selectedId || markedIds.current.has(selectedId))
+      return
+    markReadMutation.mutate(selectedId)
+  }, [selectedId])
 
   if (!hasRead) {
     return (
@@ -62,6 +81,11 @@ export function PortalMuralPage() {
   const posts = feedQuery.data ?? []
   const listsOk = muralPageListsPosts(posts)
   const selected = posts.find((p) => p.id === selectedId) ?? null
+  void muralDetailMarksReadOnOpen({
+    detailOpened: Boolean(selectedId),
+    markReadCalled,
+    postId: selectedId,
+  })
 
   return (
     <Stack gap="lg">

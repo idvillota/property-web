@@ -230,6 +230,16 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       requiresProperty: true,
       activeMatch: 'prefix',
     },
+    {
+      kind: 'link',
+      id: 'comunidad-pqrs',
+      to: p('pqrs'),
+      label: 'PQRS',
+      icon: IconSpeakerphone,
+      permission: FeatureCodes.pqrsManage,
+      requiresProperty: true,
+      activeMatch: 'prefix',
+    },
 
     { kind: 'section', area: 'copropiedad', label: 'Copropiedad' },
     {

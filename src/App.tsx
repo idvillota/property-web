@@ -22,6 +22,7 @@ import { PaymentsPage } from './features/billing/pages/PaymentsPage'
 import { PaymentIntentsPage } from './features/billing/pages/PaymentIntentsPage'
 import { DunningPage } from './features/billing/pages/DunningPage'
 import { MuralPage } from './features/community/pages/MuralPage'
+import { PqrsInboxPage } from './features/community/pages/PqrsInboxPage'
 import { ReceptionItemsPage } from './features/reception/pages/ReceptionItemsPage'
 import { VisitorsPage } from './features/reception/pages/VisitorsPage'
 import { CarteraReportPage } from './features/reports/pages/CarteraReportPage'
@@ -41,12 +42,12 @@ import { StructureWorkspacePage } from './features/structure/pages/StructureWork
 import { VehiclesPage } from './features/structure/pages/VehiclesPage'
 import { PortalLayout } from './features/portal/layouts/PortalLayout'
 import { PortalProtectedRoute } from './features/portal/PortalProtectedRoute'
-import { PortalComingSoonPage } from './features/portal/pages/PortalComingSoonPage'
 import { PortalAccountPage } from './features/portal/pages/PortalAccountPage'
 import { PortalPayPage } from './features/portal/pages/PortalPayPage'
 import { PortalPayResultPage } from './features/portal/pages/PortalPayResultPage'
 import { PortalReservationsPage } from './features/portal/pages/PortalReservationsPage'
 import { PortalMuralPage } from './features/portal/pages/PortalMuralPage'
+import { PortalPqrsPage } from './features/portal/pages/PortalPqrsPage'
 import { PortalHomePage } from './features/portal/pages/PortalHomePage'
 import { PortalLoginPage } from './features/portal/pages/PortalLoginPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
@@ -83,7 +84,8 @@ export default function App() {
             <Route path="/portal/cuenta/pagar/resultado" element={<PortalPayResultPage />} />
             <Route path="/portal/reservas" element={<PortalReservationsPage />} />
             <Route path="/portal/mural" element={<PortalMuralPage />} />
-            <Route path="/portal/pqrs" element={<PortalComingSoonPage title="PQRS" />} />
+            <Route path="/portal/pqrs" element={<PortalPqrsPage />} />
+            <Route path="/portal/pqrs/nuevo" element={<PortalPqrsPage />} />
           </Route>
         </Route>
 
@@ -114,6 +116,7 @@ export default function App() {
                 <Route path="common-areas" element={<CommonAreasPage />} />
                 <Route path="reservations" element={<ReservationsPage />} />
                 <Route path="mural" element={<MuralPage />} />
+                <Route path="pqrs" element={<PqrsInboxPage />} />
                 <Route path="reception" element={<ReceptionItemsPage />} />
                 <Route path="reception/visitors" element={<VisitorsPage />} />
                 <Route path="reports" element={<ReportsHubPage />} />
