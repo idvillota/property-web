@@ -33,6 +33,7 @@ export const PAYMENT_METHOD_OPTIONS = [
   { value: 'Transfer', label: 'Transferencia' },
   { value: 'Check', label: 'Cheque' },
   { value: 'Other', label: 'Otro' },
+  { value: 'Pse', label: 'PSE' },
 ] as const
 
 export const MONTH_OPTIONS = [

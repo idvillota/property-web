@@ -154,6 +154,16 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       requiresProperty: true,
       activeMatch: 'prefix',
     },
+    {
+      kind: 'link',
+      id: 'cartera-intents',
+      to: p('payment-intents'),
+      label: 'Intents PSE',
+      icon: IconCreditCard,
+      permission: FeatureCodes.billingPayments,
+      requiresProperty: true,
+      activeMatch: 'prefix',
+    },
 
     { kind: 'section', area: 'contabilidad', label: 'Contabilidad' },
     {

@@ -84,6 +84,35 @@ export type PortalAccountUnitDetail = {
   recentPayments: PortalAccountPayment[]
 }
 
+export type PaymentIntentAllocation = {
+  feeChargeId: string
+  amount: number
+}
+
+export type PaymentIntent = {
+  id: string
+  idempotencyKey: string
+  providerRef: string | null
+  provider: string
+  status: string | number
+  horizontalPropertyId: string
+  unitId: string
+  personId: string | null
+  amount: number
+  paymentId: string | null
+  failureReason: string | null
+  paidAtUtc: string | null
+  createdAtUtc: string
+  allocations: PaymentIntentAllocation[]
+}
+
+export type PortalCheckout = {
+  intent: PaymentIntent
+  checkoutUrl: string
+  isMockCheckout: boolean
+  provider: string
+}
+
 export type PortalCommonArea = {
   id: string
   horizontalPropertyId: string

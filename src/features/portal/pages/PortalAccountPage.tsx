@@ -84,9 +84,14 @@ export function PortalAccountPage() {
             {account.personFullName} · saldos de tus unidades
           </Text>
         </Stack>
-        <Button component={Link} to="/portal" variant="default" size="sm">
-          Inicio
-        </Button>
+        <Group gap="sm">
+          <Button component={Link} to="/portal" variant="default" size="sm">
+            Inicio
+          </Button>
+          <Button component={Link} to="/portal/cuenta/pagar" size="sm">
+            Pagar PSE
+          </Button>
+        </Group>
       </Group>
 
       <div className="portal-unit-grid">
