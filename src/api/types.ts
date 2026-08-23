@@ -9,6 +9,15 @@ export type AuthResponse = {
   isPlatformAdmin?: boolean
   brandTheme: BrandThemeId
   colorScheme: ColorSchemePreference
+  modules?: TenantModuleFlags
+}
+
+export type TenantModuleFlags = {
+  portal: boolean
+  digitalPayments: boolean
+  accounting: boolean
+  visits: boolean
+  assemblies: boolean
 }
 
 export type LoginTenantOption = {
@@ -85,6 +94,7 @@ export type TenantSettings = {
   coefficientBasisNotes: string | null
   isActive: boolean
   hasProperty: boolean
+  modules: TenantModuleFlags
 }
 
 export type PlatformTenantsStatus = {

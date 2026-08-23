@@ -59,7 +59,7 @@ export function LoginPage() {
       propertyId = null
     }
 
-    navigate(resolveDefaultLandingPath(data.permissions, propertyId, data.isPlatformAdmin))
+    navigate(resolveDefaultLandingPath(data.permissions, propertyId, data.isPlatformAdmin, data.modules))
   }
 
   const submit = form.onSubmit(async (values) => {

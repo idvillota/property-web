@@ -15,10 +15,11 @@ export function FeatureGuard({ permission, children }: FeatureGuardProps) {
   const hasPermission = useAuthStore((s) => s.hasPermission)
   const permissions = useAuthStore((s) => s.permissions)
   const isPlatformAdmin = useAuthStore((s) => s.isPlatformAdmin)
+  const modules = useAuthStore((s) => s.modules)
   const propertyId = useCurrentProperty().data?.id ?? null
 
   if (!hasPermission(permission)) {
-    const fallback = resolveDefaultLandingPath(permissions, propertyId, isPlatformAdmin)
+    const fallback = resolveDefaultLandingPath(permissions, propertyId, isPlatformAdmin, modules)
     return (
       <>
         <Center mih="50vh">

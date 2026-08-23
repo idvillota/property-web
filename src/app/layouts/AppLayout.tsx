@@ -14,9 +14,13 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconLogout } from '@tabler/icons-react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../../api/client'
+import type { TenantModuleFlags } from '../../api/types'
 import { AppLogo } from '../../components/shared/AppLogo'
 import { clearAuthSession } from '../../features/auth/applyAuthSession'
+import { DEFAULT_TENANT_MODULES } from '../../features/settings/lib/tenantModuleFlags'
 import { useCurrentProperty } from '../../hooks/useCurrentProperty'
 import { ROLE_LABELS } from '../../lib/permissions'
 import { useAuthStore } from '../../stores/authStore'
@@ -37,9 +41,23 @@ export function AppLayout() {
   const tenantSlug = useAuthStore((s) => s.tenantSlug)
   const permissions = useAuthStore((s) => s.permissions)
   const isPlatformAdmin = useAuthStore((s) => s.isPlatformAdmin)
+  const modules = useAuthStore((s) => s.modules)
+  const setModules = useAuthStore((s) => s.setModules)
   const currentProperty = useCurrentProperty()
   const propertyId = currentProperty.data?.id ?? null
   const propertyReady = !currentProperty.isLoading && Boolean(propertyId)
+
+  const modulesQuery = useQuery({
+    queryKey: ['tenantModules'],
+    queryFn: async () => {
+      const { data } = await api.get<TenantModuleFlags>('/api/tenant/modules')
+      return data
+    },
+  })
+
+  useEffect(() => {
+    if (modulesQuery.data) setModules(modulesQuery.data)
+  }, [modulesQuery.data, setModules])
 
   const userSubtitle = useMemo(() => {
     const roleLabels = roles.map((role) => ROLE_LABELS[role] ?? role)
@@ -47,9 +65,11 @@ export function AppLayout() {
     return `${email} - ${roleLabels.join(', ')}`
   }, [email, roles])
 
+  const effectiveModules = modulesQuery.data ?? modules ?? DEFAULT_TENANT_MODULES
+
   const visibleNav = useMemo(
-    () => filterVisibleNav(buildAppNav(propertyId), permissions, isPlatformAdmin),
-    [propertyId, permissions, isPlatformAdmin],
+    () => filterVisibleNav(buildAppNav(propertyId), permissions, isPlatformAdmin, effectiveModules),
+    [propertyId, permissions, isPlatformAdmin, effectiveModules],
   )
 
   const activeNavId = useMemo(() => {

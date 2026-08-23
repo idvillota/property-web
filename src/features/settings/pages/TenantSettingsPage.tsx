@@ -2,12 +2,15 @@ import {
   Alert,
   Anchor,
   Button,
+  Divider,
   Loader,
   Select,
   Stack,
   Switch,
+  Text,
   Textarea,
   TextInput,
+  Title,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
@@ -21,10 +24,13 @@ import { PageHeader } from '../../../components/shared/PageHeader'
 import { useEntityOptions } from '../../../hooks/useEntityOptions'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { PROPERTY_USE_TYPE_OPTIONS } from '../../../lib/structureEnums'
+import { useAuthStore } from '../../../stores/authStore'
+import { DEFAULT_TENANT_MODULES } from '../lib/tenantModuleFlags'
 
 /** Tenant configuration = the single property profile (Colombia 1:1 model). */
 export function TenantSettingsPage() {
   const queryClient = useQueryClient()
+  const setModules = useAuthStore((s) => s.setModules)
   const neighborhoods = useEntityOptions<Neighborhood>('neighborhood-options', '/api/Neighborhoods')
 
   const settingsQuery = useQuery({
@@ -54,6 +60,11 @@ export function TenantSettingsPage() {
       regulationNotes: '',
       coefficientBasisNotes: '',
       isActive: true,
+      modulePortal: true,
+      moduleDigitalPayments: false,
+      moduleAccounting: false,
+      moduleVisits: false,
+      moduleAssemblies: false,
     },
     validate: {
       name: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
@@ -66,6 +77,7 @@ export function TenantSettingsPage() {
   useEffect(() => {
     const s = settingsQuery.data
     if (!s?.hasProperty) return
+    const m = s.modules ?? DEFAULT_TENANT_MODULES
     form.setValues({
       name: s.name,
       tradeName: s.tradeName,
@@ -84,6 +96,11 @@ export function TenantSettingsPage() {
       regulationNotes: s.regulationNotes ?? '',
       coefficientBasisNotes: s.coefficientBasisNotes ?? '',
       isActive: s.isActive,
+      modulePortal: m.portal,
+      moduleDigitalPayments: m.digitalPayments,
+      moduleAccounting: m.accounting,
+      moduleVisits: m.visits,
+      moduleAssemblies: m.assemblies,
     })
   }, [settingsQuery.data])
 
@@ -107,6 +124,13 @@ export function TenantSettingsPage() {
         regulationNotes: form.values.regulationNotes.trim() || null,
         coefficientBasisNotes: form.values.coefficientBasisNotes.trim() || null,
         isActive: form.values.isActive,
+        modules: {
+          portal: form.values.modulePortal,
+          digitalPayments: form.values.moduleDigitalPayments,
+          accounting: form.values.moduleAccounting,
+          visits: form.values.moduleVisits,
+          assemblies: form.values.moduleAssemblies,
+        },
       })
       return data
     },
@@ -114,7 +138,13 @@ export function TenantSettingsPage() {
       queryClient.setQueryData(['tenantSettings'], data)
       void queryClient.invalidateQueries({ queryKey: ['horizontal-property'] })
       void queryClient.invalidateQueries({ queryKey: ['horizontal-properties'] })
-      notifications.show({ title: 'Guardado', message: 'Datos del conjunto actualizados', color: 'teal' })
+      void queryClient.invalidateQueries({ queryKey: ['tenantModules'] })
+      if (data.modules) setModules(data.modules)
+      notifications.show({
+        title: 'Guardado',
+        message: 'Datos del conjunto y módulos actualizados. El menú se actualiza al instante (sin re-login).',
+        color: 'teal',
+      })
     },
     onError: (err) =>
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
@@ -194,6 +224,22 @@ export function TenantSettingsPage() {
             {...form.getInputProps('coefficientBasisNotes')}
           />
           <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
+
+          <Divider my="sm" />
+          <Title order={4}>Módulos del tenant</Title>
+          <Text size="sm" c="dimmed">
+            Empaquetado comercial independiente de los permisos de rol. Los cambios aplican al menú sin
+            volver a iniciar sesión.
+          </Text>
+          <Switch label="Portal residentes" {...form.getInputProps('modulePortal', { type: 'checkbox' })} />
+          <Switch
+            label="Pagos digitales"
+            {...form.getInputProps('moduleDigitalPayments', { type: 'checkbox' })}
+          />
+          <Switch label="Contabilidad" {...form.getInputProps('moduleAccounting', { type: 'checkbox' })} />
+          <Switch label="Visitas" {...form.getInputProps('moduleVisits', { type: 'checkbox' })} />
+          <Switch label="Asambleas" {...form.getInputProps('moduleAssemblies', { type: 'checkbox' })} />
+
           <Button type="submit" loading={saveMutation.isPending}>
             Guardar
           </Button>

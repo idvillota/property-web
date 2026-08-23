@@ -2,6 +2,7 @@ import type { AuthResponse } from '../../api/types'
 import { useAuthStore } from '../../stores/authStore'
 import { usePreferencesStore } from '../../stores/preferencesStore'
 import { normalizeBrandTheme, normalizeColorScheme } from '../../theme/brandThemes'
+import { DEFAULT_TENANT_MODULES } from '../settings/lib/tenantModuleFlags'
 
 export function applyAuthSession(data: AuthResponse) {
   useAuthStore.getState().setAuth({
@@ -11,6 +12,7 @@ export function applyAuthSession(data: AuthResponse) {
     roles: data.roles ?? [],
     permissions: data.permissions ?? [],
     isPlatformAdmin: Boolean(data.isPlatformAdmin),
+    modules: data.modules ?? { ...DEFAULT_TENANT_MODULES },
   })
 
   usePreferencesStore.getState().setPreferences({

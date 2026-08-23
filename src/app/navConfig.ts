@@ -15,25 +15,33 @@ import {
   IconPalette,
   IconPool,
   IconReceipt,
+  IconScale,
   IconServer,
   IconSettings,
   IconShieldLock,
   IconSitemap,
+  IconSpeakerphone,
   IconUserPlus,
   IconUsers,
   IconUsersGroup,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
+import type { TenantModuleFlags } from '../api/types'
 import { FeatureCodes } from '../lib/permissions'
+import { isTenantModuleEnabled } from '../features/settings/lib/tenantModuleFlags'
 
 export type NavAreaId =
   | 'inicio'
   | 'porteria'
   | 'cartera'
+  | 'contabilidad'
+  | 'asambleas'
   | 'comunidad'
   | 'copropiedad'
   | 'reportes'
   | 'administracion'
+
+export type TenantModuleNavKey = keyof TenantModuleFlags
 
 export type AppNavLeaf = {
   kind: 'link'
@@ -43,6 +51,8 @@ export type AppNavLeaf = {
   icon: TablerIcon
   permission?: string
   platformAdmin?: boolean
+  /** ARCH-002 — hide when tenant module flag is off. */
+  tenantModule?: TenantModuleNavKey
   /** When true, link is disabled until the tenant property id is known. */
   requiresProperty?: boolean
   /** Match active state for nested property routes. */
@@ -129,6 +139,30 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       icon: IconCreditCard,
       permission: FeatureCodes.billingPayments,
       requiresProperty: true,
+      activeMatch: 'prefix',
+    },
+
+    { kind: 'section', area: 'contabilidad', label: 'Contabilidad' },
+    {
+      kind: 'link',
+      id: 'contabilidad-hub',
+      to: '/accounting',
+      label: 'Contabilidad',
+      icon: IconScale,
+      permission: FeatureCodes.dashboardView,
+      tenantModule: 'accounting',
+      activeMatch: 'prefix',
+    },
+
+    { kind: 'section', area: 'asambleas', label: 'Asambleas' },
+    {
+      kind: 'link',
+      id: 'asambleas-hub',
+      to: '/assemblies',
+      label: 'Asambleas',
+      icon: IconSpeakerphone,
+      permission: FeatureCodes.dashboardView,
+      tenantModule: 'assemblies',
       activeMatch: 'prefix',
     },
 
@@ -340,8 +374,9 @@ export function resolveDefaultLandingPath(
   permissions: string[],
   propertyId: string | null | undefined,
   isPlatformAdmin = false,
+  modules?: TenantModuleFlags | null,
 ): string {
-  const links = filterVisibleNav(buildAppNav(propertyId), permissions, isPlatformAdmin).filter(
+  const links = filterVisibleNav(buildAppNav(propertyId), permissions, isPlatformAdmin, modules).filter(
     (item): item is AppNavLeaf => item.kind === 'link' && !(item.requiresProperty && !propertyId),
   )
   const operational = links.filter(
@@ -355,7 +390,9 @@ export function resolveDefaultLandingPath(
       !item.to.startsWith('/team') &&
       !item.to.startsWith('/role-permissions') &&
       !item.to.startsWith('/people') &&
-      !item.to.startsWith('/platform'),
+      !item.to.startsWith('/platform') &&
+      !item.to.startsWith('/accounting') &&
+      !item.to.startsWith('/assemblies'),
   )
   if (operational.length === 1) return operational[0]!.to
 
@@ -369,9 +406,11 @@ export function filterVisibleNav(
   items: AppNavItem[],
   permissions: string[],
   isPlatformAdmin: boolean,
+  modules?: TenantModuleFlags | null,
 ): AppNavItem[] {
   const canSee = (item: AppNavLeaf) => {
     if (item.platformAdmin) return isPlatformAdmin
+    if (item.tenantModule && !isTenantModuleEnabled(modules, item.tenantModule)) return false
     if (!item.permission) return true
     return permissions.includes(item.permission)
   }
