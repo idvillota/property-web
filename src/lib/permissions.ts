@@ -22,6 +22,7 @@ export const FeatureCodes = {
   muralManage: 'mural.manage',
   reportsView: 'reports.view',
   auditView: 'audit.view',
+  portalAccess: 'portal.access',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -31,6 +32,7 @@ export const ROLE_LABELS: Record<string, string> = {
   Owner: 'Propietario',
   Manager: 'Gerente',
   Receptionist: 'Recepcionista',
+  Resident: 'Residente',
 }
 
 /** Spanish labels for API feature codes (UI only; codes stay English). */
@@ -57,6 +59,7 @@ export const FEATURE_LABELS: Record<string, string> = {
   'mural.manage': 'Mural',
   'reports.view': 'Reportes',
   'audit.view': 'Auditoría',
+  'portal.access': 'Portal residentes',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
@@ -69,6 +72,7 @@ export const FEATURE_MODULE_LABELS: Record<string, string> = {
   Reception: 'Portería',
   Community: 'Comunidad',
   Reports: 'Reportes',
+  Portal: 'Portal',
 }
 
 export function featureLabel(code: string, fallbackName?: string) {

@@ -15,6 +15,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@fontsource-variable/dm-sans": "^5.2.8",
+    "@fontsource/fraunces": "^5.3.0",
     "@hookform/resolvers": "^5.2.2",
     "@mantine/charts": "^9.2.0",
     "@mantine/core": "^9.2.0",

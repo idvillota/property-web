@@ -44,10 +44,11 @@ api.interceptors.response.use(
       const path = `${window.location.pathname}${window.location.search}`
       const params = new URLSearchParams()
       params.set('session', 'expired')
-      if (path && path !== '/login' && path !== '/register') {
+      const portal = path.startsWith('/portal')
+      if (path && path !== '/login' && path !== '/register' && path !== '/portal/login') {
         params.set('returnUrl', path)
       }
-      window.location.assign(`/login?${params.toString()}`)
+      window.location.assign(portal ? `/portal/login?${params.toString()}` : `/login?${params.toString()}`)
     }
 
     return Promise.reject(error)

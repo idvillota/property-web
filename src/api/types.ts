@@ -10,6 +10,30 @@ export type AuthResponse = {
   brandTheme: BrandThemeId
   colorScheme: ColorSchemePreference
   modules?: TenantModuleFlags
+  hasPersonLink?: boolean
+  unitIds?: string[]
+}
+
+export type PortalUnitCard = {
+  unitId: string
+  code: string
+  occupancyRole: string
+  isPrimary: boolean
+}
+
+export type PortalQuickLink = {
+  id: string
+  label: string
+  path: string
+  available: boolean
+}
+
+export type PortalHome = {
+  personId: string
+  personFullName: string
+  propertyName: string | null
+  units: PortalUnitCard[]
+  quickLinks: PortalQuickLink[]
 }
 
 export type TenantModuleFlags = {

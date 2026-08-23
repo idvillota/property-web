@@ -11,6 +11,8 @@ export type AuthPayload = {
   permissions: string[]
   isPlatformAdmin: boolean
   modules: TenantModuleFlags
+  hasPersonLink: boolean
+  unitIds: string[]
 }
 
 type AuthState = AuthPayload & {
@@ -28,6 +30,8 @@ const empty: AuthPayload = {
   permissions: [],
   isPlatformAdmin: false,
   modules: { ...DEFAULT_TENANT_MODULES },
+  hasPersonLink: false,
+  unitIds: [],
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -49,6 +53,8 @@ export const useAuthStore = create<AuthState>()(
         permissions: s.permissions,
         isPlatformAdmin: s.isPlatformAdmin,
         modules: s.modules,
+        hasPersonLink: s.hasPersonLink,
+        unitIds: s.unitIds,
       }),
     },
   ),

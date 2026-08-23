@@ -13,6 +13,8 @@ export function applyAuthSession(data: AuthResponse) {
     permissions: data.permissions ?? [],
     isPlatformAdmin: Boolean(data.isPlatformAdmin),
     modules: data.modules ?? { ...DEFAULT_TENANT_MODULES },
+    hasPersonLink: Boolean(data.hasPersonLink),
+    unitIds: data.unitIds ?? [],
   })
 
   usePreferencesStore.getState().setPreferences({
