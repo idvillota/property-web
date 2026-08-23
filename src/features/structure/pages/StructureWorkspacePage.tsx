@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Badge,
   Box,
   Button,
@@ -11,7 +10,6 @@ import {
   Paper,
   ScrollArea,
   SegmentedControl,
-  Select,
   SimpleGrid,
   Stack,
   Switch,
@@ -21,7 +19,7 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconBox, IconCar, IconPlus, IconSun } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconCar, IconPlus, IconSun } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../../../api/client'
@@ -38,20 +36,14 @@ import type {
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePropertyId } from '../../../hooks/usePropertyId'
-import { labelForOption, normalizeUnitType, UNIT_TYPE_OPTIONS } from '../../../lib/structureEnums'
+import { normalizeUnitType } from '../../../lib/structureEnums'
 import {
-  UnitAmenityLinksPanel,
-  UnitHostLinkField,
-} from '../components/UnitAmenityLinksPanel'
-import { UnitPersonasPanel } from '../components/UnitPersonasPanel'
-import { UnitVehiclesPanel } from '../components/UnitVehiclesPanel'
+  BuildingContextPanel,
+  FloorContextPanel,
+} from '../components/StructureContextPanel'
+import { StructureBuildingTree } from '../components/StructureBuildingTree'
+import { UnitInspectorPanel } from '../components/UnitInspectorPanel'
 
-function isDwellingUnit(unitType: string | number | null | undefined) {
-  const t = normalizeUnitType(unitType)
-  return t === 'Apartment' || t === 'House'
-}
-
-/** Units that can have an owner assigned (dwellings + parking). */
 function canAssignOwner(unitType: string | number | null | undefined) {
   const t = normalizeUnitType(unitType)
   return t === 'Apartment' || t === 'House' || t === 'Parking'
@@ -603,22 +595,19 @@ function OperateMode({
     'dwelling-units',
   ])
   const [buildingId, setBuildingId] = useState(workspace.buildings[0]?.id ?? '')
-  const [floorId, setFloorId] = useState<string | 'all'>('all')
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null)
-  const [inspectorTab, setInspectorTab] = useState<'datos' | 'personas'>('datos')
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState({
-    code: '',
-    unitType: 'Apartment',
-    privateBuiltAreaM2: 0,
-    parkingCount: 0,
-    terraceCount: 0,
-    storageCount: 0,
-    isDoubleParking: false,
-    isBillable: true,
-    isPaymentUpToDate: true,
-    isActive: true,
+  const [floorId, setFloorId] = useState<string | 'all'>(() => {
+    const firstFloors = workspace.buildings[0]?.floors ?? []
+    if (!firstFloors.length) return 'all'
+    return (
+      [...firstFloors].sort((a, b) => (b.number ?? 0) - (a.number ?? 0))[0]?.id ?? 'all'
+    )
   })
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null)
+  /** Option 3: explore (Planta) vs inspect (Unidad) — never both competing for height. */
+  const [viewMode, setViewMode] = useState<'planta' | 'unidad'>('planta')
+  const [expandedBuildingIds, setExpandedBuildingIds] = useState<string[]>(() =>
+    workspace.buildings[0]?.id ? [workspace.buildings[0].id] : [],
+  )
 
   const building = workspace.buildings.find((b) => b.id === buildingId) ?? workspace.buildings[0]
   const floors = building?.floors ?? []
@@ -629,6 +618,17 @@ function OperateMode({
       setFloorId(floors[0]?.id ?? 'all')
     }
   }, [building, floorId, floors])
+
+  const goToPlanta = (clearUnit = false) => {
+    setViewMode('planta')
+    if (clearUnit) setSelectedUnitId(null)
+  }
+
+  const openUnit = (unitId: string, unitFloorId?: string | null) => {
+    setSelectedUnitId(unitId)
+    if (unitFloorId) setFloorId(unitFloorId)
+    setViewMode('unidad')
+  }
 
   const visibleFloors =
     floorId === 'all' ? [...floors].sort((a, b) => (b.number ?? 0) - (a.number ?? 0)) : floors.filter((f) => f.id === floorId)
@@ -644,37 +644,24 @@ function OperateMode({
     return null
   }, [workspace, selectedUnitId])
 
-  const dwellingSelected = !!selectedUnit && isDwellingUnit(selectedUnit.unit.unitType)
+  useEffect(() => {
+    if (viewMode === 'unidad' && !selectedUnit) {
+      setViewMode('planta')
+    }
+  }, [viewMode, selectedUnit])
+
+  const activeFloor = floorId !== 'all' ? floors.find((f) => f.id === floorId) ?? null : null
+
+  /** Context ficha in Planta mode (no unit dossier competing). */
+  const plantaFocus: 'floor' | 'building' | 'none' = activeFloor
+    ? 'floor'
+    : building
+      ? 'building'
+      : 'none'
+
+  const siblingUnits = selectedUnit?.floor.units ?? []
+
   const personasAvailable = !!selectedUnit && canAssignOwner(selectedUnit.unit.unitType)
-  const parkingSelected =
-    !!selectedUnit && normalizeUnitType(selectedUnit.unit.unitType) === 'Parking'
-
-  useEffect(() => {
-    if (!selectedUnit) {
-      setEditing(false)
-      return
-    }
-    setDraft({
-      code: selectedUnit.unit.code,
-      unitType: String(selectedUnit.unit.unitType),
-      privateBuiltAreaM2: selectedUnit.unit.privateBuiltAreaM2,
-      parkingCount: selectedUnit.unit.parkingCount ?? 0,
-      terraceCount: selectedUnit.unit.terraceCount ?? 0,
-      storageCount: selectedUnit.unit.storageCount ?? 0,
-      isDoubleParking: selectedUnit.unit.isDoubleParking ?? false,
-      isBillable: selectedUnit.unit.isBillable,
-      isPaymentUpToDate: selectedUnit.unit.isPaymentUpToDate ?? true,
-      isActive: selectedUnit.unit.isActive,
-    })
-    setEditing(false)
-    setInspectorTab('datos')
-  }, [selectedUnit?.unit.id])
-
-  useEffect(() => {
-    if (!personasAvailable && inspectorTab === 'personas') {
-      setInspectorTab('datos')
-    }
-  }, [personasAvailable, inspectorTab])
 
   const householdQuery = useQuery({
     queryKey: ['unit-household', selectedUnitId],
@@ -683,38 +670,6 @@ function OperateMode({
       const { data } = await api.get<UnitHousehold>(`/api/Units/${selectedUnitId}/household`)
       return data
     },
-  })
-
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      if (!selectedUnit) throw new Error('No unit')
-      const { data } = await api.put<Unit>(`/api/Units/${selectedUnit.unit.id}`, {
-        horizontalPropertyId: propertyId,
-        buildingId: selectedUnit.unit.buildingId,
-        floorId: selectedUnit.unit.floorId,
-        code: draft.code.trim(),
-        unitType: draft.unitType,
-        privateBuiltAreaM2: draft.privateBuiltAreaM2,
-        privateOpenAreaM2: selectedUnit.unit.privateOpenAreaM2,
-        contributionModuleCode: selectedUnit.unit.contributionModuleCode,
-        linkedUnitId: selectedUnit.unit.linkedUnitId,
-        parkingCount: draft.parkingCount,
-        terraceCount: draft.terraceCount,
-        storageCount: draft.storageCount,
-        isDoubleParking: draft.isDoubleParking,
-        isBillable: draft.isBillable,
-        isPaymentUpToDate: draft.isPaymentUpToDate,
-        isActive: draft.isActive,
-      })
-      return data
-    },
-    onSuccess: () => {
-      notifications.show({ title: 'Guardado', message: 'Unidad actualizada', color: 'teal' })
-      setEditing(false)
-      invalidate()
-    },
-    onError: (err) =>
-      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
   })
 
   const addBuildingMutation = useMutation({
@@ -732,6 +687,9 @@ function OperateMode({
     onSuccess: (data) => {
       notifications.show({ title: 'Bloque creado', message: data.name, color: 'teal' })
       setBuildingId(data.id)
+      setFloorId('all')
+      goToPlanta(true)
+      setExpandedBuildingIds((ids) => (ids.includes(data.id) ? ids : [...ids, data.id]))
       invalidate()
     },
     onError: (err) =>
@@ -754,6 +712,12 @@ function OperateMode({
     onSuccess: (data) => {
       notifications.show({ title: 'Piso creado', message: data.name, color: 'teal' })
       setFloorId(data.id)
+      goToPlanta(true)
+      if (building) {
+        setExpandedBuildingIds((ids) =>
+          ids.includes(building.id) ? ids : [...ids, building.id],
+        )
+      }
       invalidate()
     },
     onError: (err) =>
@@ -806,7 +770,7 @@ function OperateMode({
     },
     onSuccess: (data) => {
       notifications.show({ title: 'Unidad creada', message: data.code, color: 'teal' })
-      setSelectedUnitId(data.id)
+      openUnit(data.id, data.floorId)
       invalidate()
     },
     onError: (err) =>
@@ -814,6 +778,145 @@ function OperateMode({
   })
 
   const maxCols = Math.max(1, ...visibleFloors.map((f) => f.units.length), 1)
+  const breadcrumbFloor =
+    floorId === 'all' ? null : floors.find((f) => f.id === floorId) ?? null
+
+  const plantaContext =
+    plantaFocus === 'floor' && building && activeFloor ? (
+      <FloorContextPanel
+        building={building}
+        floor={activeFloor}
+        onAddUnit={(unitType) => addUnitMutation.mutate(unitType)}
+        addUnitLoading={addUnitMutation.isPending}
+      />
+    ) : plantaFocus === 'building' && building ? (
+      <BuildingContextPanel
+        building={building}
+        onSelectFloor={(id) => {
+          setFloorId(id)
+          goToPlanta(true)
+          setExpandedBuildingIds((ids) =>
+            building && ids.includes(building.id) ? ids : [...ids, building.id],
+          )
+        }}
+        onAddFloor={() => addFloorMutation.mutate()}
+        addFloorLoading={addFloorMutation.isPending}
+      />
+    ) : (
+      <Stack gap="xs">
+        <Text fw={600} size="sm">
+          Detalle
+        </Text>
+        <Text size="sm" c="dimmed">
+          Selecciona un bloque o piso en el árbol, o una unidad en la planta.
+        </Text>
+      </Stack>
+    )
+
+  const planToolbar = (
+    <Group justify="space-between" align="flex-start" wrap="wrap">
+      <Stack gap={2}>
+        <Text size="sm" fw={600}>
+          {building?.name ?? 'Bloque'}
+          {breadcrumbFloor
+            ? ` / ${breadcrumbFloor.name}`
+            : floorId === 'all'
+              ? ' / Todos los pisos'
+              : ''}
+        </Text>
+        {floorId !== 'all' ? (
+          <UnstyledButton
+            onClick={() => {
+              setFloorId('all')
+              goToPlanta(true)
+            }}
+          >
+            <Text size="xs" c="teal" fw={600}>
+              Ver todos los pisos
+            </Text>
+          </UnstyledButton>
+        ) : (
+          <Text size="xs" c="dimmed">
+            Elige un piso en el árbol o una unidad en la planta
+          </Text>
+        )}
+      </Stack>
+      <Group gap={6}>
+        <Button
+          size="compact-sm"
+          variant="light"
+          leftSection={<IconPlus size={14} />}
+          onClick={() => addFloorMutation.mutate()}
+          loading={addFloorMutation.isPending}
+        >
+          Piso
+        </Button>
+        <Menu shadow="sm" width={200}>
+          <Menu.Target>
+            <Button
+              size="compact-sm"
+              color="teal"
+              leftSection={<IconPlus size={14} />}
+              loading={addUnitMutation.isPending}
+            >
+              Unidad
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item onClick={() => addUnitMutation.mutate('Apartment')}>
+              Apartamento
+            </Menu.Item>
+            <Menu.Item onClick={() => addUnitMutation.mutate('House')}>Casa</Menu.Item>
+            <Menu.Divider />
+            <Menu.Item onClick={() => addUnitMutation.mutate('Parking')}>
+              Parqueadero
+            </Menu.Item>
+            <Menu.Item onClick={() => addUnitMutation.mutate('Terrace')}>Terraza</Menu.Item>
+            <Menu.Item onClick={() => addUnitMutation.mutate('Storage')}>Bodega</Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+    </Group>
+  )
+
+  const floorPlanGrid = (
+    <Stack gap="md">
+      {visibleFloors.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          Este bloque no tiene pisos. Agrega un piso para ubicar unidades.
+        </Text>
+      ) : (
+        visibleFloors.map((floor) => (
+          <Stack key={floor.id} gap={6}>
+            {floorId === 'all' && (
+              <Text size="xs" c="dimmed" fw={600}>
+                {floor.name}
+              </Text>
+            )}
+            <SimpleGrid cols={{ base: 2, sm: Math.min(Math.max(maxCols, 2), 6) }} spacing={8}>
+              {floor.units.map((unit) => (
+                <UnitCell
+                  key={unit.id}
+                  code={unit.code}
+                  areaLabel={`${unit.privateBuiltAreaM2} m²`}
+                  selected={unit.id === selectedUnitId}
+                  parkingCount={unit.parkingCount}
+                  terraceCount={unit.terraceCount}
+                  storageCount={unit.storageCount}
+                  onClick={() => openUnit(unit.id, unit.floorId)}
+                />
+              ))}
+            </SimpleGrid>
+            {floor.units.length === 0 && floorId !== 'all' && (
+              <Text size="sm" c="dimmed">
+                Sin unidades en este piso.
+              </Text>
+            )}
+          </Stack>
+        ))
+      )}
+    </Stack>
+  )
 
   return (
     <Stack gap="lg">
@@ -826,361 +929,140 @@ function OperateMode({
         style={{
           display: 'grid',
           gap: 16,
-          gridTemplateColumns: 'minmax(180px, 200px) minmax(0, 1fr) minmax(260px, 300px)',
+          gridTemplateColumns: 'minmax(200px, 240px) minmax(0, 1fr)',
+          alignItems: 'start',
         }}
       >
         <Paper withBorder p="md" radius="md">
-          <Group justify="space-between" mb="sm">
-            <Text fw={600} size="sm">
-              Bloques
-            </Text>
-            <ActionIcon
-              variant="subtle"
-              color="teal"
-              onClick={() => addBuildingMutation.mutate()}
-              loading={addBuildingMutation.isPending}
-              aria-label="Agregar bloque"
-            >
-              <IconPlus size={16} />
-            </ActionIcon>
-          </Group>
-          <Stack gap={6}>
-            {workspace.buildings.map((b) => (
-              <UnstyledButton
-                key={b.id}
-                onClick={() => {
-                  setBuildingId(b.id)
-                  setFloorId('all')
-                  setSelectedUnitId(null)
-                }}
-                p="sm"
-                style={{
-                  borderRadius: 8,
-                  border:
-                    b.id === building?.id
-                      ? '1.5px solid var(--mantine-color-teal-6)'
-                      : '1px solid var(--mantine-color-gray-3)',
-                  background:
-                    b.id === building?.id ? 'var(--mantine-color-teal-0)' : 'transparent',
-                }}
+          <StructureBuildingTree
+            buildings={workspace.buildings}
+            buildingId={building?.id ?? ''}
+            floorId={floorId}
+            expandedIds={expandedBuildingIds}
+            onToggleExpand={(id) =>
+              setExpandedBuildingIds((ids) =>
+                ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id],
+              )
+            }
+            onSelectBuilding={(id) => {
+              setBuildingId(id)
+              setFloorId('all')
+              goToPlanta(true)
+              setExpandedBuildingIds((ids) => (ids.includes(id) ? ids : [...ids, id]))
+            }}
+            onSelectFloor={(bId, fId) => {
+              setBuildingId(bId)
+              setFloorId(fId)
+              goToPlanta(true)
+              setExpandedBuildingIds((ids) => (ids.includes(bId) ? ids : [...ids, bId]))
+            }}
+            onAddBuilding={() => addBuildingMutation.mutate()}
+            addBuildingLoading={addBuildingMutation.isPending}
+          />
+        </Paper>
+
+        <Stack gap="md">
+          <Group justify="space-between" align="center" wrap="wrap">
+            <SegmentedControl
+              value={viewMode}
+              onChange={(v) => {
+                const next = v as 'planta' | 'unidad'
+                if (next === 'planta') {
+                  goToPlanta()
+                  return
+                }
+                if (selectedUnit) {
+                  setViewMode('unidad')
+                  return
+                }
+                notifications.show({
+                  title: 'Selecciona una unidad',
+                  message: 'Haz clic en una celda de la planta para abrir su ficha.',
+                  color: 'gray',
+                })
+              }}
+              data={[
+                { label: 'Planta', value: 'planta' },
+                { label: 'Unidad', value: 'unidad', disabled: !selectedUnit },
+              ]}
+            />
+            {viewMode === 'unidad' && selectedUnit && (
+              <Button
+                size="compact-sm"
+                variant="subtle"
+                leftSection={<IconArrowLeft size={14} />}
+                onClick={() => goToPlanta()}
               >
-                <Text size="sm" fw={600}>
-                  {b.name}
+                Volver a planta
+              </Button>
+            )}
+          </Group>
+
+          {viewMode === 'planta' ? (
+            <>
+              <Paper withBorder p="md" radius="md">
+                <Stack gap="sm">
+                  {planToolbar}
+                  <ScrollArea.Autosize mah={560}>{floorPlanGrid}</ScrollArea.Autosize>
+                </Stack>
+              </Paper>
+              <Paper withBorder p="md" radius="md">
+                <Text size="xs" c="dimmed" fw={600} tt="uppercase" mb="sm">
+                  {plantaFocus === 'floor'
+                    ? 'Ficha de piso'
+                    : plantaFocus === 'building'
+                      ? 'Ficha de bloque'
+                      : 'Detalle'}
                 </Text>
-                <Text size="xs" c="dimmed">
-                  {b.floors.length} pisos · {b.floors.reduce((s, f) => s + f.units.length, 0)} uds
-                </Text>
-              </UnstyledButton>
-            ))}
-          </Stack>
-        </Paper>
-
-        <Paper withBorder p="md" radius="md">
-          <Stack gap="sm">
-            <Group justify="space-between">
-              <Group gap={6}>
-                <Badge
-                  style={{ cursor: 'pointer' }}
-                  variant={floorId === 'all' ? 'filled' : 'light'}
-                  color="teal"
-                  onClick={() => setFloorId('all')}
-                >
-                  Todos
-                </Badge>
-                {[...floors]
-                  .sort((a, b) => (b.number ?? 0) - (a.number ?? 0))
-                  .map((f) => (
-                    <Badge
-                      key={f.id}
-                      style={{ cursor: 'pointer' }}
-                      variant={floorId === f.id ? 'filled' : 'light'}
-                      color="teal"
-                      onClick={() => setFloorId(f.id)}
-                    >
-                      {f.name}
-                    </Badge>
-                  ))}
-              </Group>
-              <Group gap={6}>
-                <Button
-                  size="compact-sm"
-                  variant="light"
-                  leftSection={<IconPlus size={14} />}
-                  onClick={() => addFloorMutation.mutate()}
-                  loading={addFloorMutation.isPending}
-                >
-                  Piso
-                </Button>
-                <Menu shadow="sm" width={200}>
-                  <Menu.Target>
-                    <Button
-                      size="compact-sm"
-                      color="teal"
-                      leftSection={<IconPlus size={14} />}
-                      loading={addUnitMutation.isPending}
-                    >
-                      Unidad
-                    </Button>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item onClick={() => addUnitMutation.mutate('Apartment')}>
-                      Apartamento
-                    </Menu.Item>
-                    <Menu.Item onClick={() => addUnitMutation.mutate('House')}>Casa</Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Item onClick={() => addUnitMutation.mutate('Parking')}>
-                      Parqueadero
-                    </Menu.Item>
-                    <Menu.Item onClick={() => addUnitMutation.mutate('Terrace')}>Terraza</Menu.Item>
-                    <Menu.Item onClick={() => addUnitMutation.mutate('Storage')}>Bodega</Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Group>
-            </Group>
-
-            <Text size="sm" c="dimmed">
-              {building?.name}
-              {floorId !== 'all' ? ` · ${floors.find((f) => f.id === floorId)?.name ?? ''}` : ''}
-            </Text>
-
-            <ScrollArea.Autosize mah={560}>
+                {plantaContext}
+              </Paper>
+            </>
+          ) : selectedUnit ? (
+            <Paper withBorder p="md" radius="md">
               <Stack gap="md">
-                {visibleFloors.map((floor) => (
-                  <Stack key={floor.id} gap={6}>
-                    {floorId === 'all' && (
-                      <Text size="xs" c="dimmed" fw={600}>
-                        {floor.name}
-                      </Text>
-                    )}
-                    <SimpleGrid cols={{ base: 2, sm: Math.min(maxCols, 4) }} spacing={8}>
-                      {floor.units.map((unit) => (
-                        <UnitCell
-                          key={unit.id}
-                          code={unit.code}
-                          areaLabel={`${unit.privateBuiltAreaM2} m²`}
-                          selected={unit.id === selectedUnitId}
-                          parkingCount={unit.parkingCount}
-                          terraceCount={unit.terraceCount}
-                          storageCount={unit.storageCount}
-                          onClick={() => setSelectedUnitId(unit.id)}
-                        />
-                      ))}
-                    </SimpleGrid>
+                {siblingUnits.length > 1 && (
+                  <Stack gap={6}>
+                    <Text size="xs" c="dimmed" fw={600}>
+                      {selectedUnit.building.name} · {selectedUnit.floor.name}
+                    </Text>
+                    <ScrollArea type="hover" offsetScrollbars>
+                      <Group gap={6} wrap="nowrap" pb={4}>
+                        {siblingUnits.map((unit) => (
+                          <Box key={unit.id} style={{ flex: '0 0 auto', width: 72 }}>
+                            <UnitCell
+                              code={unit.code}
+                              selected={unit.id === selectedUnitId}
+                              parkingCount={unit.parkingCount}
+                              terraceCount={unit.terraceCount}
+                              storageCount={unit.storageCount}
+                              onClick={() => openUnit(unit.id, unit.floorId)}
+                            />
+                          </Box>
+                        ))}
+                      </Group>
+                    </ScrollArea>
+                    <Divider />
                   </Stack>
-                ))}
-              </Stack>
-            </ScrollArea.Autosize>
-          </Stack>
-        </Paper>
-
-        <Paper withBorder p="md" radius="md">
-          {selectedUnit ? (
-            <Box style={{ maxHeight: 640, overflowY: 'auto' }}>
-            <Stack gap="sm">
-              <Group justify="space-between" align="flex-start">
-                <div>
-                  <Text fw={700} size="lg">
-                    {editing ? draft.code : selectedUnit.unit.code}
-                  </Text>
-                  <Text size="sm" c="dimmed">
-                    {selectedUnit.building.name} · {selectedUnit.floor.name}
-                  </Text>
-                </div>
-                <Badge variant="light">
-                  {labelForOption(UNIT_TYPE_OPTIONS, selectedUnit.unit.unitType)}
-                </Badge>
-              </Group>
-
-              {!editing && personasAvailable && (
-                <SegmentedControl
-                  fullWidth
-                  size="xs"
-                  value={inspectorTab}
-                  onChange={(v) => setInspectorTab(v as 'datos' | 'personas')}
-                  data={[
-                    { label: 'Datos', value: 'datos' },
-                    { label: 'Personas', value: 'personas' },
-                  ]}
-                />
-              )}
-
-              {!editing && personasAvailable && inspectorTab === 'personas' ? (
-                <UnitPersonasPanel
-                  unitId={selectedUnit.unit.id}
+                )}
+                <UnitInspectorPanel
+                  propertyId={propertyId}
+                  selected={selectedUnit}
                   household={householdQuery.data}
                   householdLoading={householdQuery.isLoading}
-                  showHabitants={dwellingSelected}
                   onChanged={() => {
                     void householdQuery.refetch()
                     invalidate()
                   }}
                 />
-              ) : !editing ? (
-                <>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Área
-                    </Text>
-                    <Text size="sm" fw={600}>
-                      {selectedUnit.unit.privateBuiltAreaM2} m²
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Coeficiente
-                    </Text>
-                    <Text size="sm" fw={600}>
-                      {selectedUnit.unit.coefficient.toFixed(2)}%
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      Pagos
-                    </Text>
-                    <Badge
-                      size="sm"
-                      variant="light"
-                      color={selectedUnit.unit.isPaymentUpToDate ? 'teal' : 'red'}
-                    >
-                      {selectedUnit.unit.isPaymentUpToDate ? 'Al día' : 'Pendiente'}
-                    </Badge>
-                  </Group>
-
-                  {parkingSelected && (
-                    <Group justify="space-between">
-                      <Text size="sm" c="dimmed">
-                        Tipo de cupo
-                      </Text>
-                      <Badge size="sm" variant="light">
-                        {selectedUnit.unit.isDoubleParking
-                          ? 'Doble (máx. 2 vehículos)'
-                          : 'Sencillo (máx. 1 vehículo)'}
-                      </Badge>
-                    </Group>
-                  )}
-
-                  {dwellingSelected && (
-                    <UnitAmenityLinksPanel
-                      propertyId={propertyId}
-                      dwelling={selectedUnit.unit}
-                      household={householdQuery.data}
-                      onChanged={() => {
-                        void householdQuery.refetch()
-                        invalidate()
-                      }}
-                    />
-                  )}
-
-                  {isLinkableAmenity(selectedUnit.unit.unitType) && (
-                    <UnitHostLinkField
-                      propertyId={propertyId}
-                      amenity={selectedUnit.unit}
-                      onChanged={() => {
-                        void householdQuery.refetch()
-                        invalidate()
-                      }}
-                    />
-                  )}
-
-                  {parkingSelected && (
-                    <UnitVehiclesPanel
-                      propertyId={propertyId}
-                      parkingUnitId={selectedUnit.unit.id}
-                      parkingCode={selectedUnit.unit.code}
-                      isDoubleParking={selectedUnit.unit.isDoubleParking ?? false}
-                    />
-                  )}
-
-                  <Button color="teal" onClick={() => setEditing(true)}>
-                    Editar unidad
-                  </Button>
-                </>
-              ) : (
-                <Stack gap="sm">
-                  <TextInput
-                    label="Código"
-                    value={draft.code}
-                    onChange={(e) => setDraft((d) => ({ ...d, code: e.currentTarget.value }))}
-                  />
-                  <Select
-                    label="Tipo"
-                    data={UNIT_TYPE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
-                    value={normalizeUnitType(draft.unitType) ?? draft.unitType}
-                    onChange={(v) => setDraft((d) => ({ ...d, unitType: v ?? 'Apartment' }))}
-                  />
-                  <NumberInput
-                    label="Área m²"
-                    value={draft.privateBuiltAreaM2}
-                    onChange={(v) => setDraft((d) => ({ ...d, privateBuiltAreaM2: Number(v) || 0 }))}
-                    min={0}
-                    decimalScale={2}
-                  />
-                  {normalizeUnitType(draft.unitType) === 'Parking' && (
-                    <Switch
-                      label="Parqueadero doble"
-                      description="Permite hasta 2 vehículos en este cupo."
-                      checked={draft.isDoubleParking}
-                      onChange={(event) => {
-                        const checked = event.currentTarget.checked
-                        setDraft((d) => ({ ...d, isDoubleParking: checked }))
-                      }}
-                    />
-                  )}
-                  <Switch
-                    label="Facturable"
-                    checked={draft.isBillable}
-                    onChange={(event) => {
-                      const checked = event.currentTarget.checked
-                      setDraft((d) => ({ ...d, isBillable: checked }))
-                    }}
-                  />
-                  <Switch
-                    label="Pagos al día"
-                    checked={draft.isPaymentUpToDate}
-                    onChange={(event) => {
-                      const checked = event.currentTarget.checked
-                      setDraft((d) => ({ ...d, isPaymentUpToDate: checked }))
-                    }}
-                  />
-                  <Text size="xs" c="dimmed">
-                    {dwellingSelected
-                      ? 'Para vincular parqueadero/terraza/bodega, usa la vista Datos (no edición).'
-                      : isLinkableAmenity(draft.unitType)
-                        ? 'Para asignar este parqueadero/terraza/bodega a un apartamento, usa la vista Datos.'
-                        : null}
-                  </Text>
-                  <Group>
-                    <Button
-                      color="teal"
-                      loading={saveMutation.isPending}
-                      onClick={() => saveMutation.mutate()}
-                    >
-                      Guardar
-                    </Button>
-                    <Button variant="subtle" onClick={() => setEditing(false)}>
-                      Cancelar
-                    </Button>
-                  </Group>
-                </Stack>
-              )}
-            </Stack>
-            </Box>
-          ) : (
-            <Stack gap="xs">
-              <Text fw={600} size="sm">
-                Unidad
-              </Text>
-              <Text size="sm" c="dimmed">
-                Selecciona una celda para ver datos o asignar personas (mensajería y
-                entregas más adelante).
-              </Text>
-            </Stack>
-          )}
-        </Paper>
+              </Stack>
+            </Paper>
+          ) : null}
+        </Stack>
       </Box>
     </Stack>
   )
 }
+
 
 export function StructureWorkspacePage() {
   const propertyId = usePropertyId()
