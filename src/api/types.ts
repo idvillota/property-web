@@ -20,6 +20,16 @@ export type TenantModuleFlags = {
   assemblies: boolean
 }
 
+export type FileAsset = {
+  id: string
+  fileName: string
+  contentType: string
+  sizeBytes: number
+  purpose: string | null
+  createdByUserId: string | null
+  createdAtUtc: string
+}
+
 export type LoginTenantOption = {
   slug: string
   name: string
