@@ -49,6 +49,8 @@ export const FeatureCodes = {
   pollsManage: 'polls.manage',
   portalLibrary: 'portal.library',
   portalPolls: 'portal.polls',
+  aiOps: 'ai.ops',
+  platformApi: 'platform.api',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -113,6 +115,8 @@ export const FEATURE_LABELS: Record<string, string> = {
   'polls.manage': 'Encuestas y votaciones',
   'portal.library': 'Biblioteca (portal)',
   'portal.polls': 'Encuestas (portal)',
+  'ai.ops': 'Asistente IA (operación)',
+  'platform.api': 'API e integraciones',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
@@ -128,6 +132,8 @@ export const FEATURE_MODULE_LABELS: Record<string, string> = {
   Portal: 'Portal',
   Accounting: 'Contabilidad',
   Assemblies: 'Asambleas',
+  Channels: 'Canales',
+  Platform: 'Plataforma',
 }
 
 export function featureLabel(code: string, fallbackName?: string) {

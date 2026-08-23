@@ -374,6 +374,7 @@ export type Person = {
   lastName: string
   email: string | null
   phone: string | null
+  whatsAppOptIn: boolean
   isActive: boolean
 }
 
@@ -633,7 +634,35 @@ export type DunningSendLog = {
   daysOverdueSnapshot: number
   balanceSnapshot: number
   toEmail: string
+  channel?: string | null
   sentAtUtc: string
+}
+
+export type HoldingPropertyKpi = {
+  propertyId: string
+  name: string
+  openBalance: number
+  overdueBalance: number
+  occupiedUnits: number
+  totalUnits: number
+}
+
+export type HoldingSummary = {
+  properties: HoldingPropertyKpi[]
+}
+
+export type WebhookSubscription = {
+  id: string
+  name: string
+  targetUrl: string
+  secret?: string
+  eventTypes: string[]
+  isActive: boolean
+  createdAtUtc?: string
+}
+
+export type AiSuggestPqrsResponse = {
+  draft: string
 }
 
 export type BillingPeriod = {

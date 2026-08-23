@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
-import type { PqrsCase } from '../../../api/types'
+import type { AiSuggestPqrsResponse, PqrsCase } from '../../../api/types'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePagedListQuery } from '../../../hooks/usePagedListQuery'
@@ -29,6 +29,7 @@ import { FeatureCodes } from '../../../lib/permissions'
 import { PQRS_CATEGORY_OPTIONS, PQRS_STATUS_OPTIONS } from '../../../lib/pqrsEnums'
 import { useAuthStore } from '../../../stores/authStore'
 import { adminPqrsInboxFilters } from '../lib/adminPqrsInboxFilters'
+import { PqrsDetail_SuggestButton } from '../lib/pqrsDetailSuggestButton'
 
 function formatWhen(iso: string) {
   try {
@@ -46,6 +47,7 @@ function formatWhen(iso: string) {
 export function PqrsInboxPage() {
   const propertyId = usePropertyId()
   const canManage = useAuthStore((s) => s.hasPermission(FeatureCodes.pqrsManage))
+  const canSuggest = useAuthStore((s) => s.hasPermission(FeatureCodes.aiOps))
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const invalidate = useInvalidate(['pqrs-cases'])
   const queryClient = useQueryClient()
@@ -72,6 +74,25 @@ export function PqrsInboxPage() {
       comment: '',
       dueAt: '',
     },
+  })
+
+  const suggestMutation = useMutation({
+    mutationFn: async (pqrsCaseId: string) => {
+      const { data } = await api.post<AiSuggestPqrsResponse>(
+        `/api/ai-assist/suggest-pqrs/${pqrsCaseId}`,
+      )
+      return data
+    },
+    onSuccess: (data) => {
+      statusForm.setFieldValue('comment', data.draft)
+      notifications.show({
+        title: 'Borrador listo',
+        message: 'Revise y edite la respuesta antes de enviar',
+        color: 'teal',
+      })
+    },
+    onError: (err) =>
+      notifications.show({ title: 'IA no disponible', message: getApiErrorMessage(err), color: 'red' }),
   })
 
   const transitionMutation = useMutation({
@@ -111,6 +132,9 @@ export function PqrsInboxPage() {
   )
   const visibleItems = items.filter((i) => filtered.some((f) => f.id === i.id))
   const detail = detailQuery.data
+  const showSuggestButton =
+    detail &&
+    PqrsDetail_SuggestButton(asEnumName(detail.status, PQRS_STATUS_OPTIONS) ?? detail.status, canSuggest)
 
   return (
     <Stack gap="md">
@@ -226,9 +250,20 @@ export function PqrsInboxPage() {
               minRows={3}
               {...statusForm.getInputProps('comment')}
             />
-            <Button loading={transitionMutation.isPending} onClick={() => transitionMutation.mutate()}>
-              Guardar y notificar
-            </Button>
+            <Group gap="sm">
+              {showSuggestButton ? (
+                <Button
+                  variant="light"
+                  loading={suggestMutation.isPending}
+                  onClick={() => selectedId && suggestMutation.mutate(selectedId)}
+                >
+                  Sugerir respuesta
+                </Button>
+              ) : null}
+              <Button loading={transitionMutation.isPending} onClick={() => transitionMutation.mutate()}>
+                Guardar y notificar
+              </Button>
+            </Group>
 
             <Stack gap="xs">
               <Text fw={600} size="sm">

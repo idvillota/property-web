@@ -1,4 +1,5 @@
 import {
+  IconBuildingSkyscraper,
   IconCalendarCheck,
   IconCalendarEvent,
   IconCar,
@@ -24,6 +25,7 @@ import {
   IconUserPlus,
   IconUsers,
   IconUsersGroup,
+  IconWebhook,
 } from '@tabler/icons-react'
 import type { TablerIcon } from '@tabler/icons-react'
 import type { TenantModuleFlags } from '../api/types'
@@ -39,6 +41,7 @@ export type NavAreaId =
   | 'comunidad'
   | 'copropiedad'
   | 'reportes'
+  | 'canales'
   | 'administracion'
 
 export type TenantModuleNavKey = keyof TenantModuleFlags
@@ -444,6 +447,17 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       activeMatch: 'prefix',
     },
 
+    { kind: 'section', area: 'canales', label: 'Canales' },
+    {
+      kind: 'link',
+      id: 'canales-holding',
+      to: '/holding',
+      label: 'Multi-PH / Holding',
+      icon: IconBuildingSkyscraper,
+      permission: FeatureCodes.structureProperties,
+      activeMatch: 'exact',
+    },
+
     { kind: 'section', area: 'administracion', label: 'Administración' },
     {
       kind: 'link',
@@ -524,6 +538,15 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       label: 'Auditoría',
       icon: IconShieldLock,
       permission: FeatureCodes.auditView,
+      activeMatch: 'prefix',
+    },
+    {
+      kind: 'link',
+      id: 'admin-webhooks',
+      to: '/settings/webhooks',
+      label: 'Webhooks',
+      icon: IconWebhook,
+      permission: FeatureCodes.platformApi,
       activeMatch: 'prefix',
     },
     {

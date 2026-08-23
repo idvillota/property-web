@@ -29,6 +29,8 @@ export const ROUTE_PERMISSIONS: Record<string, FeatureCode> = {
   '/vehicle-brands': FeatureCodes.structureVehicleBrands,
   '/properties': FeatureCodes.structureProperties,
   '/people': FeatureCodes.peopleManage,
+  '/holding': FeatureCodes.structureProperties,
+  '/settings/webhooks': FeatureCodes.platformApi,
 }
 
 const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [

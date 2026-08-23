@@ -29,6 +29,7 @@ import { usePagedListState } from '../../../hooks/usePagedListState'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { DOCUMENT_TYPE_OPTIONS, labelForOption } from '../../../lib/structureEnums'
 import { PersonOverviewDrawer } from '../components/PersonOverviewDrawer'
+import { PERSON_FORM_DEFAULTS } from '../lib/personFormWhatsAppOptInToggle'
 
 export function PeoplePage() {
   const [drawer, setDrawer] = useState<'create' | Person | null>(null)
@@ -38,15 +39,7 @@ export function PeoplePage() {
   const listQuery = usePagedListQuery<Person>('people', '/api/People', list)
 
   const form = useForm({
-    initialValues: {
-      documentType: 'CC',
-      documentNumber: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      isActive: true,
-    },
+    initialValues: { ...PERSON_FORM_DEFAULTS },
     validate: {
       documentType: (v) => (!v ? 'Obligatorio' : null),
       documentNumber: (v) => (v.trim().length < 1 ? 'Obligatorio' : null),
@@ -56,15 +49,7 @@ export function PeoplePage() {
   })
 
   const openCreate = () => {
-    form.setValues({
-      documentType: 'CC',
-      documentNumber: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      isActive: true,
-    })
+    form.setValues({ ...PERSON_FORM_DEFAULTS })
     setDrawer('create')
   }
 
@@ -76,6 +61,7 @@ export function PeoplePage() {
       lastName: item.lastName,
       email: item.email ?? '',
       phone: item.phone ?? '',
+      whatsAppOptIn: item.whatsAppOptIn ?? false,
       isActive: item.isActive,
     })
     setDrawer(item)
@@ -90,6 +76,7 @@ export function PeoplePage() {
         lastName: form.values.lastName.trim(),
         email: form.values.email.trim() || null,
         phone: form.values.phone.trim() || null,
+        whatsAppOptIn: form.values.whatsAppOptIn,
       }
       if (drawer === 'create') {
         const { data } = await api.post<Person>('/api/People', payload)
@@ -268,6 +255,11 @@ export function PeoplePage() {
             <TextInput label="Apellidos" required {...form.getInputProps('lastName')} />
             <TextInput label="Correo" type="email" {...form.getInputProps('email')} />
             <TextInput label="Teléfono" {...form.getInputProps('phone')} />
+            <Switch
+              label="Aceptar WhatsApp"
+              description="Permite notificaciones operacionales por WhatsApp (mora, visitas)"
+              {...form.getInputProps('whatsAppOptIn', { type: 'checkbox' })}
+            />
             {drawer !== 'create' && (
               <Switch label="Activo" {...form.getInputProps('isActive', { type: 'checkbox' })} />
             )}

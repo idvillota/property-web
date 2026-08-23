@@ -74,6 +74,8 @@ import { InsurancePage } from './features/community/pages/InsurancePage'
 import { PollsPage } from './features/community/pages/PollsPage'
 import { PortalLibraryPage } from './features/portal/pages/PortalLibraryPage'
 import { PortalPollsPage } from './features/portal/pages/PortalPollsPage'
+import { HoldingPage } from './features/holding/pages/HoldingPage'
+import { WebhooksSettingsPage } from './features/platform/pages/WebhooksSettingsPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
 import { useAuthStore } from './stores/authStore'
 import { FeatureCodes } from './lib/permissions'
@@ -131,6 +133,7 @@ export default function App() {
               <Route path="/neighborhoods" element={<NeighborhoodsPage />} />
               <Route path="/vehicle-brands" element={<VehicleBrandsPage />} />
               <Route path="/properties" element={<PropertiesPage />} />
+              <Route path="/holding" element={<HoldingPage />} />
               <Route path="/properties/:propertyId" element={<PropertyWorkspaceLayout />}>
                 <Route index element={<PropertyOverviewPage />} />
                 <Route path="estructura" element={<StructureWorkspacePage />} />
@@ -187,6 +190,7 @@ export default function App() {
               <Route path="/settings" element={<TenantSettingsPage />} />
               <Route path="/settings/appearance" element={<AppearanceSettingsPage />} />
               <Route path="/settings/audit" element={<AuditPage />} />
+              <Route path="/settings/webhooks" element={<WebhooksSettingsPage />} />
             </Route>
           </Route>
         </Route>

@@ -258,6 +258,7 @@ export function DunningPage() {
               <Table.Tr>
                 <Table.Th>Fecha</Table.Th>
                 <Table.Th>Unidad</Table.Th>
+                {sendsQuery.data!.some((s) => s.channel) ? <Table.Th>Canal</Table.Th> : null}
                 <Table.Th>Email</Table.Th>
                 <Table.Th>Días</Table.Th>
                 <Table.Th>Saldo</Table.Th>
@@ -268,6 +269,9 @@ export function DunningPage() {
                 <Table.Tr key={s.id}>
                   <Table.Td>{new Date(s.sentAtUtc).toLocaleString()}</Table.Td>
                   <Table.Td>{s.unitCode ?? '—'}</Table.Td>
+                  {sendsQuery.data!.some((row) => row.channel) ? (
+                    <Table.Td>{s.channel === 'whatsapp' ? 'WhatsApp' : s.channel ?? 'Email'}</Table.Td>
+                  ) : null}
                   <Table.Td>{s.toEmail}</Table.Td>
                   <Table.Td>{s.daysOverdueSnapshot}</Table.Td>
                   <Table.Td>{formatMoney(s.balanceSnapshot)}</Table.Td>
