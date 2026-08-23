@@ -509,6 +509,8 @@ export type BillingPeriod = {
   periodKey: string
   status: string | number
   notes: string | null
+  isLiquidated: boolean
+  liquidatedAtUtc: string | null
 }
 
 export type FeeCharge = {
@@ -539,6 +541,26 @@ export type GenerateChargesResult = {
   createdCount: number
   skippedCount: number
   totalAmount: number
+}
+
+export type LiquidationPreview = {
+  billingPeriodId: string
+  periodKey: string
+  isLiquidated: boolean
+  billableUnitCount: number
+  chargeCount: number
+  totalAmount: number
+  monthlyBudgetAmount: number
+  dueDate: string
+}
+
+export type LiquidationResult = {
+  billingPeriodId: string
+  periodKey: string
+  createdCount: number
+  totalAmount: number
+  isLiquidated: boolean
+  liquidatedAtUtc: string | null
 }
 
 export type PaymentAllocation = {

@@ -1,7 +1,9 @@
 import {
   ActionIcon,
+  Alert,
   Button,
   Group,
+  Modal,
   Select,
   Stack,
   Text,
@@ -15,7 +17,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
-import type { BillingPeriod, GenerateChargesResult } from '../../../api/types'
+import type {
+  BillingPeriod,
+  LiquidationPreview,
+  LiquidationResult,
+} from '../../../api/types'
 import { EntityCard } from '../../../components/crud/EntityCard'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
 import { ListToolbar } from '../../../components/crud/ListToolbar'
@@ -36,6 +42,7 @@ import {
 } from '../../../lib/billingEnums'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { formatMoney } from '../../../lib/money'
+import { liquidationWizardShowsPreviewTotals } from '../lib/liquidationWizardPreview'
 
 function yearOptions(around = new Date().getFullYear()) {
   return Array.from({ length: 7 }, (_, i) => {
@@ -48,9 +55,16 @@ function isOpenPeriod(status: string | number) {
   return asEnumName(status, BILLING_PERIOD_STATUS_OPTIONS) === 'Open'
 }
 
+type WizardState = {
+  period: BillingPeriod
+  step: 'preview' | 'confirm'
+  preview: LiquidationPreview | null
+}
+
 export function BillingPeriodsPage() {
   const propertyId = usePropertyId()
   const [drawer, setDrawer] = useState<'create' | BillingPeriod | null>(null)
+  const [wizard, setWizard] = useState<WizardState | null>(null)
   const invalidate = useInvalidate(['billing-periods', 'billing-period-options', 'fee-charges'])
   const list = usePagedListState('year', {
     sortDir: 'desc',
@@ -148,25 +162,61 @@ export function BillingPeriodsPage() {
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
   })
 
-  const generateMutation = useMutation({
-    mutationFn: async (billingPeriodId: string) => {
-      const { data } = await api.post<GenerateChargesResult>('/api/FeeCharges/generate-ordinary', {
+  const previewMutation = useMutation({
+    mutationFn: async (period: BillingPeriod) => {
+      const { data } = await api.post<LiquidationPreview>('/api/FeeCharges/liquidation/preview', {
         horizontalPropertyId: propertyId,
-        billingPeriodId,
+        billingPeriodId: period.id,
+      })
+      return { period, preview: data }
+    },
+    onSuccess: ({ period, preview }) => {
+      setWizard({ period, step: 'preview', preview })
+    },
+    onError: (err) =>
+      notifications.show({ title: 'No se puede liquidar', message: getApiErrorMessage(err), color: 'red' }),
+  })
+
+  const commitMutation = useMutation({
+    mutationFn: async (period: BillingPeriod) => {
+      const { data } = await api.post<LiquidationResult>('/api/FeeCharges/liquidation/commit', {
+        horizontalPropertyId: propertyId,
+        billingPeriodId: period.id,
       })
       return data
     },
     onSuccess: (result) => {
       notifications.show({
-        title: 'Cargos ordinarios generados',
-        message: `Creados ${result.createdCount}, omitidos ${result.skippedCount}, total ${formatMoney(result.totalAmount)}`,
+        title: 'Liquidación confirmada',
+        message: `${result.periodKey}: ${result.createdCount} cargos · ${formatMoney(result.totalAmount)}`,
         color: 'teal',
       })
+      setWizard(null)
       invalidate()
     },
     onError: (err) =>
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
   })
+
+  const openLiquidationWizard = (period: BillingPeriod) => {
+    if (period.isLiquidated) {
+      notifications.show({
+        title: 'Periodo ya liquidado',
+        message: `El periodo ${period.periodKey} ya tiene cuotas ordinarias. No se puede liquidar de nuevo.`,
+        color: 'orange',
+      })
+      return
+    }
+    if (!isOpenPeriod(period.status)) {
+      notifications.show({
+        title: 'Periodo cerrado',
+        message: 'Solo se liquidan periodos abiertos.',
+        color: 'orange',
+      })
+      return
+    }
+    previewMutation.mutate(period)
+  }
 
   const columns = useMemo((): ColumnDef<BillingPeriod>[] => {
     return [
@@ -192,10 +242,15 @@ export function BillingPeriodsPage() {
           label: o.label,
         })),
         render: (row) => (
-          <StatusBadge
-            variant={isOpenPeriod(row.status) ? 'success' : 'neutral'}
-            label={labelForOption(BILLING_PERIOD_STATUS_OPTIONS, row.status)}
-          />
+          <Group gap={6}>
+            <StatusBadge
+              variant={isOpenPeriod(row.status) ? 'success' : 'neutral'}
+              label={labelForOption(BILLING_PERIOD_STATUS_OPTIONS, row.status)}
+            />
+            {row.isLiquidated ? (
+              <StatusBadge variant="warning" label="Liquidado" />
+            ) : null}
+          </Group>
         ),
       },
       {
@@ -211,23 +266,15 @@ export function BillingPeriodsPage() {
         width: 140,
         render: (row) => (
           <Group gap={4} wrap="nowrap">
-            {isOpenPeriod(row.status) ? (
-              <Tooltip label="Generar cuotas ordinarias">
+            {isOpenPeriod(row.status) && !row.isLiquidated ? (
+              <Tooltip label="Liquidar cuota (asistente)">
                 <ActionIcon
                   variant="light"
                   color="teal"
                   size="md"
-                  loading={generateMutation.isPending}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `¿Generar cuotas ordinarias para ${row.periodKey}? Se omitirán las cuotas ordinarias existentes por unidad.`,
-                      )
-                    ) {
-                      generateMutation.mutate(row.id)
-                    }
-                  }}
-                  aria-label="Generar cuotas ordinarias"
+                  loading={previewMutation.isPending}
+                  onClick={() => openLiquidationWizard(row)}
+                  aria-label="Liquidar cuota"
                 >
                   <IconReceipt2 size={16} stroke={1.75} />
                 </ActionIcon>
@@ -272,13 +319,16 @@ export function BillingPeriodsPage() {
         ),
       },
     ]
-  }, [closeMutation, generateMutation, softCloseMutation])
+  }, [closeMutation, previewMutation.isPending, softCloseMutation])
+
+  const showPreviewTotals =
+    wizard?.preview != null && liquidationWizardShowsPreviewTotals(wizard.preview)
 
   return (
     <Stack gap="md">
       <PageHeader
-        title="Periodos de facturación"
-        description="Abra y cierre periodos mensuales, luego genere las cuotas ordinarias."
+        title="Periodos y liquidación"
+        description="Abra periodos mensuales y liquide la cuota ordinaria con vista previa antes de confirmar."
       />
       <ListToolbar onAdd={openCreate} addLabel="Agregar periodo" />
       <PagedEntityView
@@ -299,7 +349,7 @@ export function BillingPeriodsPage() {
           <EntityCard
             key={item.id}
             title={item.periodKey}
-            subtitle={labelForOption(BILLING_PERIOD_STATUS_OPTIONS, item.status)}
+            subtitle={`${labelForOption(BILLING_PERIOD_STATUS_OPTIONS, item.status)}${item.isLiquidated ? ' · Liquidado' : ''}`}
             onEdit={() => openEdit(item)}
             onDelete={() => {
               if (isOpenPeriod(item.status) && window.confirm(`¿Cerrar periodo ${item.periodKey}?`)) {
@@ -354,6 +404,97 @@ export function BillingPeriodsPage() {
           </Stack>
         </form>
       </FormDrawer>
+
+      <Modal
+        opened={wizard !== null}
+        onClose={() => setWizard(null)}
+        title={
+          wizard?.step === 'confirm'
+            ? `Confirmar liquidación · ${wizard.period.periodKey}`
+            : `Vista previa · ${wizard?.period.periodKey ?? ''}`
+        }
+        centered
+      >
+        {wizard?.preview && showPreviewTotals ? (
+          <Stack gap="md">
+            {wizard.step === 'preview' ? (
+              <>
+                <Alert color="teal" variant="light">
+                  Se generarán cargos ordinarios según presupuesto y coeficientes. Cancelar no guarda
+                  nada.
+                </Alert>
+                <Stack gap={4}>
+                  <Text size="sm">
+                    Unidades facturables:{' '}
+                    <Text span fw={600}>
+                      {wizard.preview.billableUnitCount}
+                    </Text>
+                  </Text>
+                  <Text size="sm">
+                    Cargos a crear:{' '}
+                    <Text span fw={600}>
+                      {wizard.preview.chargeCount}
+                    </Text>
+                  </Text>
+                  <Text size="sm">
+                    Presupuesto mensual:{' '}
+                    <Text span fw={600}>
+                      {formatMoney(wizard.preview.monthlyBudgetAmount)}
+                    </Text>
+                  </Text>
+                  <Text size="sm">
+                    Total a liquidar:{' '}
+                    <Text span fw={700}>
+                      {formatMoney(wizard.preview.totalAmount)}
+                    </Text>
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    Vencimiento: {wizard.preview.dueDate}
+                  </Text>
+                </Stack>
+                <Group justify="flex-end" gap="sm">
+                  <Button variant="default" onClick={() => setWizard(null)}>
+                    Cancelar
+                  </Button>
+                  <Button onClick={() => setWizard({ ...wizard, step: 'confirm' })}>
+                    Continuar
+                  </Button>
+                </Group>
+              </>
+            ) : (
+              <>
+                <Text size="sm">
+                  ¿Confirmar liquidación de {wizard.preview.chargeCount} cargos por{' '}
+                  <Text span fw={700}>
+                    {formatMoney(wizard.preview.totalAmount)}
+                  </Text>
+                  ? Esta acción no se puede repetir para el mismo periodo.
+                </Text>
+                <Group justify="flex-end" gap="sm">
+                  <Button
+                    variant="default"
+                    onClick={() => setWizard({ ...wizard, step: 'preview' })}
+                    disabled={commitMutation.isPending}
+                  >
+                    Atrás
+                  </Button>
+                  <Button
+                    color="teal"
+                    loading={commitMutation.isPending}
+                    onClick={() => commitMutation.mutate(wizard.period)}
+                  >
+                    Confirmar liquidación
+                  </Button>
+                </Group>
+              </>
+            )}
+          </Stack>
+        ) : wizard ? (
+          <Text size="sm" c="dimmed">
+            Cargando vista previa…
+          </Text>
+        ) : null}
+      </Modal>
     </Stack>
   )
 }

@@ -128,7 +128,7 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       kind: 'link',
       id: 'cartera-periodos',
       to: p('periods'),
-      label: 'Periodos',
+      label: 'Liquidación',
       icon: IconCalendarEvent,
       permission: FeatureCodes.billingCharges,
       requiresProperty: true,
