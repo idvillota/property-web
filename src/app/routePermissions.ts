@@ -61,6 +61,15 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/reception(?:\/|$)/, FeatureCodes.receptionManage],
   [/^\/guard(?:\/|$)/, { anyOf: [FeatureCodes.receptionManage, FeatureCodes.receptionVisits] }],
   [/^\/properties\/[^/]+\/reports(?:\/|$)/, FeatureCodes.reportsView],
+  [/^\/properties\/[^/]+\/accounting\/coa(?:\/|$)/, FeatureCodes.accountingCoa],
+  [/^\/properties\/[^/]+\/accounting\/journals(?:\/|$)/, FeatureCodes.accountingJournals],
+  [/^\/properties\/[^/]+\/accounting\/budget(?:\/|$)/, FeatureCodes.accountingBudget],
+  [/^\/properties\/[^/]+\/accounting\/ap(?:\/|$)/, FeatureCodes.accountingAp],
+  [/^\/properties\/[^/]+\/accounting\/petty-cash(?:\/|$)/, FeatureCodes.accountingPettyCash],
+  [/^\/properties\/[^/]+\/accounting\/tax(?:\/|$)/, FeatureCodes.accountingTax],
+  [/^\/properties\/[^/]+\/accounting\/reports(?:\/|$)/, FeatureCodes.accountingReports],
+  [/^\/properties\/[^/]+\/accounting\/bank-rec(?:\/|$)/, FeatureCodes.accountingBank],
+  [/^\/properties\/[^/]+\/accounting(?:\/|$)/, FeatureCodes.accountingCoa],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 

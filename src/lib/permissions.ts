@@ -32,6 +32,14 @@ export const FeatureCodes = {
   portalVisits: 'portal.visits',
   pqrsCreate: 'pqrs.create',
   pqrsManage: 'pqrs.manage',
+  accountingCoa: 'accounting.coa',
+  accountingJournals: 'accounting.journals',
+  accountingBudget: 'accounting.budget',
+  accountingAp: 'accounting.ap',
+  accountingPettyCash: 'accounting.pettycash',
+  accountingTax: 'accounting.tax',
+  accountingReports: 'accounting.reports',
+  accountingBank: 'accounting.bank',
 } as const
 
 export type FeatureCode = (typeof FeatureCodes)[keyof typeof FeatureCodes]
@@ -41,6 +49,7 @@ export const ROLE_LABELS: Record<string, string> = {
   Owner: 'Propietario',
   Manager: 'Gerente',
   Receptionist: 'Recepcionista',
+  Accountant: 'Contador',
   Resident: 'Residente',
 }
 
@@ -78,6 +87,14 @@ export const FEATURE_LABELS: Record<string, string> = {
   'portal.visits': 'Autorizar visitas (portal)',
   'pqrs.create': 'Crear PQRS (portal)',
   'pqrs.manage': 'Bandeja PQRS',
+  'accounting.coa': 'Plan de cuentas',
+  'accounting.journals': 'Asientos contables',
+  'accounting.budget': 'Presupuesto',
+  'accounting.ap': 'Cuentas por pagar',
+  'accounting.pettycash': 'Caja menor',
+  'accounting.tax': 'Retenciones',
+  'accounting.reports': 'Estados financieros',
+  'accounting.bank': 'Conciliación bancaria',
 }
 
 export const FEATURE_MODULE_LABELS: Record<string, string> = {
@@ -91,6 +108,7 @@ export const FEATURE_MODULE_LABELS: Record<string, string> = {
   Community: 'Comunidad',
   Reports: 'Reportes',
   Portal: 'Portal',
+  Accounting: 'Contabilidad',
 }
 
 export function featureLabel(code: string, fallbackName?: string) {

@@ -33,6 +33,15 @@ import { OccupancyReportPage } from './features/reports/pages/OccupancyReportPag
 import { ReceptionReportPage } from './features/reports/pages/ReceptionReportPage'
 import { ReportsHubPage } from './features/reports/pages/ReportsHubPage'
 import { ReservationUsageReportPage } from './features/reports/pages/ReservationUsageReportPage'
+import { AccountingHubPage } from './features/accounting/pages/AccountingHubPage'
+import { CoaPage } from './features/accounting/pages/CoaPage'
+import { JournalsPage } from './features/accounting/pages/JournalsPage'
+import { BudgetPage } from './features/accounting/pages/BudgetPage'
+import { ApPage } from './features/accounting/pages/ApPage'
+import { PettyCashPage } from './features/accounting/pages/PettyCashPage'
+import { TaxPage } from './features/accounting/pages/TaxPage'
+import { AccountingReportsPage } from './features/accounting/pages/ReportsPage'
+import { BankRecPage } from './features/accounting/pages/BankRecPage'
 import { PropertyWorkspaceLayout } from './features/structure/layouts/PropertyWorkspaceLayout'
 import { NeighborhoodsPage } from './features/structure/pages/NeighborhoodsPage'
 import { VehicleBrandsPage } from './features/structure/pages/VehicleBrandsPage'
@@ -142,6 +151,15 @@ export default function App() {
                 <Route path="reports/coefficients" element={<CoefficientsReportPage />} />
                 <Route path="reports/reservations" element={<ReservationUsageReportPage />} />
                 <Route path="reports/reception" element={<ReceptionReportPage />} />
+                <Route path="accounting" element={<AccountingHubPage />} />
+                <Route path="accounting/coa" element={<CoaPage />} />
+                <Route path="accounting/journals" element={<JournalsPage />} />
+                <Route path="accounting/budget" element={<BudgetPage />} />
+                <Route path="accounting/ap" element={<ApPage />} />
+                <Route path="accounting/petty-cash" element={<PettyCashPage />} />
+                <Route path="accounting/tax" element={<TaxPage />} />
+                <Route path="accounting/reports" element={<AccountingReportsPage />} />
+                <Route path="accounting/bank-rec" element={<BankRecPage />} />
               </Route>
               <Route path="/people" element={<PeoplePage />} />
               <Route path="/employees" element={<EmployeesPage />} />
