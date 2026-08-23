@@ -174,6 +174,7 @@ export function buildAppNav(propertyId: string | null | undefined): AppNavItem[]
       label: 'Intents PSE',
       icon: IconCreditCard,
       permission: FeatureCodes.billingPayments,
+      tenantModule: 'digitalPayments',
       requiresProperty: true,
       activeMatch: 'prefix',
     },

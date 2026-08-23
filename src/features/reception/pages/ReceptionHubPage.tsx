@@ -4,6 +4,7 @@ import { ReceptionItemsPage } from './ReceptionItemsPage'
 import { VisitorsPage } from './VisitorsPage'
 import { porterHubTabsRespectModuleFlags } from '../lib/porterHubTabsRespectModuleFlags'
 import { useAuthStore } from '../../../stores/authStore'
+import { FeatureCodes } from '../../../lib/permissions'
 import { PageHeader } from '../../../components/shared/PageHeader'
 
 /** Spec DIFF-007 — admin portería hub (entregas | visitas | parking). */
@@ -11,10 +12,12 @@ export function ReceptionHubPage() {
   const { tab } = useParams()
   const navigate = useNavigate()
   const modules = useAuthStore((s) => s.modules)
+  const hasPermission = useAuthStore((s) => s.hasPermission)
   const propertyMatch = window.location.pathname.match(/\/properties\/([^/]+)/)
   const propertyId = propertyMatch?.[1]
   const tabs = porterHubTabsRespectModuleFlags({
-    parking: Boolean((modules as { parking?: boolean } | null)?.parking),
+    visits: Boolean(modules?.visits),
+    parking: hasPermission(FeatureCodes.visitorParking),
   })
   const active = tabs.includes((tab as 'entregas' | 'visitas' | 'parking') ?? 'entregas')
     ? (tab as string)

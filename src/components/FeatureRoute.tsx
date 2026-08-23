@@ -3,6 +3,7 @@ import {
   isAnyOfPermission,
   isPlatformOnlyRoute,
   resolveRoutePermission,
+  resolveRouteTenantModule,
 } from '../app/routePermissions'
 import { FeatureGuard } from './FeatureGuard'
 import { PlatformGuard } from './PlatformGuard'
@@ -19,21 +20,25 @@ export function FeatureRoute() {
   }
 
   const requirement = resolveRoutePermission(pathname)
+  const tenantModule = resolveRouteTenantModule(pathname)
 
-  if (!requirement) {
+  if (!requirement && !tenantModule) {
     return <Outlet />
   }
 
-  if (isAnyOfPermission(requirement)) {
+  if (requirement && isAnyOfPermission(requirement)) {
     return (
-      <FeatureGuard anyOf={requirement.anyOf}>
+      <FeatureGuard anyOf={requirement.anyOf} tenantModule={tenantModule ?? undefined}>
         <Outlet />
       </FeatureGuard>
     )
   }
 
   return (
-    <FeatureGuard permission={requirement}>
+    <FeatureGuard
+      permission={requirement && !isAnyOfPermission(requirement) ? requirement : undefined}
+      tenantModule={tenantModule ?? undefined}
+    >
       <Outlet />
     </FeatureGuard>
   )

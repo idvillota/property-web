@@ -74,6 +74,7 @@ import { InsurancePage } from './features/community/pages/InsurancePage'
 import { PollsPage } from './features/community/pages/PollsPage'
 import { PortalLibraryPage } from './features/portal/pages/PortalLibraryPage'
 import { PortalPollsPage } from './features/portal/pages/PortalPollsPage'
+import { PortalAssembliesPage } from './features/portal/pages/PortalAssembliesPage'
 import { HoldingPage } from './features/holding/pages/HoldingPage'
 import { WebhooksSettingsPage } from './features/platform/pages/WebhooksSettingsPage'
 import { UserPreferencesBootstrap } from './components/theme/UserPreferencesBootstrap'
@@ -115,6 +116,7 @@ export default function App() {
             <Route path="/portal/pqrs/nuevo" element={<PortalPqrsPage />} />
             <Route path="/portal/library" element={<PortalLibraryPage />} />
             <Route path="/portal/polls" element={<PortalPollsPage />} />
+            <Route path="/portal/assemblies" element={<PortalAssembliesPage />} />
           </Route>
         </Route>
 

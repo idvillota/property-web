@@ -18,14 +18,17 @@ export function GuardLayout() {
   const location = useLocation()
 
   const canGuard =
-    hasPermission(FeatureCodes.receptionManage) || hasPermission(FeatureCodes.receptionVisits)
+    hasPermission(FeatureCodes.receptionManage) ||
+    hasPermission(FeatureCodes.receptionVisits) ||
+    hasPermission(FeatureCodes.visitorParking)
 
   if (!canGuard) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
   const tabIds = porterHubTabsRespectModuleFlags({
-    parking: Boolean((modules as { parking?: boolean } | null)?.parking),
+    visits: Boolean(modules?.visits),
+    parking: hasPermission(FeatureCodes.visitorParking),
   })
   const tabs = tabIds.map((id) => ({
     id,

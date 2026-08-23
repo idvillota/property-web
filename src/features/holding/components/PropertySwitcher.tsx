@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import type { HorizontalProperty } from '../../../api/types'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { PropertySwitcher_ListsAuthorized } from '../lib/propertySwitcherListsAuthorized'
+import { setPreferredPropertyId } from '../../../hooks/useCurrentProperty'
 
 type PropertySwitcherProps = {
   properties: HorizontalProperty[]
@@ -46,7 +47,10 @@ export function PropertySwitcher({
       searchable
       data={options}
       value={value}
-      onChange={onChange}
+      onChange={(next) => {
+        if (next) setPreferredPropertyId(next)
+        onChange(next)
+      }}
       comboboxProps={formDrawerSelectComboboxProps}
     />
   )

@@ -41,12 +41,12 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/units(?:\/|$)/, FeatureCodes.structureUnits],
   [/^\/properties\/[^/]+\/occupancies(?:\/|$)/, FeatureCodes.peopleManage],
   [/^\/properties\/[^/]+\/vehicles(?:\/|$)/, FeatureCodes.structureUnits],
+  [/^\/properties\/[^/]+\/billing\/dunning(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/billing(?:\/|$)/, FeatureCodes.billingSettings],
   [/^\/properties\/[^/]+\/periods(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/charges(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/payments(?:\/|$)/, FeatureCodes.billingPayments],
   [/^\/properties\/[^/]+\/payment-intents(?:\/|$)/, FeatureCodes.billingPayments],
-  [/^\/properties\/[^/]+\/billing\/dunning(?:\/|$)/, FeatureCodes.billingCharges],
   [/^\/properties\/[^/]+\/common-areas(?:\/|$)/, FeatureCodes.amenitiesAreas],
   [/^\/properties\/[^/]+\/reservations(?:\/|$)/, FeatureCodes.amenitiesReservations],
   [/^\/properties\/[^/]+\/mural(?:\/|$)/, FeatureCodes.muralManage],
@@ -72,6 +72,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/accounting\/reports(?:\/|$)/, FeatureCodes.accountingReports],
   [/^\/properties\/[^/]+\/accounting\/bank-rec(?:\/|$)/, FeatureCodes.accountingBank],
   [/^\/properties\/[^/]+\/accounting(?:\/|$)/, FeatureCodes.accountingCoa],
+  [/^\/properties\/[^/]+\/assemblies\/[^/]+\/votes(?:\/|$)/, { anyOf: [FeatureCodes.assemblyManage, FeatureCodes.assemblyVote] }],
   [/^\/properties\/[^/]+\/assemblies(?:\/|$)/, FeatureCodes.assemblyManage],
   [/^\/properties\/[^/]+\/visitor-parking(?:\/|$)/, FeatureCodes.visitorParking],
   [/^\/properties\/[^/]+\/library(?:\/|$)/, FeatureCodes.docsLibrary],
@@ -80,6 +81,7 @@ const DYNAMIC_ROUTE_PERMISSIONS: Array<[RegExp, RoutePermissionRequirement]> = [
   [/^\/properties\/[^/]+\/polls(?:\/|$)/, FeatureCodes.pollsManage],
   [/^\/portal\/library(?:\/|$)/, FeatureCodes.portalLibrary],
   [/^\/portal\/polls(?:\/|$)/, FeatureCodes.portalPolls],
+  [/^\/portal\/assemblies(?:\/|$)/, FeatureCodes.assemblyVote],
   [/^\/properties\/[^/]+(?:\/|$)/, FeatureCodes.structureProperties],
 ]
 
@@ -91,5 +93,15 @@ export function resolveRoutePermission(pathname: string): RoutePermissionRequire
     if (pattern.test(pathname)) return code
   }
 
+  return null
+}
+
+/** Tenant module required for path (DIFF-005 / ASM / PSE). */
+export function resolveRouteTenantModule(
+  pathname: string,
+): 'accounting' | 'assemblies' | 'digitalPayments' | null {
+  if (/\/accounting(?:\/|$)/.test(pathname)) return 'accounting'
+  if (/\/assemblies(?:\/|$)/.test(pathname)) return 'assemblies'
+  if (/\/payment-intents(?:\/|$)/.test(pathname)) return 'digitalPayments'
   return null
 }
