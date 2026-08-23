@@ -664,6 +664,8 @@ export type Payment = {
   isActive: boolean
   unitCode?: string
   allocations?: PaymentAllocation[]
+  /** Open charge balance for the unit after create (BIL-004). */
+  unitOpenBalanceAfter?: number
 }
 
 export type CommonArea = {

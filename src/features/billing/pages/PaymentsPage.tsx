@@ -44,6 +44,7 @@ import { localInputToUtcIso, utcIsoToLocalInput } from '../../../lib/datetime'
 import { formDrawerSelectComboboxProps } from '../../../lib/formDrawerSelect'
 import { formatMoney } from '../../../lib/money'
 import { toDwellingUnitSelectOptions } from '../../../lib/unitLabels'
+import { paymentsPageShowsValidationOnEmptyAmount } from '../lib/paymentsPageShowsValidationOnEmptyAmount'
 
 type AllocRow = { feeChargeId: string; amount: number; label: string; balance: number }
 
@@ -51,7 +52,9 @@ export function PaymentsPage() {
   const propertyId = usePropertyId()
   const [drawer, setDrawer] = useState(false)
   const [autoAllocate, setAutoAllocate] = useState(true)
+  const [allowOverpayment, setAllowOverpayment] = useState(false)
   const [allocations, setAllocations] = useState<AllocRow[]>([])
+  const [lastUnitBalance, setLastUnitBalance] = useState<number | null>(null)
   const invalidate = useInvalidate(['payments', 'fee-charges', 'arrears-summary'])
 
   const list = usePagedListState('paidat', {
@@ -84,7 +87,7 @@ export function PaymentsPage() {
     },
     validate: {
       unitId: (v) => (!v ? 'Obligatorio' : null),
-      amount: (v) => (v <= 0 ? 'Debe ser mayor que cero' : null),
+      amount: (v) => paymentsPageShowsValidationOnEmptyAmount(v),
       method: (v) => (!v ? 'Obligatorio' : null),
       paidAt: (v) => (!v ? 'Obligatorio' : null),
     },
@@ -121,6 +124,12 @@ export function PaymentsPage() {
       return [...map.values()].sort((a, b) => a.dueDate.localeCompare(b.dueDate))
     },
   })
+
+  const unitOpenBalance = useMemo(() => {
+    const charges = pendingChargesQuery.data
+    if (!charges) return null
+    return Math.round(charges.reduce((sum, c) => sum + chargeBalance(c.amount, c.amountPaid), 0) * 100) / 100
+  }, [pendingChargesQuery.data])
 
   const rebuildAllocations = (amount: number, charges: FeeCharge[], fifo: boolean) => {
     const suggested = fifo ? suggestFifoAllocations(amount, charges) : []
@@ -159,6 +168,8 @@ export function PaymentsPage() {
     })
     setAllocations([])
     setAutoAllocate(true)
+    setAllowOverpayment(false)
+    setLastUnitBalance(null)
     setDrawer(true)
   }
 
@@ -174,10 +185,19 @@ export function PaymentsPage() {
         .filter((a) => (Number(a.amount) || 0) > 0)
         .map((a) => ({ feeChargeId: a.feeChargeId, amount: Number(a.amount) || 0 }))
       const sum = Math.round(activeAllocations.reduce((s, a) => s + a.amount, 0) * 100) / 100
-      if (sum !== Math.round(amount * 100) / 100) {
+      const roundedAmount = Math.round(amount * 100) / 100
+      if (!allowOverpayment && sum !== roundedAmount) {
         throw new Error(
           `Las asignaciones (${formatMoney(sum)}) deben igualar el valor del pago (${formatMoney(amount)})`,
         )
+      }
+      if (allowOverpayment && sum > roundedAmount) {
+        throw new Error(
+          `Las asignaciones (${formatMoney(sum)}) no pueden superar el valor del pago (${formatMoney(amount)})`,
+        )
+      }
+      if (activeAllocations.length === 0) {
+        throw new Error('Seleccione al menos un cargo a aplicar.')
       }
       const { data } = await api.post<Payment>('/api/Payments', {
         horizontalPropertyId: propertyId,
@@ -188,12 +208,19 @@ export function PaymentsPage() {
         method: enumIndex(form.values.method, PAYMENT_METHOD_OPTIONS),
         reference: form.values.reference.trim() || null,
         notes: form.values.notes.trim() || null,
+        allowOverpayment,
         allocations: activeAllocations,
       })
       return data
     },
-    onSuccess: () => {
-      notifications.show({ title: 'Guardado', message: 'Pago registrado', color: 'teal' })
+    onSuccess: (data) => {
+      const remaining = data.unitOpenBalanceAfter ?? 0
+      setLastUnitBalance(remaining)
+      notifications.show({
+        title: 'Pago registrado',
+        message: `Saldo restante de la unidad: ${formatMoney(remaining)}`,
+        color: 'teal',
+      })
       setDrawer(false)
       invalidate()
     },
@@ -302,6 +329,11 @@ export function PaymentsPage() {
         title="Pagos"
         description="Registre pagos y asígnelos a cargos de cuota abiertos."
       />
+      {lastUnitBalance != null ? (
+        <Text size="sm" c="dimmed">
+          Último saldo restante de unidad tras guardar: {formatMoney(lastUnitBalance)}
+        </Text>
+      ) : null}
       <ListToolbar
         onAdd={openCreate}
         addLabel="Registrar pago"
@@ -357,6 +389,11 @@ export function PaymentsPage() {
               required
               {...form.getInputProps('amount')}
             />
+            {unitOpenBalance != null ? (
+              <Text size="sm" c="dimmed">
+                Saldo abierto de la unidad: {formatMoney(unitOpenBalance)}
+              </Text>
+            ) : null}
             <Select
               label="Método"
               required
@@ -378,6 +415,12 @@ export function PaymentsPage() {
               checked={autoAllocate}
               onChange={(e) => setAutoAllocate(e.currentTarget.checked)}
             />
+            <Switch
+              label="Permitir sobrante (monto mayor al saldo abierto)"
+              description="Si está desactivado, el API rechaza pagos por encima del saldo de cargos."
+              checked={allowOverpayment}
+              onChange={(e) => setAllowOverpayment(e.currentTarget.checked)}
+            />
 
             {!form.values.unitId ? (
               <Text size="sm" c="dimmed">
@@ -395,9 +438,20 @@ export function PaymentsPage() {
               <Stack gap="xs">
                 <Group justify="space-between">
                   <Text size="sm" fw={600}>
-                    Asignaciones
+                    Cargos a aplicar
                   </Text>
-                  <Text size="xs" c={allocationSum === Number(form.values.amount) ? 'teal' : 'orange'}>
+                  <Text
+                    size="xs"
+                    c={
+                      allowOverpayment
+                        ? allocationSum <= Number(form.values.amount)
+                          ? 'teal'
+                          : 'orange'
+                        : allocationSum === Number(form.values.amount)
+                          ? 'teal'
+                          : 'orange'
+                    }
+                  >
                     {formatMoney(allocationSum)} / {formatMoney(Number(form.values.amount) || 0)}
                   </Text>
                 </Group>
