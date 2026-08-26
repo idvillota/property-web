@@ -219,6 +219,16 @@ export type InvitedTenantUser = {
   roles: string[]
 }
 
+export type TenantUserListItem = {
+  tenantUserId: string
+  userId: string
+  email: string
+  displayName: string | null
+  isActive: boolean
+  roles: string[]
+  createdAtUtc: string
+}
+
 export type TenantSettings = {
   propertyId: string | null
   name: string
