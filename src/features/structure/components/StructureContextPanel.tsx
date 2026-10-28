@@ -1,5 +1,5 @@
 import { Badge, Button, Group, Menu, Stack, Text, UnstyledButton } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import type { StructureWorkspaceBuilding, StructureWorkspaceFloor, Unit } from '../../../api/types'
 import { labelForOption, normalizeUnitType, UNIT_TYPE_OPTIONS } from '../../../lib/structureEnums'
 
@@ -95,14 +95,18 @@ type BuildingPanelProps = {
   building: StructureWorkspaceBuilding
   onSelectFloor: (floorId: string) => void
   onAddFloor: () => void
+  onRemove: () => void
   addFloorLoading?: boolean
+  removeLoading?: boolean
 }
 
 export function BuildingContextPanel({
   building,
   onSelectFloor,
   onAddFloor,
+  onRemove,
   addFloorLoading,
+  removeLoading,
 }: BuildingPanelProps) {
   const units = building.floors.flatMap((f) => f.units)
   const summary = summarizeUnits(units)
@@ -177,22 +181,42 @@ export function BuildingContextPanel({
       >
         Agregar piso
       </Button>
+      <Button
+        variant="light"
+        color="red"
+        leftSection={<IconTrash size={14} />}
+        loading={removeLoading}
+        onClick={() => {
+          const ok = window.confirm(
+            `¿Eliminar ${building.name} con sus pisos y unidades? Se recalcularán los coeficientes.`,
+          )
+          if (ok) onRemove()
+        }}
+      >
+        Eliminar torre
+      </Button>
     </Stack>
   )
 }
+
+const emptyFloorId = '00000000-0000-0000-0000-000000000000'
 
 type FloorPanelProps = {
   building: StructureWorkspaceBuilding
   floor: StructureWorkspaceFloor
   onAddUnit: (unitType: string) => void
+  onRemove: () => void
   addUnitLoading?: boolean
+  removeLoading?: boolean
 }
 
 export function FloorContextPanel({
   building,
   floor,
   onAddUnit,
+  onRemove,
   addUnitLoading,
+  removeLoading,
 }: FloorPanelProps) {
   const summary = summarizeUnits(floor.units)
 
@@ -220,6 +244,22 @@ export function FloorContextPanel({
       <BreakdownList breakdown={summary.breakdown} />
 
       <AddUnitMenu loading={addUnitLoading} onAdd={onAddUnit} />
+      {floor.id !== emptyFloorId && (
+        <Button
+          variant="light"
+          color="red"
+          leftSection={<IconTrash size={14} />}
+          loading={removeLoading}
+          onClick={() => {
+            const ok = window.confirm(
+              `¿Eliminar ${floor.name} y sus unidades? Se recalcularán los coeficientes.`,
+            )
+            if (ok) onRemove()
+          }}
+        >
+          Eliminar piso
+        </Button>
+      )}
     </Stack>
   )
 }

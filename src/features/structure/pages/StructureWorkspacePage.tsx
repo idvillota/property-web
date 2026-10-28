@@ -790,6 +790,36 @@ function OperateMode({
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
   })
 
+  const removeFloorMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/api/Floors/${id}`)
+    },
+    onSuccess: () => {
+      notifications.show({ title: 'Piso eliminado', message: 'Las unidades del piso quedaron inactivas.', color: 'teal' })
+      setFloorId('all')
+      goToPlanta(true)
+      invalidate()
+    },
+    onError: (err) =>
+      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+  })
+
+  const removeBuildingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/api/Buildings/${id}`)
+    },
+    onSuccess: (_data, id) => {
+      notifications.show({ title: 'Torre eliminada', message: 'Sus pisos y unidades quedaron inactivos.', color: 'teal' })
+      const remaining = workspace.buildings.filter((b) => b.id !== id)
+      setBuildingId(remaining[0]?.id ?? '')
+      setFloorId('all')
+      goToPlanta(true)
+      invalidate()
+    },
+    onError: (err) =>
+      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+  })
+
   const maxCols = Math.max(1, ...visibleFloors.map((f) => f.units.length), 1)
   const breadcrumbFloor =
     floorId === 'all' ? null : floors.find((f) => f.id === floorId) ?? null
@@ -800,7 +830,9 @@ function OperateMode({
         building={building}
         floor={activeFloor}
         onAddUnit={(unitType) => addUnitMutation.mutate(unitType)}
+        onRemove={() => removeFloorMutation.mutate(activeFloor.id)}
         addUnitLoading={addUnitMutation.isPending}
+        removeLoading={removeFloorMutation.isPending}
       />
     ) : plantaFocus === 'building' && building ? (
       <BuildingContextPanel
@@ -813,7 +845,9 @@ function OperateMode({
           )
         }}
         onAddFloor={() => addFloorMutation.mutate()}
+        onRemove={() => removeBuildingMutation.mutate(building.id)}
         addFloorLoading={addFloorMutation.isPending}
+        removeLoading={removeBuildingMutation.isPending}
       />
     ) : (
       <Stack gap="xs">
@@ -1064,6 +1098,10 @@ function OperateMode({
                   householdLoading={householdQuery.isLoading}
                   onChanged={() => {
                     void householdQuery.refetch()
+                    invalidate()
+                  }}
+                  onRemoved={() => {
+                    goToPlanta(true)
                     invalidate()
                   }}
                 />
