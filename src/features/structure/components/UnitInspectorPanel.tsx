@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconDots, IconPencil, IconUserPlus } from '@tabler/icons-react'
+import { IconDots, IconPencil, IconTrash, IconUserPlus } from '@tabler/icons-react'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { api } from '../../../api/client'
@@ -27,6 +27,7 @@ import type {
   UnitHouseholdPerson,
 } from '../../../api/types'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
+import { inputChangeValue } from '../../../lib/inputChangeValue'
 import {
   labelForOption,
   normalizeUnitType,
@@ -92,6 +93,7 @@ type Props = {
   household: UnitHousehold | undefined
   householdLoading: boolean
   onChanged: () => void
+  onRemoved: () => void
 }
 
 export function UnitInspectorPanel({
@@ -100,6 +102,7 @@ export function UnitInspectorPanel({
   household,
   householdLoading,
   onChanged,
+  onRemoved,
 }: Props) {
   const dwelling = isDwellingUnit(selected.unit.unitType)
   const personasAvailable = canAssignOwner(selected.unit.unitType)
@@ -169,6 +172,22 @@ export function UnitInspectorPanel({
       notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
   })
 
+  const removeMutation = useMutation({
+    mutationFn: async () => {
+      await api.delete(`/api/Units/${selected.unit.id}`)
+    },
+    onSuccess: () => {
+      notifications.show({
+        title: 'Unidad eliminada',
+        message: selected.unit.code,
+        color: 'teal',
+      })
+      onRemoved()
+    },
+    onError: (err) =>
+      notifications.show({ title: 'Error', message: getApiErrorMessage(err), color: 'red' }),
+  })
+
   const owners = household?.owners ?? []
   const habitants = household?.habitants ?? []
   const relatedParkings = household?.relatedParkings ?? []
@@ -191,7 +210,7 @@ export function UnitInspectorPanel({
             </Text>
           </div>
           {!editing && (
-            <Menu shadow="sm" width={160} position="bottom-end">
+            <Menu shadow="sm" width={200} position="bottom-end">
               <Menu.Target>
                 <ActionIcon variant="subtle" color="gray" aria-label="Acciones">
                   <IconDots size={18} stroke={1.75} />
@@ -204,6 +223,19 @@ export function UnitInspectorPanel({
                 >
                   Editar unidad
                 </Menu.Item>
+                <Menu.Item
+                  color="red"
+                  leftSection={<IconTrash size={14} stroke={1.75} />}
+                  disabled={removeMutation.isPending}
+                  onClick={() => {
+                    const ok = window.confirm(
+                      `¿Eliminar la unidad ${selected.unit.code}? Saldrá de la planta y se recalcularán los coeficientes.`,
+                    )
+                    if (ok) removeMutation.mutate()
+                  }}
+                >
+                  Eliminar unidad
+                </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           )}
@@ -214,7 +246,10 @@ export function UnitInspectorPanel({
             <TextInput
               label="Código"
               value={draft.code}
-              onChange={(e) => setDraft((d) => ({ ...d, code: e.currentTarget.value }))}
+              onChange={(event) => {
+                const code = inputChangeValue(event)
+                setDraft((current) => ({ ...current, code }))
+              }}
             />
             <Select
               label="Tipo"

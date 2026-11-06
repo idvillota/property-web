@@ -15,11 +15,12 @@ import {
 import { notifications } from '@mantine/notifications'
 import { IconPlus, IconTrash, IconUserPlus } from '@tabler/icons-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { api } from '../../../api/client'
 import { getApiErrorMessage } from '../../../api/errors'
 import { buildListUrl, type PagedResult } from '../../../api/paging'
 import type { Person, UnitHousehold, UnitHouseholdPerson, UnitOccupancy } from '../../../api/types'
+import { inputChangeValue } from '../../../lib/inputChangeValue'
 import { FeatureCodes } from '../../../lib/permissions'
 import {
   DOCUMENT_TYPE_OPTIONS,
@@ -112,6 +113,13 @@ export function UnitPersonasPanel({
     email: '',
     phone: '',
   })
+
+  const setPersonText =
+    (field: 'documentNumber' | 'firstName' | 'lastName' | 'email' | 'phone') =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const value = inputChangeValue(event)
+      setNewPerson((person) => ({ ...person, [field]: value }))
+    }
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedSearch(search.trim()), 250)
@@ -352,6 +360,7 @@ export function UnitPersonasPanel({
             <Stack gap="sm">
               {showHabitants && (
                 <Select
+                  key="occupancy-role"
                   label="Rol"
                   data={
                     canAddOwner
@@ -450,6 +459,7 @@ export function UnitPersonasPanel({
           ) : (
             <Stack gap="sm">
               <Select
+                key="document-type"
                 label="Tipo de documento"
                 data={DOCUMENT_TYPE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
                 value={newPerson.documentType}
@@ -458,32 +468,30 @@ export function UnitPersonasPanel({
               <TextInput
                 label="Número de documento"
                 value={newPerson.documentNumber}
-                onChange={(e) =>
-                  setNewPerson((p) => ({ ...p, documentNumber: e.currentTarget.value }))
-                }
+                onChange={setPersonText('documentNumber')}
                 required
               />
               <TextInput
                 label="Nombres"
                 value={newPerson.firstName}
-                onChange={(e) => setNewPerson((p) => ({ ...p, firstName: e.currentTarget.value }))}
+                onChange={setPersonText('firstName')}
                 required
               />
               <TextInput
                 label="Apellidos"
                 value={newPerson.lastName}
-                onChange={(e) => setNewPerson((p) => ({ ...p, lastName: e.currentTarget.value }))}
+                onChange={setPersonText('lastName')}
                 required
               />
               <TextInput
                 label="Teléfono"
                 value={newPerson.phone}
-                onChange={(e) => setNewPerson((p) => ({ ...p, phone: e.currentTarget.value }))}
+                onChange={setPersonText('phone')}
               />
               <TextInput
                 label="Correo"
                 value={newPerson.email}
-                onChange={(e) => setNewPerson((p) => ({ ...p, email: e.currentTarget.value }))}
+                onChange={setPersonText('email')}
               />
               <Group gap="xs">
                 <Button

@@ -18,6 +18,7 @@ import { CommonAreasPage } from './features/amenities/pages/CommonAreasPage'
 import { ReservationsPage } from './features/amenities/pages/ReservationsPage'
 import { BillingPeriodsPage } from './features/billing/pages/BillingPeriodsPage'
 import { BillingSettingsPage } from './features/billing/pages/BillingSettingsPage'
+import { BreBSettingsPage } from './features/billing/pages/BreBSettingsPage'
 import { FeeChargesPage } from './features/billing/pages/FeeChargesPage'
 import { PaymentsPage } from './features/billing/pages/PaymentsPage'
 import { PaymentIntentsPage } from './features/billing/pages/PaymentIntentsPage'
@@ -146,6 +147,7 @@ export default function App() {
                 <Route path="occupancies" element={<OccupanciesPage />} />
                 <Route path="vehicles" element={<VehiclesPage />} />
                 <Route path="billing" element={<BillingSettingsPage />} />
+                <Route path="billing/breb" element={<BreBSettingsPage />} />
                 <Route path="periods" element={<BillingPeriodsPage />} />
                 <Route path="charges" element={<FeeChargesPage />} />
                 <Route path="payments" element={<PaymentsPage />} />
