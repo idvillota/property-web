@@ -625,6 +625,16 @@ export type FeeSettings = {
   notes: string | null
 }
 
+export type BreBPaymentProfile = {
+  horizontalPropertyId: string
+  key: string
+  keyType: number
+  merchantName: string
+  city: string
+  postalCode: string
+  isReady: boolean
+}
+
 export type DunningRule = {
   id: string
   horizontalPropertyId: string
@@ -735,6 +745,10 @@ export type LiquidationResult = {
   totalAmount: number
   isLiquidated: boolean
   liquidatedAtUtc: string | null
+  paymentQrConfigured: boolean
+  paymentQrSkipReason: string | null
+  paymentNoticeEmailsQueued: number
+  paymentNoticeUnitsWithoutEmail: number
 }
 
 export type PaymentAllocation = {

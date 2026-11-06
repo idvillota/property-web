@@ -61,6 +61,19 @@ type WizardState = {
   preview: LiquidationPreview | null
 }
 
+function liquidationNotice(result: LiquidationResult): string {
+  const base = `${result.periodKey}: ${result.createdCount} cargos · ${formatMoney(result.totalAmount)}`
+  if (result.createdCount <= 0) return base
+  if (!result.paymentQrConfigured) {
+    return `${base}. ${result.paymentQrSkipReason ?? 'Configura la llave Bre-B para enviar el QR.'}`
+  }
+  const missing =
+    result.paymentNoticeUnitsWithoutEmail > 0
+      ? `, ${result.paymentNoticeUnitsWithoutEmail} unidades sin correo de cobro`
+      : ''
+  return `${base}. ${result.paymentNoticeEmailsQueued} correos de cobro en cola${missing}`
+}
+
 export function BillingPeriodsPage() {
   const propertyId = usePropertyId()
   const [drawer, setDrawer] = useState<'create' | BillingPeriod | null>(null)
@@ -188,7 +201,7 @@ export function BillingPeriodsPage() {
     onSuccess: (result) => {
       notifications.show({
         title: 'Liquidación confirmada',
-        message: `${result.periodKey}: ${result.createdCount} cargos · ${formatMoney(result.totalAmount)}`,
+        message: liquidationNotice(result),
         color: 'teal',
       })
       setWizard(null)

@@ -36,6 +36,7 @@ import type {
 import { PageHeader } from '../../../components/shared/PageHeader'
 import { useInvalidate } from '../../../hooks/useInvalidate'
 import { usePropertyId } from '../../../hooks/usePropertyId'
+import { inputChangeValue } from '../../../lib/inputChangeValue'
 import { normalizeUnitType } from '../../../lib/structureEnums'
 import {
   BuildingContextPanel,
@@ -486,24 +487,26 @@ function SetupMode({ propertyId }: { propertyId: string }) {
                   <TextInput
                     label="Nombre del bloque"
                     value={activeBuilding.name}
-                    onChange={(e) =>
+                    onChange={(event) => {
+                      const name = inputChangeValue(event)
                       setMatrix((prev) =>
                         prev.map((b) =>
-                          b.key === activeBuilding.key ? { ...b, name: e.currentTarget.value } : b,
+                          b.key === activeBuilding.key ? { ...b, name } : b,
                         ),
                       )
-                    }
+                    }}
                   />
                   <TextInput
                     label="Código"
                     value={activeBuilding.code}
-                    onChange={(e) =>
+                    onChange={(event) => {
+                      const code = inputChangeValue(event)
                       setMatrix((prev) =>
                         prev.map((b) =>
-                          b.key === activeBuilding.key ? { ...b, code: e.currentTarget.value } : b,
+                          b.key === activeBuilding.key ? { ...b, code } : b,
                         ),
                       )
-                    }
+                    }}
                   />
                 </Group>
                 <Text size="xs" c="dimmed">

@@ -27,6 +27,7 @@ import type {
   UnitHouseholdPerson,
 } from '../../../api/types'
 import { FormDrawer } from '../../../components/crud/FormDrawer'
+import { inputChangeValue } from '../../../lib/inputChangeValue'
 import {
   labelForOption,
   normalizeUnitType,
@@ -245,7 +246,10 @@ export function UnitInspectorPanel({
             <TextInput
               label="Código"
               value={draft.code}
-              onChange={(e) => setDraft((d) => ({ ...d, code: e.currentTarget.value }))}
+              onChange={(event) => {
+                const code = inputChangeValue(event)
+                setDraft((current) => ({ ...current, code }))
+              }}
             />
             <Select
               label="Tipo"
